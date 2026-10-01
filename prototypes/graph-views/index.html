@@ -1,0 +1,480 @@
+<!doctype html>
+<!--
+  PROTOTYPE (throwaway) for "Prototype the default view and the Focus view" (#7).
+  Three variants of the main screen, switchable via ?variant=A|B|C and the bottom bar:
+    A  Frontier graph : default = Breedable now + what it needs; Focus = a separate tree. Element-node treatment is switchable.
+    B  Whole map      : every Dragon always drawn, placed near its Elements; Focus = highlight in place.
+    C  Lists, no graph: default = Breedable now list + Collection checklist; Focus = an indented outline.
+  Data: real wiki snapshot in data.js (node fetch-data.mjs). Collection lives in memory only.
+  Open this file directly in a browser.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Breeding Helper Prototype</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js"></script>
+<script src="data.js"></script>
+<script src="logic.js"></script>
+<style>
+  :root { --bg:#f6f5f2; --fg:#1d1d1f; --muted:#6b6b70; --card:#fff; --line:#d9d7d0; --own:#2e7d32; --ownbg:#c8e6c9; --breed:#00897b; --miss:#c62828; --rift:#7b1fa2; --accent:#e0a800; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#16161a; --fg:#ececf0; --muted:#9a9aa3; --card:#212127; --line:#383840; --ownbg:#1f3d22; } }
+  * { box-sizing: border-box; }
+  body { margin:0; font:14px/1.4 system-ui, sans-serif; background:var(--bg); color:var(--fg); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+  header { display:flex; gap:10px; align-items:center; padding:8px 14px; border-bottom:1px solid var(--line); background:var(--card); flex-wrap:wrap; }
+  header h1 { font-size:15px; margin:0 10px 0 0; }
+  header input, header select, button { font:inherit; padding:4px 8px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--fg); }
+  button { cursor:pointer; }
+  .stat { color:var(--muted); font-size:12px; }
+  #wrap { flex:1; display:flex; min-height:0; }
+  #main { flex:1; position:relative; min-width:0; overflow:auto; }
+  #cy { position:absolute; inset:0; }
+  #panel { width:340px; border-left:1px solid var(--line); background:var(--card); overflow:auto; padding:12px 14px 80px; display:none; }
+  #panel.open { display:block; }
+  #panel h2 { font-size:16px; margin:0 0 4px; }
+  .chip { display:inline-block; padding:1px 7px; border-radius:10px; font-size:12px; border:1px solid var(--line); margin:1px 2px; }
+  .chip.cov { background:var(--ownbg); border-color:var(--own); }
+  .chip.miss { border-color:var(--miss); color:var(--miss); }
+  .badge { display:inline-block; font-size:11px; padding:1px 6px; border-radius:4px; background:var(--bg); border:1px solid var(--line); margin:1px; }
+  .muted { color:var(--muted); }
+  .ok { color:var(--own); font-weight:600; }
+  .bad { color:var(--miss); font-weight:600; }
+  ul.plain { list-style:none; padding:0; margin:4px 0; }
+  ul.plain li { padding:2px 0; }
+  a.link { color:var(--breed); cursor:pointer; text-decoration:underline; }
+  .legend { position:absolute; left:10px; top:10px; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:6px 10px; font-size:12px; z-index:2; max-width:280px; }
+  .why { position:absolute; left:10px; bottom:60px; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:6px 10px; z-index:2; max-width:460px; }
+  /* Variant C */
+  .cols { display:grid; grid-template-columns: 1fr 1fr; gap:16px; padding:14px; }
+  .col { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px 12px; min-width:0; }
+  .row { display:flex; gap:8px; align-items:baseline; padding:3px 0; border-bottom:1px solid var(--line); }
+  .row .n { font-weight:600; cursor:pointer; }
+  .outline { padding:14px 20px 90px; max-width:900px; }
+  .tnode { margin-left:22px; border-left:2px solid var(--line); padding-left:10px; }
+  .route { margin:6px 0; padding:6px 8px; border:1px solid var(--line); border-radius:8px; background:var(--card); cursor:pointer; }
+  .route.met { border-color:var(--own); box-shadow: inset 3px 0 0 var(--own); }
+  .route.dim { opacity:.5; }
+  .dname { font-weight:600; }
+  .inl { background:var(--bg); border:1px dashed var(--line); border-radius:8px; padding:8px; margin:6px 0; }
+  /* switcher */
+  #switcher { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); background:#111; color:#fff; border-radius:999px; padding:6px 8px; display:flex; gap:8px; align-items:center; box-shadow:0 6px 24px rgba(0,0,0,.35); z-index:50; font-size:13px; }
+  #switcher button { background:#333; color:#fff; border:none; border-radius:999px; width:28px; height:28px; }
+  @media (max-width: 700px) { .cols { grid-template-columns:1fr; } #panel { position:fixed; inset:auto 0 0 0; width:auto; height:55vh; z-index:20; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>🐉 Breeding Helper <span class="muted">(prototype)</span></h1>
+  <label>Collection <select id="preset"><option value="new">New player (12)</option><option value="mid" selected>Mid-game (~150)</option><option value="empty">Empty</option></select></label>
+  <label>Target <input id="target" list="names" placeholder="Search a Dragon…" size="18" /></label>
+  <select id="form"><option value="normal">Normal</option><option value="rift">Rift form</option></select>
+  <button id="clear">Clear Target</button>
+  <span class="stat" id="stat"></span>
+  <datalist id="names"></datalist>
+</header>
+<div id="wrap"><div id="main"></div><aside id="panel"></aside></div>
+<div id="switcher"><button id="prev">←</button><span id="vlabel"></span><button id="next">→</button></div>
+
+<script>
+const DV = window.DV;
+const VARIANTS = { A: "Frontier graph", B: "Whole map", C: "Lists, no graph" };
+const ELEM_COLORS = { Plant:"#43a047", Fire:"#f4511e", Earth:"#8d6e63", Cold:"#4fc3f7", Lightning:"#fbc02d", Water:"#1e88e5", Air:"#90a4ae", Metal:"#757575", Light:"#fff176", Dark:"#5e35b1", Rift:"#8e24aa" };
+const ecol = (e) => ELEM_COLORS[e] || "#ec407a";
+const state = { target: null, form: "normal", elemMode: "hubs", wholeColl: false, variant: new URLSearchParams(location.search).get("variant") || "A" };
+let cy = null, breedCache = null;
+
+// ---------- header wiring
+document.getElementById("names").innerHTML = DV.S.dragons.map((d) => `<option value="${d.name}">`).join("");
+const $ = (id) => document.getElementById(id);
+$("preset").onchange = () => { DV.preset($("preset").value); refresh(); };
+$("target").onchange = () => { if (DV.byName.has($("target").value)) setTarget($("target").value, $("form").value); };
+$("form").onchange = () => { if (state.target) setTarget(state.target, $("form").value); };
+$("clear").onclick = () => { state.target = null; $("target").value = ""; closePanel(); render(); };
+function setTarget(name, form) {
+  const d = DV.byName.get(name);
+  if (form === "rift" && !d.hasRiftForm) form = "normal";
+  state.target = name; state.form = form; $("target").value = name; $("form").value = form; closePanel(); render();
+}
+function refresh() { breedCache = null; render(); if (panelNode) showPanel(panelNode); }
+function breedable() { return breedCache || (breedCache = DV.allBreedableNow()); }
+function stat() { $("stat").textContent = `${[...DV.coll.values()].filter((c) => c.normal || c.rift).length} owned · ${breedable().length} Breedable now · ${DV.inRotation.size} limited in rotation`; }
+
+// ---------- switcher
+function syncUrl() { const u = new URL(location); u.searchParams.set("variant", state.variant); if (state.target) { u.searchParams.set("target", state.target); u.searchParams.set("form", state.form); } else { u.searchParams.delete("target"); u.searchParams.delete("form"); } history.replaceState(null, "", u); }
+function setVariant(v) { state.variant = v; closePanel(); render(); }
+const keys = Object.keys(VARIANTS);
+$("prev").onclick = () => setVariant(keys[(keys.indexOf(state.variant) + keys.length - 1) % keys.length]);
+$("next").onclick = () => setVariant(keys[(keys.indexOf(state.variant) + 1) % keys.length]);
+addEventListener("keydown", (e) => { if (e.target.closest("input,textarea,select,[contenteditable]")) return; if (e.key === "ArrowLeft") $("prev").click(); if (e.key === "ArrowRight") $("next").click(); });
+
+// ---------- shared click panel
+let panelNode = null;
+function closePanel() { panelNode = null; $("panel").classList.remove("open"); }
+function showPanel(n, into) {
+  panelNode = into ? panelNode : n;
+  const el = into || $("panel");
+  if (!into) el.classList.add("open");
+  el.innerHTML = (into ? "" : `<button style="float:right" onclick="closePanel()">✕</button>`) + panelHtml(n);
+  el.querySelectorAll("[data-focus]").forEach((a) => (a.onclick = (ev) => { ev.stopPropagation(); setTarget(a.dataset.focus, a.dataset.form || "normal"); }));
+  el.querySelectorAll("[data-own]").forEach((cb) => (cb.onchange = () => { DV.setOwned(cb.dataset.own, cb.dataset.form, cb.checked); refresh(); }));
+  el.querySelectorAll("input.pairsearch").forEach((inp) => (inp.oninput = () => { el.querySelectorAll("li.pair").forEach((li) => (li.style.display = li.textContent.toLowerCase().includes(inp.value.toLowerCase()) ? "" : "none")); }));
+}
+const dlink = (name, form) => `<a class="link" data-focus="${name}" data-form="${form || "normal"}">${name}</a>`;
+function ownBoxes(d) {
+  if (d.isRiftDragon || !d.hasRiftForm) return `<label><input type="checkbox" data-own="${d.name}" data-form="normal" ${DV.owns(d.name, "normal") ? "checked" : ""}> Owned</label>`;
+  return `<label><input type="checkbox" data-own="${d.name}" data-form="normal" ${DV.owns(d.name, "normal") ? "checked" : ""}> Normal</label>
+          <label><input type="checkbox" data-own="${d.name}" data-form="rift" ${DV.owns(d.name, "rift") ? "checked" : ""}> Rift form</label>`;
+}
+function panelHtml(n) {
+  if (n.type === "dragon") {
+    const d = DV.byName.get(n.name);
+    const b = DV.breedableNow(d, n.form || "normal");
+    return `<h2>${d.name} ${n.form === "rift" && !d.isRiftDragon ? "<span class='chip' style='color:var(--rift)'>Rift form</span>" : ""}</h2>
+      <div class="muted">${d.rarity} · #${d.order}${d.isLimited ? " · limited" + (DV.inRotation.has(d.name) ? " (in rotation until " + (DV.endDate.get(d.name) || "?") + ")" : " (not in rotation)") : ""}</div>
+      <p>${ownBoxes(d)}</p>
+      <div>Breeds as ${d.breedingElements.map((e) => `<span class="chip">${e}</span>`).join("")}</div>
+      ${b ? `<p class="ok">Breedable now: ${b.pair[0].name} + ${b.pair[1].name}</p>` : ""}
+      <h3>Routes</h3><ul class="plain">${d.routes.map((r) => `<li>• <b>${r.kind}</b> ${DV.routeText(r)} ${DV.conditionBadges(r).map((x) => `<span class="badge">${x}</span>`).join("")}</li>`).join("")}</ul>
+      ${state.target === d.name && state.form === (n.form || "normal") ? "" : `<p><button data-focus="${d.name}" data-form="${n.form || "normal"}">🎯 Make this the Target</button></p>`}`;
+  }
+  if (n.type === "route") {
+    const r = n.r, rift = n.rift;
+    let h = `<h2>Route to ${n.owner}</h2><div><b>${r.kind}</b>: ${DV.routeText(r)}</div><div>${DV.conditionBadges(r).map((x) => `<span class="badge">${x}</span>`).join("")}</div>`;
+    if (rift) h += `<div class="badge" style="color:var(--rift)">Rift breeding: only Rift forms / Rift dragons count</div>`;
+    if (n.purchaseOnly) h += `<p class="bad">🔒 Purchase only right now</p>`;
+    if (n.oor && n.oor.length) h += `<p class="bad">⏳ Not in rotation: ${n.oor.join(", ")} (locked unless obtained another way)</p>`;
+    if (r.kind !== "Bred") return h;
+    const pairs = DV.validPairs(r, rift, 300);
+    if (pairs.length) {
+      h += `<p class="ok">✔ Met: ${pairs.length}${pairs.length === 300 ? "+" : ""} Valid pairs from your Collection</p><input class="pairsearch" placeholder="Search pairs…" style="width:100%">
+            <ul class="plain">${pairs.map(([a, b]) => `<li class="pair">${a.name} + ${b.name}</li>`).join("")}</ul>`;
+      return h;
+    }
+    const els = (r.elements || []).map((e) => `<span class="chip ${DV.elementCovered(e, rift) ? "cov" : "miss"}">${e}</span>`).join("");
+    h += `<p class="bad">No Valid pair yet</p><div>${els}</div><p class="muted">${DV.noPairReason(r, rift)}</p>`;
+    h += `<h3>Would make a Valid pair with something you own</h3><ul class="plain">${suggestions(r, rift).map((s) => `<li>${dlink(s.d.name, rift ? "rift" : "normal")} + ${s.with.name} ${s.now ? "<span class='badge ok'>breedable now</span>" : ""}</li>`).join("") || "<li class='muted'>none: you need more than one new Dragon</li>"}</ul>`;
+    return h;
+  }
+  if (n.type === "element") {
+    const rift = n.rift;
+    const owned = DV.candidates(rift).filter((d) => d.breedingElements.includes(n.name));
+    const basic = DV.basicDragon(n.name);
+    return `<h2><span class="chip" style="background:${ecol(n.name)};color:#000">${n.name}</span> Element</h2>
+      ${rift ? `<div class="badge" style="color:var(--rift)">In a Rift route: only Rift forms / Rift dragons</div>` : ""}
+      <h3>You own ${owned.length} carrying it</h3><ul class="plain">${owned.slice(0, 40).map((d) => `<li>✔ ${d.name}</li>`).join("") || "<li class='bad'>none</li>"}${owned.length > 40 ? `<li class="muted">…and ${owned.length - 40} more</li>` : ""}</ul>
+      <h3>Basic dragon</h3><p>${basic[0] ? dlink(basic[0].name, rift ? "rift" : "normal") + ` <span class="muted">(${basic[0].breedingElements.join(", ")})</span>` : "—"}</p>
+      <details><summary>Show alternatives (${Math.max(0, basic.length - 1)})</summary><ul class="plain">${basic.slice(1, 30).map((d) => `<li>${dlink(d.name, rift ? "rift" : "normal")} <span class="muted">${d.breedingElements.join(", ")}</span></li>`).join("")}</ul></details>`;
+  }
+  if (n.type === "friend") return `<h2>${n.name}</h2><p>A friend's Dragon, used in the Cooperative cave. Never checked against your Collection and never expanded.</p>`;
+  if (n.type === "rule") return `<h2>${n.name}</h2><p class="muted">Rule node: not a specific Element. Click the Route to see Valid pairs.</p>`;
+  return "";
+}
+function suggestions(r, rift) {
+  const owned = DV.candidates(rift);
+  const nowSet = new Set(breedable().map((x) => x.d.name));
+  const out = [];
+  for (const d of DV.S.dragons) {
+    if (!d.canBeParent || owned.includes(d)) continue;
+    if (r.parents && r.parents.length && !r.parents.includes(d.name) && !owned.some((o) => r.parents.includes(o.name))) continue;
+    const partner = owned.find((o) => checkPair(r, d, o));
+    if (partner) out.push({ d, with: partner, now: nowSet.has(d.name) });
+  }
+  return out.sort((a, b) => b.now - a.now || a.d.breedingElements.length - b.d.breedingElements.length || a.d.order - b.d.order).slice(0, 10);
+}
+function checkPair(r, a, b) {
+  if (r.parents && r.parents.length === 2) { const s = [a.name, b.name].sort().join(); if (s !== [...r.parents].sort().join()) return false; }
+  if (r.parents && r.parents.length === 1 && a.name !== r.parents[0] && b.name !== r.parents[0]) return false;
+  const pool = new Set([...a.breedingElements, ...b.breedingElements]);
+  if ((r.elements || []).some((e) => !pool.has(e))) return false;
+  if (r.minDistinctElements && pool.size < r.minDistinctElements) return false;
+  if ((r.elementOnBothParents || []).some((e) => !a.breedingElements.includes(e) || !b.breedingElements.includes(e))) return false;
+  const opp = DV.S.opposites.some(([x, y]) => (a.name === x && b.name === y) || (a.name === y && b.name === x));
+  return !opp;
+}
+
+// ---------- shared Cytoscape style
+function cyStyle() {
+  const fg = getComputedStyle(document.body).color;
+  return [
+    { selector: "node", style: { label: "data(label)", "font-size": 10, color: fg, "text-valign": "bottom", "text-margin-y": 3, "text-wrap": "wrap", "text-max-width": 110, "min-zoomed-font-size": 7 } },
+    { selector: "node.dragon", style: { shape: "round-rectangle", width: 26, height: 18, "background-color": "#fafafa", "border-width": 2, "border-color": "#888" } },
+    { selector: "node.owned", style: { "background-color": "#66bb6a", "border-color": "#2e7d32" } },
+    { selector: "node.breedable", style: { "border-color": "#00897b", "border-style": "dashed", "border-width": 3, "background-color": "#b2dfdb" } },
+    { selector: "node.missing", style: { "border-color": "#c62828" } },
+    { selector: "node.riftform", style: { "background-color": "#e1bee7", "border-color": "#7b1fa2" } },
+    { selector: "node.riftform.owned", style: { "background-color": "#ab47bc" } },
+    { selector: "node.root", style: { width: 44, height: 30, "border-width": 4, "border-color": "#e0a800", "font-size": 13, "font-weight": "bold" } },
+    { selector: "node.element", style: { shape: "ellipse", width: 14, height: 14, "background-color": "data(color)", "border-width": 1, "border-color": "#333", "font-size": 9 } },
+    { selector: "node.element.hub", style: { width: 34, height: 34, "font-size": 12, "text-valign": "center", "text-margin-y": 0, "font-weight": "bold" } },
+    { selector: "node.element.uncovered", style: { "border-width": 3, "border-color": "#c62828", "border-style": "dashed" } },
+    { selector: "node.route", style: { shape: "diamond", width: 12, height: 12, "background-color": "#bbb", "font-size": 9, "text-max-width": 160 } },
+    { selector: "node.route.met", style: { "background-color": "#2e7d32" } },
+    { selector: "node.route.withlabel", style: { shape: "round-rectangle", width: "label", height: 16, padding: 4, "text-valign": "center", "text-margin-y": 0, color: "#111", "background-color": "#e0e0e0" } },
+    { selector: "node.route.withlabel.met", style: { "background-color": "#a5d6a7" } },
+    { selector: "node.friend", style: { shape: "hexagon", "background-color": "#cfd8dc", width: 22, height: 20 } },
+    { selector: "node.rule", style: { shape: "tag", "background-color": "#ffe082", width: 20, height: 14 } },
+    { selector: ".dim", style: { opacity: 0.3 } },
+    { selector: "node.kept", style: { width: 70, height: 46, "font-size": 34, "min-zoomed-font-size": 0, "text-opacity": 1, "z-index": 10 } },
+    { selector: "node.element.kept", style: { width: 90, height: 90 } },
+    { selector: ".faded", style: { opacity: 0.06, "text-opacity": 0 } },
+    { selector: "edge", style: { width: 1, "line-color": "#aaa", "curve-style": "bezier", "target-arrow-shape": "triangle", "target-arrow-color": "#aaa", "arrow-scale": 0.6, opacity: 0.7 } },
+    { selector: "edge.parent", style: { width: 2, "line-color": "#555", "target-arrow-color": "#555" } },
+    { selector: "edge.evolves", style: { "line-style": "dashed", "line-color": "#8e24aa", label: "data(label)", "font-size": 8 } },
+    { selector: "edge.coop", style: { "line-style": "dotted" } },
+    { selector: "edge[label]", style: { label: "data(label)", "font-size": 8, color: fg } },
+    { selector: "edge.lit", style: { "line-color": "#e0a800", "target-arrow-color": "#e0a800", width: 2.5, opacity: 1 } },
+    { selector: "edge.lit.big", style: { width: 8, "arrow-scale": 2 } },
+    { selector: "node:selected", style: { "overlay-color": "#e0a800", "overlay-opacity": 0.25 } },
+  ];
+}
+function mountCy(elements, layout) {
+  $("main").innerHTML = `<div id="cy"></div>`;
+  cy = cytoscape({ container: $("cy"), elements, style: cyStyle(), layout, wheelSensitivity: 0.25, minZoom: 0.05 });
+  cy.on("tap", "node", (e) => showPanel(e.target.data("n")));
+  cy.on("tap", (e) => { if (e.target === cy) closePanel(); });
+}
+function dragonClasses(n) {
+  return ["dragon", n.owned ? "owned" : "missing", n.form === "rift" && !n.d.isRiftDragon ? "riftform" : "", n.root ? "root" : "", n.dimmed ? "dim" : ""].join(" ");
+}
+function focusElements(f, mode) {
+  const els = [];
+  const routeElems = new Map();
+  for (const e of f.edges) if (e.kind === "elem") { const n = f.nodes.find((x) => x.id === e.source); if (n.type === "element") (routeElems.get(e.target) || routeElems.set(e.target, []).get(e.target)).push(n.name + (e.label ? "×2" : "")); }
+  const skip = new Set();
+  for (const n of f.nodes) {
+    if (n.type === "element" && mode === "label") { skip.add(n.id); continue; }
+    if (n.type === "element" && mode === "chips") { skip.add(n.id); continue; }
+    let label = n.name || "", cls = n.type;
+    if (n.type === "dragon") { cls = dragonClasses(n); label = n.name + (n.form === "rift" && !n.d.isRiftDragon ? " (Rift)" : "") + (n.owned ? " ✔" : "") + (n.badges ? "\n" + n.badges.join(" ") : "") + (n.root && n.owned ? "\nOWNED" : ""); }
+    if (n.type === "route") {
+      cls += (n.met ? " met" : "") + (n.dimmed ? " dim" : "");
+      const bits = [];
+      if (mode === "label" && routeElems.get(n.id)) { bits.push(routeElems.get(n.id).join(" + ")); cls += " withlabel"; }
+      if (n.kind !== "Bred") bits.push(n.kind);
+      if (n.met) bits.push("✔"); else if (n.kind === "Bred" && (n.r.elements || []).every((e) => DV.elementCovered(e, n.rift)) && !(n.r.parents || []).length) bits.push("No valid pair yet");
+      if (n.purchaseOnly) bits.push("🔒 Purchase only");
+      if (n.oor.length) bits.push("⏳ Not in rotation");
+      bits.push(...DV.conditionBadges(n.r));
+      label = bits.join("\n");
+    }
+    if (n.type === "element") cls += " hub" + (n.covered ? "" : " uncovered");
+    els.push({ data: { id: n.id, label, n, color: n.type === "element" ? ecol(n.name) : undefined }, classes: cls });
+  }
+  for (const e of f.edges) {
+    if (skip.has(e.source)) {
+      if (mode === "chips") {
+        const en = f.nodes.find((x) => x.id === e.source), cid = e.target + "|" + e.source;
+        els.push({ data: { id: cid, label: en.name + (e.label ? " ×2" : ""), n: en, color: ecol(en.name) }, classes: "element" + (en.covered ? "" : " uncovered") });
+        els.push({ data: { id: cid + ">", source: cid, target: e.target }, classes: "elem" });
+      }
+      continue;
+    }
+    els.push({ data: { id: e.source + ">" + e.target, source: e.source, target: e.target, label: e.label }, classes: e.kind });
+  }
+  return els;
+}
+function whyLine(f) {
+  const root = f.nodes.find((n) => n.root);
+  const d = root.d;
+  if (root.owned) return `<b>${d.name}</b> is already in your Collection${root.form === "rift" ? " (Rift form)" : ""}.`;
+  const b = DV.breedableNow(d, state.form);
+  if (b) return `<span class="ok">Breedable now</span>: ${b.pair[0].name} + ${b.pair[1].name}`;
+  const why = [];
+  if (DV.outOfRotation(d)) why.push("⏳ not in the Limited rotation");
+  if (DV.purchaseOnly.has(d.name)) why.push("🔒 Purchase only right now");
+  if (d.routes.every((r) => r.kind !== "Bred")) why.push("no Bred Route (" + d.routes.map((r) => r.kind).join(", ") + ")");
+  if (!why.length) why.push("no Route is met by a Valid pair from your Collection yet; follow the missing pieces");
+  return `<span class="bad">Can't breed ${d.name} now</span>: ${why.join("; ")}.`;
+}
+
+// ---------- Variant A: Frontier graph
+function renderA() {
+  const legend = `<div class="legend"><b>A · Frontier graph</b><br>
+    Element nodes: <select id="em"><option value="hubs">Shared hubs</option><option value="chips">Small chips per Route</option><option value="label">None (in Route label)</option></select>
+    ${state.target ? "" : `<br><label><input type="checkbox" id="wc" ${state.wholeColl ? "checked" : ""}> also draw whole Collection</label>`}
+    <br><span class="muted">Green = owned · teal dashed = Breedable now · red border = missing · purple = Rift form · ◆ = Route</span></div>`;
+  if (state.target) {
+    const f = DV.focus(state.target, state.form);
+    mountCy(focusElements(f, state.elemMode), { name: "breadthfirst", roots: [f.rootId], directed: false, spacingFactor: 1.1, padding: 30 });
+    $("main").insertAdjacentHTML("beforeend", legend + `<div class="why">${whyLine(f)}</div>`);
+  } else {
+    const list = breedable();
+    const els = [], have = new Set();
+    const add = (id, data, cls) => { if (!have.has(id)) { have.add(id); els.push({ data: { id, ...data }, classes: cls }); } };
+    // One node per species: "(+Rift)" when the Rift form is breedable too.
+    const forms = new Map();
+    for (const x of list) (forms.get(x.d.name) || forms.set(x.d.name, []).get(x.d.name)).push(x.form);
+    for (const x of list) {
+      const fs = forms.get(x.d.name);
+      if (fs.length === 2 && x.form === "rift") continue;
+      const id = "D:" + x.d.name;
+      add(id, { label: x.d.name + (fs.length === 2 ? " (+Rift)" : x.form === "rift" ? " (Rift)" : ""), n: { type: "dragon", name: x.d.name, form: x.form } }, "dragon breedable" + (fs.length === 1 && x.form === "rift" ? " riftform" : ""));
+      const r = x.route, rift = x.form === "rift" || r.rift === "only";
+      const req = [...(r.elements || []), ...(r.elementOnBothParents || [])];
+      if (state.elemMode === "label") { els.find((e) => e.data.id === id).data.label += req.length ? "\n(" + req.join("+") + ")" : ""; }
+      for (const e of req) {
+        if (state.elemMode === "label") continue;
+        const eid = state.elemMode === "hubs" ? "E:" + e : id + "|E:" + e;
+        add(eid, { label: e, color: ecol(e), n: { type: "element", name: e, rift } }, "element" + (state.elemMode === "hubs" ? " hub" : ""));
+        add(eid + ">" + id, { source: eid, target: id }, "elem");
+      }
+      if (r.minDistinctElements) { add(id + "#min", { label: `Any ${r.minDistinctElements}+`, n: { type: "rule", name: `Any ${r.minDistinctElements}+ elements` } }, "rule"); add(id + "#min>", { source: id + "#min", target: id }, "elem"); }
+      for (const p of r.parents || []) {
+        const pid = "D:" + p;
+        add(pid, { label: p + " ✔", n: { type: "dragon", name: p, form: "normal" } }, "dragon owned");
+        add(pid + ">" + id, { source: pid, target: id }, "parent");
+      }
+    }
+    if (state.wholeColl) for (const d of DV.S.dragons) if (DV.ownsAny(d.name)) {
+      const pid = "D:" + d.name;
+      add(pid, { label: d.name + " ✔", n: { type: "dragon", name: d.name, form: "normal" } }, "dragon owned");
+      if (state.elemMode === "hubs") for (const e of d.breedingElements.filter((e) => DV.PRIMARIES.includes(e))) if (have.has("E:" + e)) add(pid + ">E" + e, { source: pid, target: "E:" + e }, "elem");
+    }
+    mountCy(els, { name: "cose", animate: false, nodeRepulsion: 9000, idealEdgeLength: 60, numIter: 600, padding: 30 });
+    $("main").insertAdjacentHTML("beforeend", legend + `<div class="why">No Target. Showing what your Collection can breed next (${list.length}). Click a Dragon, then 🎯 to focus on it.</div>`);
+    const wc = $("wc"); if (wc) wc.onchange = () => { state.wholeColl = wc.checked; render(); };
+  }
+  $("em").value = state.elemMode;
+  $("em").onchange = () => { state.elemMode = $("em").value; render(); };
+}
+
+// ---------- Variant B: Whole map, everything always drawn
+let bPositions = null;
+function computeBPositions() {
+  // Primaries on a ring; other Elements on an outer ring; each Dragon near the average of what its first Route needs.
+  const pos = new Map(), R = 900;
+  DV.PRIMARIES.forEach((e, i) => pos.set("E:" + e, { x: R * Math.cos((i / 10) * 2 * Math.PI), y: R * Math.sin((i / 10) * 2 * Math.PI) }));
+  const others = [...new Set(DV.S.dragons.flatMap((d) => d.routes.flatMap((r) => [...(r.elements || []), ...(r.elementOnBothParents || [])])))].filter((e) => !DV.PRIMARIES.includes(e));
+  others.forEach((e, i) => pos.set("E:" + e, { x: 2.3 * R * Math.cos((i / others.length) * 2 * Math.PI + 0.1), y: 2.3 * R * Math.sin((i / others.length) * 2 * Math.PI + 0.1) }));
+  const sorted = [...DV.S.dragons].sort((a, b) => a.order - b.order);
+  for (let pass = 0; pass < 3; pass++) for (const d of sorted) {
+    const r = d.routes[0], pts = [];
+    for (const e of [...(r.elements || []), ...(r.elementOnBothParents || [])]) pts.push(pos.get("E:" + e));
+    for (const p of r.parents || []) if (pos.has("D:" + p)) pts.push(pos.get("D:" + p));
+    if (r.from && pos.has("D:" + r.from)) pts.push(pos.get("D:" + r.from));
+    if (!pts.length) for (const e of d.breedingElements) if (pos.has("E:" + e)) pts.push(pos.get("E:" + e));
+    const h = [...d.name].reduce((a, c) => a * 31 + c.charCodeAt(0), 7);
+    const jx = ((h % 1000) / 1000 - 0.5) * 420, jy = (((h >> 10) % 1000) / 1000 - 0.5) * 420;
+    const x = pts.length ? pts.reduce((a, p) => a + p.x, 0) / pts.length : 0, y = pts.length ? pts.reduce((a, p) => a + p.y, 0) / pts.length : 0;
+    pos.set("D:" + d.name, { x: x * 1.15 + jx, y: y * 1.15 + jy });
+  }
+  return pos;
+}
+function renderB() {
+  bPositions = bPositions || computeBPositions();
+  const nowSet = new Map(breedable().map((x) => [x.d.name, x]));
+  const els = [];
+  for (const [id, p] of bPositions) if (id.startsWith("E:")) { const e = id.slice(2); els.push({ data: { id, label: e, color: ecol(e), n: { type: "element", name: e, rift: false } }, position: p, classes: "element hub" }); }
+  for (const d of DV.S.dragons) {
+    const owned = DV.ownsAny(d.name), b = nowSet.has(d.name);
+    els.push({ data: { id: "D:" + d.name, label: d.name, n: { type: "dragon", name: d.name, form: "normal" } }, position: bPositions.get("D:" + d.name),
+      classes: "dragon " + (owned ? "owned" : b ? "breedable" : "") + (DV.outOfRotation(d) && !owned ? " dim" : "") });
+    const r = d.routes[0];
+    for (const e of [...(r.elements || []), ...(r.elementOnBothParents || [])]) els.push({ data: { id: "E:" + e + ">" + d.name, source: "E:" + e, target: "D:" + d.name }, classes: "elem" });
+    for (const p of r.parents || []) if (DV.byName.has(p) && p !== d.name) els.push({ data: { id: "D:" + p + ">" + d.name, source: "D:" + p, target: "D:" + d.name }, classes: "parent" });
+    if (r.from) els.push({ data: { id: "D:" + r.from + ">" + d.name, source: "D:" + r.from, target: "D:" + d.name }, classes: "evolves" });
+  }
+  mountCy(els, { name: "preset", fit: true, padding: 30 });
+  cy.edges().style("opacity", 0.04);
+  cy.on("mouseover", "node", (e) => e.target.connectedEdges().addClass("lit"));
+  cy.on("mouseout", "node", (e) => e.target.connectedEdges().removeClass("lit"));
+  let why = `<div class="why">Every Dragon (983) is always drawn, placed near the Elements it needs. Hover to see its edges. Pick a Target to light up its path.</div>`;
+  if (state.target) {
+    const f = DV.focus(state.target, state.form);
+    const ids = new Set(f.nodes.filter((n) => n.type === "dragon" || n.type === "element").map((n) => n.type === "dragon" ? "D:" + n.name : "E:" + n.name));
+    cy.elements().addClass("faded");
+    const keep = cy.nodes().filter((n) => ids.has(n.id()));
+    keep.removeClass("faded").addClass("kept");
+    // light the edges of the focus tree (requirement edges into Dragons in the tree)
+    const nid = (n) => n.type === "dragon" ? "D:" + n.name : n.type === "element" ? "E:" + n.name : null;
+    const fn = new Map(f.nodes.map((n) => [n.id, n]));
+    const pairs = new Set(f.edges.filter((e) => e.kind !== "route").map((e) => nid(fn.get(e.source)) + ">D:" + fn.get(e.target).owner));
+    keep.edgesWith(keep).forEach((e) => { if (pairs.has(e.source().id() + ">" + e.target().id())) e.removeClass("faded").addClass("lit big").style("opacity", 1); });
+    cy.getElementById("D:" + state.target).addClass("root");
+    cy.animate({ fit: { eles: keep, padding: 80 } }, { duration: 400 });
+    why = `<div class="why">${whyLine(f)}<br><span class="muted">Focus drawn in place: same positions, everything else faded. Rift forms aren't separate nodes here.</span></div>`;
+  }
+  $("main").insertAdjacentHTML("beforeend", `<div class="legend"><b>B · Whole map</b><br><span class="muted">Green = owned · teal dashed = Breedable now · faint = out of rotation · big circles = Elements</span></div>` + why);
+}
+
+// ---------- Variant C: Lists, no graph
+function renderC() {
+  const main = $("main");
+  if (!state.target) {
+    const list = breedable().sort((a, b) => a.d.order - b.d.order);
+    main.innerHTML = `<div class="cols">
+      <div class="col"><h3>Breedable now (${list.length})</h3><input id="bq" placeholder="Filter…" style="width:100%">
+        <div id="bl">${list.map((x) => `<div class="row" data-n="${x.d.name.toLowerCase()}"><span class="n" data-focus="${x.d.name}" data-form="${x.form}">${x.d.name}${x.form === "rift" ? " <span class='chip' style='color:var(--rift)'>Rift</span>" : ""}</span>
+          <span class="muted">${x.d.rarity}</span><span style="margin-left:auto">${x.pair[0].name} + ${x.pair[1].name}</span></div>`).join("")}</div></div>
+      <div class="col"><h3>Collection</h3><input id="cq" placeholder="Search all 983 Dragons…" style="width:100%">
+        <label><input type="checkbox" id="conly"> owned only</label><div id="cl"></div></div></div>`;
+    const drawColl = () => {
+      const q = $("cq").value.toLowerCase(), only = $("conly").checked;
+      const rows = DV.S.dragons.filter((d) => d.name.toLowerCase().includes(q) && (!only || DV.ownsAny(d.name))).slice(0, 150);
+      $("cl").innerHTML = rows.map((d) => `<div class="row"><span class="n" data-focus="${d.name}">${d.name}</span><span class="muted">${d.rarity}</span><span style="margin-left:auto">${ownBoxes(d)}</span></div>`).join("") + `<p class="muted">Showing up to 150.</p>`;
+      wire($("cl"));
+    };
+    $("cq").oninput = drawColl; $("conly").onchange = drawColl; drawColl();
+    $("bq").oninput = () => main.querySelectorAll("#bl .row").forEach((r) => (r.style.display = r.dataset.n.includes($("bq").value.toLowerCase()) ? "" : "none"));
+    wire(main);
+    return;
+  }
+  // Focus as an outline
+  const f = DV.focus(state.target, state.form);
+  const byId = new Map(f.nodes.map((n) => [n.id, n]));
+  const into = new Map();
+  for (const e of f.edges) (into.get(e.target) || into.set(e.target, []).get(e.target)).push(e);
+  const seen = new Set();
+  const drawDragon = (id) => {
+    const n = byId.get(id);
+    const label = `<span class="dname ${n.owned ? "ok" : ""}" data-node="${id}" style="cursor:pointer">${n.owned ? "✔ " : ""}${n.name}${n.form === "rift" && !n.d.isRiftDragon ? " <span class='chip' style='color:var(--rift)'>Rift form</span>" : ""}</span>
+      ${n.dimmed ? "<span class='badge bad'>⏳ Not in rotation</span>" : ""}${(n.badges || []).map((b) => `<span class="badge">${b}</span>`).join("")}`;
+    if (seen.has(id) && !n.root) return `<div>${label} <span class="muted">(shown above)</span></div>`;
+    seen.add(id);
+    if (n.owned && !n.root) return `<div>${label} <span class="muted">owned</span></div>`;
+    const routes = (into.get(id) || []).map((e) => byId.get(e.source)).filter((r) => r.type === "route");
+    return `<div>${label}${routes.map((r) => {
+      const parts = (into.get(r.id) || []).map((e) => ({ e, s: byId.get(e.source) }));
+      const chips = parts.filter((p) => p.s.type !== "dragon").map((p) => `<span class="chip ${p.s.type === "element" ? (p.s.covered ? "cov" : "miss") : ""}" data-node="${p.s.id}">${p.s.name}${p.e.label ? " ×2" : ""}</span>`).join("");
+      const kids = parts.filter((p) => p.s.type === "dragon");
+      const status = r.met ? "<span class='ok'>✔ Met</span>" : r.kind === "Bred" ? "<span class='bad'>Not met</span>" : "";
+      return `<div class="tnode"><div class="route ${r.met ? "met" : ""} ${r.dimmed ? "dim" : ""}" data-node="${r.id}"><b>${r.kind}</b> ${status} ${chips}
+        ${kids.length ? `<span class="muted">+ ${kids.map((k) => k.s.name).join(" + ")}</span>` : ""}
+        ${r.purchaseOnly ? "<span class='badge'>🔒 Purchase only</span>" : ""}${r.oor.length ? "<span class='badge'>⏳ Not in rotation: " + r.oor.join(", ") + "</span>" : ""}
+        ${DV.conditionBadges(r.r).map((b) => `<span class="badge">${b}</span>`).join("")}<div class="slot"></div></div>
+        ${kids.map((k) => `<div class="tnode">${drawDragon(k.s.id)}</div>`).join("")}</div>`;
+    }).join("")}</div>`;
+  };
+  main.innerHTML = `<div class="outline"><p>${whyLine(f)} <button onclick="$('clear').click()">← back to lists</button></p>${drawDragon(f.rootId)}</div>`;
+  main.querySelectorAll("[data-node]").forEach((el) => (el.onclick = (ev) => {
+    ev.stopPropagation();
+    const n = byId.get(el.dataset.node);
+    const host = el.classList.contains("route") ? el.querySelector(".slot") : (el.closest(".route")?.querySelector(".slot") || el.parentElement);
+    let box = host.querySelector(":scope > .inl");
+    if (box && box.dataset.for === n.id) { box.remove(); return; }
+    if (!box) { box = document.createElement("div"); box.className = "inl"; host.appendChild(box); }
+    box.dataset.for = n.id; box.onclick = (e) => e.stopPropagation();
+    showPanel(n, box);
+  }));
+}
+function wire(root) {
+  root.querySelectorAll("[data-focus]").forEach((a) => (a.onclick = () => setTarget(a.dataset.focus, a.dataset.form || "normal")));
+  root.querySelectorAll("[data-own]").forEach((cb) => (cb.onchange = () => { DV.setOwned(cb.dataset.own, cb.dataset.form, cb.checked); breedCache = null; stat(); }));
+}
+
+function render() {
+  if (!VARIANTS[state.variant]) state.variant = "A";
+  syncUrl();
+  $("vlabel").textContent = `${state.variant} (${VARIANTS[state.variant]})`;
+  stat();
+  if (cy) { cy.destroy(); cy = null; }
+  ({ A: renderA, B: renderB, C: renderC })[state.variant]();
+}
+window.onerror = (m) => document.body.insertAdjacentHTML("afterbegin", `<pre id="err" style="color:red">${m}</pre>`);
+DV.preset("mid");
+{ const q = new URLSearchParams(location.search); if (q.get("preset")) { DV.preset(q.get("preset")); $("preset").value = q.get("preset"); }
+  if (q.get("target")) { state.target = q.get("target"); state.form = q.get("form") || "normal"; $("target").value = state.target; $("form").value = state.form; } }
+render();
+</script>
+</body>
+</html>
