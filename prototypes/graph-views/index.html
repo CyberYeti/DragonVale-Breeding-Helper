@@ -2,8 +2,8 @@
 <!--
   PROTOTYPE (throwaway) for "Prototype the default view and the Focus view" (#7).
   Three variants of the main screen, switchable via ?variant=A|B|C and the bottom bar:
-    A  Frontier graph : default = Breedable now + what it needs; Focus = a separate tree. Element-node treatment is switchable.
-    B  Whole map      : every Dragon always drawn, placed near its Elements; Focus = highlight in place.
+    A  Frontier graph : default = Breedable now + what it needs, top-down; Focus = a separate top-down tree. Element-node treatment is switchable.
+    B  Whole map      : every Dragon always drawn, top-down by generation; Focus = path pulled into a tree over the faded map (or in place).
     C  Lists, no graph: default = Breedable now list + Collection checklist; Focus = an indented outline.
   Data: real wiki snapshot in data.js (node fetch-data.mjs). Collection lives in memory only.
   Open this file directly in a browser.
@@ -14,6 +14,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Breeding Helper Prototype</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dagre/0.8.5/dagre.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
 <script src="data.js"></script>
 <script src="logic.js"></script>
 <style>
@@ -80,8 +82,8 @@ const DV = window.DV;
 const VARIANTS = { A: "Frontier graph", B: "Whole map", C: "Lists, no graph" };
 const ELEM_COLORS = { Plant:"#43a047", Fire:"#f4511e", Earth:"#8d6e63", Cold:"#4fc3f7", Lightning:"#fbc02d", Water:"#1e88e5", Air:"#90a4ae", Metal:"#757575", Light:"#fff176", Dark:"#5e35b1", Rift:"#8e24aa" };
 const ecol = (e) => ELEM_COLORS[e] || "#ec407a";
-const state = { target: null, form: "normal", elemMode: "hubs", wholeColl: false, variant: new URLSearchParams(location.search).get("variant") || "A" };
-let cy = null, breedCache = null;
+const state = { target: null, form: "normal", elemMode: "hubs", wholeColl: false, bTree: true, variant: new URLSearchParams(location.search).get("variant") || "A" };
+let cy = null, breedCache = null, cyViewport = null;
 
 // ---------- header wiring
 document.getElementById("names").innerHTML = DV.S.dragons.map((d) => `<option value="${d.name}">`).join("");
@@ -216,6 +218,8 @@ function cyStyle() {
     { selector: ".dim", style: { opacity: 0.3 } },
     { selector: "node.kept", style: { width: 70, height: 46, "font-size": 34, "min-zoomed-font-size": 0, "text-opacity": 1, "z-index": 10 } },
     { selector: "node.element.kept", style: { width: 90, height: 90 } },
+    { selector: "node.treed", style: { "font-size": 12, "min-zoomed-font-size": 0, "z-index": 10 } },
+    { selector: "node.band", style: { shape: "rectangle", width: 1, height: 1, "background-opacity": 0, "font-size": 40, "font-weight": "bold", "text-halign": "left", "text-valign": "center", "text-wrap": "none", color: "#888", "min-zoomed-font-size": 4, events: "no" } },
     { selector: ".faded", style: { opacity: 0.06, "text-opacity": 0 } },
     { selector: "edge", style: { width: 1, "line-color": "#aaa", "curve-style": "bezier", "target-arrow-shape": "triangle", "target-arrow-color": "#aaa", "arrow-scale": 0.6, opacity: 0.7 } },
     { selector: "edge.parent", style: { width: 2, "line-color": "#555", "target-arrow-color": "#555" } },
@@ -287,6 +291,21 @@ function whyLine(f) {
   return `<span class="bad">Can't breed ${d.name} now</span>: ${why.join("; ")}.`;
 }
 
+// Shared top-down placement: each item goes in the column nearest its x, stacking away from y0
+// (dir 1 = downwards, -1 = upwards), spilling up to `spread` columns sideways to keep stacks short.
+function dripInto(pos, items, y0, DX, DY, spread, dir) {
+  const fill = new Map();
+  let rows = 0;
+  for (const it of [...items].sort((a, b) => a.x - b.x)) {
+    const c0 = Math.round(it.x / DX);
+    let best = c0, bestFill = Infinity;
+    for (let k = 0; k <= spread; k++) for (const c of k ? [c0 - k, c0 + k] : [c0]) { const f = fill.get(c) || 0; if (f < bestFill) { best = c; bestFill = f; } }
+    fill.set(best, bestFill + 1); rows = Math.max(rows, bestFill + 1);
+    pos.set(it.id, { x: best * DX, y: y0 + dir * bestFill * DY });
+  }
+  return rows;
+}
+
 // ---------- Variant A: Frontier graph
 function renderA() {
   const legend = `<div class="legend"><b>A · Frontier graph</b><br>
@@ -295,7 +314,8 @@ function renderA() {
     <br><span class="muted">Green = owned · teal dashed = Breedable now · red border = missing · purple = Rift form · ◆ = Route</span></div>`;
   if (state.target) {
     const f = DV.focus(state.target, state.form);
-    mountCy(focusElements(f, state.elemMode), { name: "breadthfirst", roots: [f.rootId], directed: false, spacingFactor: 1.1, padding: 30 });
+    // Top-down: Target at the top, what it needs below (edges point into the Target, so rank bottom-to-top).
+    mountCy(focusElements(f, state.elemMode), { name: "dagre", rankDir: "BT", nodeSep: 18, rankSep: 50, padding: 30 });
     $("main").insertAdjacentHTML("beforeend", legend + `<div class="why">${whyLine(f)}</div>`);
   } else {
     const list = breedable();
@@ -330,7 +350,28 @@ function renderA() {
       add(pid, { label: d.name + " ✔", n: { type: "dragon", name: d.name, form: "normal" } }, "dragon owned");
       if (state.elemMode === "hubs") for (const e of d.breedingElements.filter((e) => DV.PRIMARIES.includes(e))) if (have.has("E:" + e)) add(pid + ">E" + e, { source: pid, target: "E:" + e }, "elem");
     }
-    mountCy(els, { name: "cose", animate: false, nodeRepulsion: 9000, idealEdgeLength: 60, numIter: 600, padding: 30 });
+    // Top-down: Elements (then named parents) on the top row; each Dragon hangs below what it's bred from.
+    // With "whole Collection", owned Dragons stack upwards above the Elements they carry.
+    const EGAP = 200, DX = 70, DY = state.elemMode === "chips" ? 84 : 46;
+    const eOrder = (e) => { const i = DV.PRIMARIES.indexOf(e); return i < 0 ? 100 : i; };
+    const reqOf = new Map();
+    for (const x of list) if (have.has("D:" + x.d.name) && !reqOf.has("D:" + x.d.name)) reqOf.set("D:" + x.d.name, x.route);
+    const reqEls = (r) => [...(r.elements || []), ...(r.elementOnBothParents || [])];
+    const elems = [...new Set([...reqOf.values()].flatMap(reqEls))].sort((a, b) => eOrder(a) - eOrder(b) || a.localeCompare(b));
+    const parents = [...new Set([...reqOf.values()].flatMap((r) => r.parents || []))].filter((p) => !reqOf.has("D:" + p));
+    const pos = new Map();
+    elems.forEach((e, i) => pos.set("E:" + e, { x: i * EGAP, y: 0 }));
+    parents.forEach((p, i) => pos.set("D:" + p, { x: (elems.length + i) * EGAP, y: 0 }));
+    const xOf = (ids) => { const xs = ids.map((id) => pos.get(id)).filter(Boolean).map((p) => p.x); return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0; };
+    dripInto(pos, [...reqOf].map(([id, r]) => ({ id, x: xOf([...reqEls(r).map((e) => "E:" + e), ...(r.parents || []).map((p) => "D:" + p)]) })), DY * 1.6, DX, DY, 4, 1);
+    if (state.wholeColl) dripInto(pos, els.filter((e) => !e.data.source && e.data.id.startsWith("D:") && !pos.has(e.data.id))
+      .map((e) => ({ id: e.data.id, x: xOf(DV.byName.get(e.data.n.name).breedingElements.map((x) => "E:" + x)) })), -DY * 1.6, DX, 46, 4, -1);
+    // Per-Route chips (and "Any N+" rule nodes) sit in a little row just above their Dragon.
+    const chipsOf = new Map();
+    for (const e of els) if (!e.data.source && !pos.has(e.data.id)) { const owner = e.data.id.split(/\||#/)[0]; (chipsOf.get(owner) || chipsOf.set(owner, []).get(owner)).push(e.data.id); }
+    for (const [owner, ids] of chipsOf) { const o = pos.get(owner) || { x: 0, y: 0 }; ids.forEach((id, i) => pos.set(id, { x: o.x + (i - (ids.length - 1) / 2) * 24, y: o.y - 42 })); }
+    for (const e of els) if (!e.data.source) e.position = pos.get(e.data.id);
+    mountCy(els, { name: "preset", fit: true, padding: 30 });
     $("main").insertAdjacentHTML("beforeend", legend + `<div class="why">No Target. Showing what your Collection can breed next (${list.length}). Click a Dragon, then 🎯 to focus on it.</div>`);
     const wc = $("wc"); if (wc) wc.onchange = () => { state.wholeColl = wc.checked; render(); };
   }
@@ -339,24 +380,44 @@ function renderA() {
 }
 
 // ---------- Variant B: Whole map, everything always drawn
-let bPositions = null;
+// Layered top-down: Elements on the top row, then one band per generation of Dragons.
+// A Dragon's generation is 1 + the deepest thing its first Route needs (Elements are 0).
+// Inside a band each Dragon hangs under the average x of what it needs, stacking downwards
+// (spilling into a nearby column) when the spot is taken.
+let bPositions = null, bBands = null;
+const routeSources = (d) => {
+  const r = d.routes[0], out = [];
+  for (const e of [...(r.elements || []), ...(r.elementOnBothParents || [])]) out.push("E:" + e);
+  for (const p of r.parents || []) if (DV.byName.has(p) && p !== d.name) out.push("D:" + p);
+  if (r.from && DV.byName.has(r.from)) out.push("D:" + r.from);
+  return out;
+};
 function computeBPositions() {
-  // Primaries on a ring; other Elements on an outer ring; each Dragon near the average of what its first Route needs.
-  const pos = new Map(), R = 900;
-  DV.PRIMARIES.forEach((e, i) => pos.set("E:" + e, { x: R * Math.cos((i / 10) * 2 * Math.PI), y: R * Math.sin((i / 10) * 2 * Math.PI) }));
+  const pos = new Map(), DX = 74, DY = 46, EGAP = 230, BANDGAP = 150, SPREAD = 6;
   const others = [...new Set(DV.S.dragons.flatMap((d) => d.routes.flatMap((r) => [...(r.elements || []), ...(r.elementOnBothParents || [])])))].filter((e) => !DV.PRIMARIES.includes(e));
-  others.forEach((e, i) => pos.set("E:" + e, { x: 2.3 * R * Math.cos((i / others.length) * 2 * Math.PI + 0.1), y: 2.3 * R * Math.sin((i / others.length) * 2 * Math.PI + 0.1) }));
-  const sorted = [...DV.S.dragons].sort((a, b) => a.order - b.order);
-  for (let pass = 0; pass < 3; pass++) for (const d of sorted) {
-    const r = d.routes[0], pts = [];
-    for (const e of [...(r.elements || []), ...(r.elementOnBothParents || [])]) pts.push(pos.get("E:" + e));
-    for (const p of r.parents || []) if (pos.has("D:" + p)) pts.push(pos.get("D:" + p));
-    if (r.from && pos.has("D:" + r.from)) pts.push(pos.get("D:" + r.from));
-    if (!pts.length) for (const e of d.breedingElements) if (pos.has("E:" + e)) pts.push(pos.get("E:" + e));
-    const h = [...d.name].reduce((a, c) => a * 31 + c.charCodeAt(0), 7);
-    const jx = ((h % 1000) / 1000 - 0.5) * 420, jy = (((h >> 10) % 1000) / 1000 - 0.5) * 420;
-    const x = pts.length ? pts.reduce((a, p) => a + p.x, 0) / pts.length : 0, y = pts.length ? pts.reduce((a, p) => a + p.y, 0) / pts.length : 0;
-    pos.set("D:" + d.name, { x: x * 1.15 + jx, y: y * 1.15 + jy });
+  [...DV.PRIMARIES, ...others].forEach((e, i) => pos.set("E:" + e, { x: i * EGAP, y: 0 }));
+  const rank = new Map(), visiting = new Set();
+  const rankOf = (d) => {
+    if (rank.has(d.name)) return rank.get(d.name);
+    if (visiting.has(d.name)) return 1; // breaks the odd cycle
+    visiting.add(d.name);
+    let r = 1;
+    for (const s of routeSources(d)) if (s.startsWith("D:")) r = Math.max(r, rankOf(DV.byName.get(s.slice(2))) + 1);
+    visiting.delete(d.name); rank.set(d.name, r); return r;
+  };
+  const byRank = new Map();
+  for (const d of DV.S.dragons) { const r = rankOf(d); (byRank.get(r) || byRank.set(r, []).get(r)).push(d); }
+  let top = DY * 2.5;
+  bBands = [];
+  for (const r of [...byRank.keys()].sort((a, b) => a - b)) {
+    const items = byRank.get(r).map((d) => {
+      const pts = routeSources(d).map((s) => pos.get(s)).filter(Boolean);
+      const use = pts.length ? pts : d.breedingElements.map((e) => pos.get("E:" + e)).filter(Boolean);
+      return { id: "D:" + d.name, x: use.length ? use.reduce((a, p) => a + p.x, 0) / use.length : 0 };
+    });
+    const rows = dripInto(pos, items, top, DX, DY, SPREAD, 1);
+    bBands.push({ rank: r, y: top, n: items.length });
+    top += rows * DY + BANDGAP;
   }
   return pos;
 }
@@ -364,37 +425,63 @@ function renderB() {
   bPositions = bPositions || computeBPositions();
   const nowSet = new Map(breedable().map((x) => [x.d.name, x]));
   const els = [];
+  for (const b of bBands) els.push({ data: { id: "band" + b.rank, label: b.rank === 1 ? `Generation 1 · bred from Elements (${b.n})` : `Generation ${b.rank} · needs a generation ${b.rank - 1} parent (${b.n})` }, position: { x: -260, y: b.y - 60 }, classes: "band", selectable: false });
   for (const [id, p] of bPositions) if (id.startsWith("E:")) { const e = id.slice(2); els.push({ data: { id, label: e, color: ecol(e), n: { type: "element", name: e, rift: false } }, position: p, classes: "element hub" }); }
   for (const d of DV.S.dragons) {
     const owned = DV.ownsAny(d.name), b = nowSet.has(d.name);
     els.push({ data: { id: "D:" + d.name, label: d.name, n: { type: "dragon", name: d.name, form: "normal" } }, position: bPositions.get("D:" + d.name),
       classes: "dragon " + (owned ? "owned" : b ? "breedable" : "") + (DV.outOfRotation(d) && !owned ? " dim" : "") });
-    const r = d.routes[0];
-    for (const e of [...(r.elements || []), ...(r.elementOnBothParents || [])]) els.push({ data: { id: "E:" + e + ">" + d.name, source: "E:" + e, target: "D:" + d.name }, classes: "elem" });
-    for (const p of r.parents || []) if (DV.byName.has(p) && p !== d.name) els.push({ data: { id: "D:" + p + ">" + d.name, source: "D:" + p, target: "D:" + d.name }, classes: "parent" });
-    if (r.from) els.push({ data: { id: "D:" + r.from + ">" + d.name, source: "D:" + r.from, target: "D:" + d.name }, classes: "evolves" });
+    for (const s of routeSources(d)) els.push({ data: { id: s + ">D:" + d.name, source: s, target: "D:" + d.name }, classes: s.startsWith("E:") ? "elem" : d.routes[0].from ? "evolves" : "parent" });
   }
-  mountCy(els, { name: "preset", fit: true, padding: 30 });
+  const before = cyViewport;
+  mountCy(els, { name: "preset", fit: false, padding: 30 });
+  if (before) cy.viewport(before); else cy.fit(cy.elements(), 30);
+  cy.on("viewport", () => { if (!state.target) cyViewport = { zoom: cy.zoom(), pan: { ...cy.pan() } }; });
   cy.edges().style("opacity", 0.04);
-  cy.on("mouseover", "node", (e) => e.target.connectedEdges().addClass("lit"));
-  cy.on("mouseout", "node", (e) => e.target.connectedEdges().removeClass("lit"));
-  let why = `<div class="why">Every Dragon (983) is always drawn, placed near the Elements it needs. Hover to see its edges. Pick a Target to light up its path.</div>`;
+  cy.on("mouseover", "node", (e) => { if (!state.target) e.target.connectedEdges().addClass("lit"); });
+  cy.on("mouseout", "node", (e) => { if (!state.target) e.target.connectedEdges().removeClass("lit"); });
+  // Click a Dragon: focus it (and keep its panel open). Click the background: leave the Focus view.
+  cy.on("tap", "node.dragon", (e) => { const n = e.target.data("n"); setTarget(n.name, "normal"); showPanel(n); });
+  cy.on("tap", (e) => { if (e.target === cy && state.target) $("clear").click(); });
+  let why = `<div class="why">Every Dragon (983), top-down by generation. Hover to see its edges. Click a Dragon to see its path; click the background to leave.</div>`;
+  let opts = "";
   if (state.target) {
     const f = DV.focus(state.target, state.form);
-    const ids = new Set(f.nodes.filter((n) => n.type === "dragon" || n.type === "element").map((n) => n.type === "dragon" ? "D:" + n.name : "E:" + n.name));
+    const nid = (n) => n.type === "dragon" ? "D:" + n.name : n.type === "element" ? "E:" + n.name : null;
+    const ids = new Set(f.nodes.map(nid).filter(Boolean));
     cy.elements().addClass("faded");
     const keep = cy.nodes().filter((n) => ids.has(n.id()));
-    keep.removeClass("faded").addClass("kept");
-    // light the edges of the focus tree (requirement edges into Dragons in the tree)
-    const nid = (n) => n.type === "dragon" ? "D:" + n.name : n.type === "element" ? "E:" + n.name : null;
+    // Edges of the focus tree: every requirement edge into a Dragon on the path (all its Routes, not just the first).
     const fn = new Map(f.nodes.map((n) => [n.id, n]));
-    const pairs = new Set(f.edges.filter((e) => e.kind !== "route").map((e) => nid(fn.get(e.source)) + ">D:" + fn.get(e.target).owner));
-    keep.edgesWith(keep).forEach((e) => { if (pairs.has(e.source().id() + ">" + e.target().id())) e.removeClass("faded").addClass("lit big").style("opacity", 1); });
+    const pairs = new Set(f.edges.filter((e) => e.kind !== "route").map((e) => [nid(fn.get(e.source)), "D:" + fn.get(e.target).owner]).filter(([s, t]) => s && s !== t && ids.has(s)).map((p) => p.join(">")));
+    let lit = cy.collection();
+    for (const p of pairs) {
+      const [s, t] = p.split(">");
+      let e = cy.getElementById(p);
+      if (e.empty()) e = cy.add({ data: { id: p, source: s, target: t } });
+      lit = lit.union(e);
+    }
+    lit.removeClass("faded").addClass("lit").style("opacity", 1);
+    keep.removeClass("faded");
     cy.getElementById("D:" + state.target).addClass("root");
-    cy.animate({ fit: { eles: keep, padding: 80 } }, { duration: 400 });
-    why = `<div class="why">${whyLine(f)}<br><span class="muted">Focus drawn in place: same positions, everything else faded. Rift forms aren't separate nodes here.</span></div>`;
+    if (state.bTree) {
+      // Lay the path out as a tree (Target on top) in the middle of what was on screen, animating from map positions.
+      keep.addClass("treed");
+      cy.edges().not(lit).style("display", "none"); // faded hub edges would stretch across the tree
+      const ext = cy.extent(), mid = { x: (ext.x1 + ext.x2) / 2, y: (ext.y1 + ext.y2) / 2 };
+      const l = keep.union(lit).layout({ name: "dagre", rankDir: "BT", nodeSep: 30, rankSep: 80, fit: false, animate: true, animationDuration: 600,
+        transform: (n, p) => ({ x: p.x + mid.x, y: p.y + mid.y }) });
+      l.one("layoutstop", () => cy.animate({ fit: { eles: keep, padding: 60 } }, { duration: 300 }));
+      l.run();
+    } else {
+      keep.addClass("kept"); lit.addClass("big");
+      cy.animate({ fit: { eles: keep, padding: 80 } }, { duration: 400 });
+    }
+    opts = `<br><label><input type="checkbox" id="btree" ${state.bTree ? "checked" : ""}> pull the path into a tree</label>`;
+    why = `<div class="why">${whyLine(f)}<br><span class="muted">${state.bTree ? "The path is pulled into a tree over the faded map." : "Focus drawn in place: same positions, everything else faded."} Click any Dragon to focus it, the background to leave. Rift forms aren't separate nodes here.</span></div>`;
   }
-  $("main").insertAdjacentHTML("beforeend", `<div class="legend"><b>B · Whole map</b><br><span class="muted">Green = owned · teal dashed = Breedable now · faint = out of rotation · big circles = Elements</span></div>` + why);
+  $("main").insertAdjacentHTML("beforeend", `<div class="legend"><b>B · Whole map</b><br><span class="muted">Green = owned · teal dashed = Breedable now · faint = out of rotation · big circles = Elements</span>${opts}</div>` + why);
+  const bt = $("btree"); if (bt) bt.onchange = () => { state.bTree = bt.checked; render(); };
 }
 
 // ---------- Variant C: Lists, no graph
