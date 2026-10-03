@@ -18,5 +18,13 @@ for (let i = 0; i < names.length; i += 50) {
   const norm = new Map((j.query.normalized || []).map((n) => [n.from, n.to]));
   for (const n of batch) { const t = byTitle.get(norm.get(file(n)) || file(n)); if (t) out[n] = t; }
 }
-writeFileSync(join(here, "images.js"), "// PROTOTYPE (throwaway): Dragon -> thumbnail URL\nwindow.IMAGES = " + JSON.stringify(out) + ";\n");
+// Element icons: File:Icon <Element>.png
+const elems = new Set();
+for (const d of S.dragons) { d.breedingElements.forEach((e) => elems.add(e)); d.elements.forEach((e) => elems.add(e)); for (const r of d.routes) (r.elements || []).concat(r.elementOnBothParents || []).forEach((e) => elems.add(e)); }
+const icons = {};
+const eurl = "https://dragonvale.fandom.com/api.php?action=query&prop=imageinfo&iiprop=url&iiurlwidth=64&format=json&formatversion=2&titles=" + encodeURIComponent([...elems].map((e) => `File:Icon ${e}.png`).join("|"));
+const ej = await (await fetch(eurl, { headers: { "User-Agent": "DragonValeBreedingHelper-prototype/0.1 (personal tool)" } })).json();
+for (const p of ej.query.pages) if (p.imageinfo) icons[p.title.replace(/^File:Icon /, "").replace(/\.png$/, "")] = p.imageinfo[0].thumburl || p.imageinfo[0].url;
+console.log("element icons:", Object.keys(icons).length, "of", elems.size, "missing:", [...elems].filter((e) => !icons[e]).join(", "));
+writeFileSync(join(here, "images.js"), "// PROTOTYPE (throwaway): Dragon -> thumbnail URL, Element -> icon URL\nwindow.IMAGES = " + JSON.stringify(out) + ";\nwindow.ELEMENT_ICONS = " + JSON.stringify(icons) + ";\n");
 console.log(Object.keys(out).length, "of", names.length, "resolved; missing:", names.filter((n) => !out[n]).join(", "));

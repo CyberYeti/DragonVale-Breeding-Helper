@@ -18,6 +18,7 @@
 <script src="https://cdn.jsdelivr.net/npm/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
 <script src="data.js"></script>
 <script src="logic.js"></script>
+<script src="../menu-layout/images.js"></script>
 <style>
   :root { --bg:#f6f5f2; --fg:#1d1d1f; --muted:#6b6b70; --card:#fff; --line:#d9d7d0; --own:#2e7d32; --ownbg:#c8e6c9; --breed:#00897b; --miss:#c62828; --rift:#7b1fa2; --accent:#e0a800; }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#16161a; --fg:#ececf0; --muted:#9a9aa3; --card:#212127; --line:#383840; --ownbg:#1f3d22; } }
@@ -221,6 +222,15 @@ function cyStyle() {
     { selector: "node.treed", style: { "font-size": 12, "min-zoomed-font-size": 0, "z-index": 10 } },
     { selector: "node.band", style: { shape: "rectangle", width: 1, height: 1, "background-opacity": 0, "font-size": 40, "font-weight": "bold", "text-halign": "left", "text-valign": "center", "text-wrap": "none", color: "#888", "min-zoomed-font-size": 4, events: "no" } },
     { selector: ".faded", style: { opacity: 0.06, "text-opacity": 0 } },
+    // Pictures: wiki art on Dragon nodes, the game's icons on Element nodes (state still shows in the border/background).
+    { selector: "node.dragon[img]", style: { "background-image": "data(img)", "background-fit": "contain", "background-clip": "none", "background-image-crossorigin": "anonymous", width: 34, height: 28 } },
+    { selector: "node.dragon.pic[img]", style: { width: 64, height: 52, "border-width": 3, "font-size": 11 } },
+    { selector: "node.dragon.pic.root[img]", style: { width: 96, height: 78, "border-width": 5 } },
+    { selector: "node.element[img]", style: { "background-image": "data(img)", "background-fit": "contain", "background-image-crossorigin": "anonymous", shape: "round-rectangle", "background-opacity": 0, "border-width": 0 } },
+    { selector: "node.element.uncovered[img]", style: { "border-width": 3, "border-color": "#c62828", "border-style": "dashed" } },
+    { selector: "node.element.hub[img]", style: { width: 40, height: 40, "text-valign": "bottom", "text-margin-y": 3, "font-weight": "bold" } },
+    { selector: "node.element.pic[img]", style: { width: 26, height: 26 } },
+    { selector: "node.element.hub.pic[img]", style: { width: 46, height: 46 } },
     { selector: "edge", style: { width: 1, "line-color": "#aaa", "curve-style": "bezier", "target-arrow-shape": "triangle", "target-arrow-color": "#aaa", "arrow-scale": 0.6, opacity: 0.7 } },
     { selector: "edge.parent", style: { width: 2, "line-color": "#555", "target-arrow-color": "#555" } },
     { selector: "edge.evolves", style: { "line-style": "dashed", "line-color": "#8e24aa", label: "data(label)", "font-size": 8 } },
@@ -232,6 +242,12 @@ function cyStyle() {
   ];
 }
 function mountCy(elements, layout) {
+  // Attach image URLs; outside the whole map (B), nodes are drawn bigger so the art is readable.
+  for (const el of elements) {
+    const n = el.data && el.data.n; if (!n || el.data.source) continue;
+    const img = n.type === "dragon" ? (window.IMAGES || {})[n.name] : n.type === "element" ? (window.ELEMENT_ICONS || {})[n.name] : null;
+    if (img) { el.data.img = img; if (state.variant !== "B") el.classes = (el.classes || "") + " pic"; }
+  }
   $("main").innerHTML = `<div id="cy"></div>`;
   cy = cytoscape({ container: $("cy"), elements, style: cyStyle(), layout, wheelSensitivity: 0.25, minZoom: 0.05 });
   cy.on("tap", "node", (e) => showPanel(e.target.data("n")));

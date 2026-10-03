@@ -131,6 +131,12 @@
   button.factive { border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent); }
   .fbadge { background:var(--accent); color:#000; border-radius:999px; padding:0 6px; font-size:11px; margin-left:2px; }
   .b-active { display:flex; gap:6px; align-items:center; flex-wrap:wrap; padding:2px 12px 6px; }
+  .switch { display:flex; gap:8px; align-items:center; cursor:pointer; font-size:13px; }
+  .fullcolour .tile.grey img, .fullcolour .tile.pulse img { filter:none; animation:none; }
+  .fullcolour .tile.grey .nm { color:var(--muted); }
+  .fullcolour .tile.pulse { animation:glow 2.4s ease-in-out infinite; }
+  @keyframes glow { 0%,100% { box-shadow:0 0 0 0 transparent; } 50% { box-shadow:0 0 0 4px var(--accent); } }
+  @media (prefers-reduced-motion: reduce) { .fullcolour .tile.pulse { animation:none; box-shadow:0 0 0 3px var(--accent); } }
   .bar { height:6px; width:140px; background:var(--line); border-radius:3px; overflow:hidden; }
   .bar i { display:block; height:100%; background:var(--own); }
   .B .scroll { flex:1; padding-bottom:60px; }
@@ -200,7 +206,7 @@ const LIMITED = Object.entries(L.dragons || {}).filter(([n]) => DV.byName.has(n)
 
 const q0 = new URLSearchParams(location.search);
 const st = { variant: q0.get("variant") || "A", mode: "all", tab: "page:Fire", q: "", owned: "any", rar: new Set(), select: false, sel: new Set(), bulk: "both",
-  undo: null, toast: null, menu: false, sheet: false, drawer: false, overlay: null };
+  undo: null, toast: null, openGrp: "elemental", colour: false, menu: false, sheet: false, drawer: false, overlay: null };
 const app = document.getElementById("app"), $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 
@@ -315,8 +321,9 @@ function renderB() {
   const side = `<aside class="b-side ${st.drawer ? "open" : ""}" data-keep="bs">
     <div style="display:flex;justify-content:space-between;align-items:center"><b>🐉 Breeding Helper</b><button class="b-close small" data-act="drawer">✕</button></div>
     <div><div class="lbl">Form mode</div>${modeSeg()}</div>
+    <label class="switch"><input type="checkbox" data-colour ${st.colour ? "checked" : ""}><span>🎨 Show all Dragons in colour</span></label>
     <div>${KINDS.map(([k, ico, t]) => nav(k, `${ico} ${t}`, sectionsForRaw(k))).join("")}</div>
-    ${GROUPS.map(([g, t]) => `<details ${curGrp === g || (!curGrp && g === "elemental") ? "open" : ""}><summary><b>${t}</b> <span class="muted">(${PAGES.filter((p) => p.group === g).length})</span></summary>
+    ${GROUPS.map(([g, t]) => `<details name="pagegroups" data-grp="${g}" ${st.openGrp === g ? "open" : ""}><summary><b>${t}</b> <span class="muted">(${PAGES.filter((p) => p.group === g).length})</span></summary>
       ${PAGES.filter((p) => p.group === g).map((p) => nav("page:" + p.name, p.name, p.dragons)).join("")}</details>`).join("")}
   </aside>`;
   // Filters live behind a button; active ones show as removable chips under the title.
@@ -327,7 +334,7 @@ function renderB() {
       ${RARITIES.map((r) => `<div class="fchk" data-rar="${r}"><input type="checkbox" ${st.rar.has(r) ? "checked" : ""} tabindex="-1"><span class="dot" style="background:${RC[r] || "#999"}"></span>${r}</div>`).join("")}
       <div style="display:flex;gap:6px;margin-top:10px"><button data-act="clearf" class="small">Clear all</button><span style="flex:1"></span><button data-act="fpop" class="small primary">Done</button></div></div>` : ""}</span>`;
   const active = fc ? `<div class="b-active"><span class="lbl">Filtered:</span>${st.owned !== "any" ? `<button class="chip on" data-owned="any">${st.owned === "owned" ? "Owned" : "Not owned"} ✕</button>` : ""}${[...st.rar].map((r) => `<button class="chip on" data-rar="${r}">${r} ✕</button>`).join("")}<button class="small" data-act="clearf">Clear all</button></div>` : "";
-  return `<div class="B ${st.select ? "selmode" : ""}">${side}${st.drawer ? `<div class="backdrop" data-act="drawer"></div>` : ""}
+  return `<div class="B ${st.select ? "selmode" : ""} ${st.colour ? "fullcolour" : ""}">${side}${st.drawer ? `<div class="backdrop" data-act="drawer"></div>` : ""}
     <div class="b-main">
       <header class="b-top"><button class="b-burger" data-act="drawer">☰</button>${search()}${moreMenu()}</header>
       <div class="b-head"><h2>${st.q ? secs[0].title : tabTitle(st.tab)}</h2><span class="bar"><i style="width:${n ? (100 * o) / n : 0}%"></i></span><span class="muted">${o}/${n} owned</span>
@@ -442,6 +449,8 @@ app.addEventListener("click", (e) => {
   }
   render();
 });
+app.addEventListener("toggle", (e) => { const g = e.target.dataset && e.target.dataset.grp; if (!g) return; if (e.target.open) st.openGrp = g; else if (st.openGrp === g) st.openGrp = null; }, true);
+app.addEventListener("change", (e) => { if (e.target.matches("[data-colour]")) { st.colour = e.target.checked; render(); } });
 let qT = 0;
 app.addEventListener("input", (e) => { if (e.target.id !== "q") return; clearTimeout(qT); qT = setTimeout(() => { st.q = e.target.value.trim(); render(); }, 150); });
 // Long-press a tile to enter select mode (B and C; A only has the Select button).
@@ -471,6 +480,7 @@ addEventListener("keydown", (e) => {
 window.onerror = (m) => document.body.insertAdjacentHTML("afterbegin", `<pre style="color:red;position:fixed;top:0;z-index:99;background:#fff">${m}</pre>`);
 if (q0.get("phone")) document.body.classList.add("phone");
 DV.preset("mid");
+if (q0.get("colour")) st.colour = true;
 if (q0.get("demo") === "filters") { st.owned = "missing"; st.rar.add("Epic"); st.fpop = true; }
 render();
 </script>
