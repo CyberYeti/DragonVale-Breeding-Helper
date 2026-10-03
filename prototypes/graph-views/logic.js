@@ -30,8 +30,9 @@
   const endDate = new Map(Object.entries(L.dragons || {}).map(([k, v]) => [k, v.countdown]));
   for (const ev of Object.values(L.events || {}))
     for (const [n, v] of Object.entries(ev.dragons || {})) {
-      // Assumption: an event-shop Dragon counts as in rotation only when it has its own countdown.
-      if (v.Breedable === false) purchaseOnly.add(n); else if (v.countdown) { inRotation.add(n); endDate.set(n, v.countdown); }
+      // Every event-shop Dragon is Available until the event (or its own countdown) ends; Breedable: false is Purchase only.
+      inRotation.add(n); endDate.set(n, v.countdown || ev.countdown);
+      if (v.Breedable === false) purchaseOnly.add(n);
     }
   const outOfRotation = (d) => d.isLimited && !inRotation.has(d.name);
 
