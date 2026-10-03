@@ -123,6 +123,14 @@
   .b-burger, .b-bottom, .b-close { display:none; }
   .b-head { display:flex; gap:10px; align-items:center; flex-wrap:wrap; padding:12px 12px 4px; }
   .b-head h2 { margin:0; font-size:20px; }
+  .fchk { display:flex; align-items:center; gap:6px; padding:3px 4px; border-radius:6px; cursor:pointer; }
+  .fchk:hover { background:var(--bg); }
+  .fchk input { pointer-events:none; margin:0; }
+  .fpop { min-width:250px; padding:10px 12px; }
+  .fpop button { display:inline-block; width:auto; margin:0; }
+  button.factive { border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent); }
+  .fbadge { background:var(--accent); color:#000; border-radius:999px; padding:0 6px; font-size:11px; margin-left:2px; }
+  .b-active { display:flex; gap:6px; align-items:center; flex-wrap:wrap; padding:2px 12px 6px; }
   .bar { height:6px; width:140px; background:var(--line); border-radius:3px; overflow:hidden; }
   .bar i { display:block; height:100%; background:var(--own); }
   .B .scroll { flex:1; padding-bottom:60px; }
@@ -130,6 +138,7 @@
     .b-side { position:absolute; top:0; bottom:0; left:0; z-index:29; width:280px; transform:translateX(-105%); transition:transform .2s; box-shadow:4px 0 24px #0004; }
     .b-side.open { transform:none; }
     .b-burger, .b-close { display:inline-block; }
+    .fpop { position:fixed; left:0; right:0; bottom:0; top:auto; border-radius:16px 16px 0 0; box-shadow:0 -10px 30px #0006; padding:14px 16px 20px; }
     .b-top .logo { display:none; }
     .b-head h2 { font-size:16px; }
     .bar { width:80px; }
@@ -309,14 +318,20 @@ function renderB() {
     <div>${KINDS.map(([k, ico, t]) => nav(k, `${ico} ${t}`, sectionsForRaw(k))).join("")}</div>
     ${GROUPS.map(([g, t]) => `<details ${curGrp === g || (!curGrp && g === "elemental") ? "open" : ""}><summary><b>${t}</b> <span class="muted">(${PAGES.filter((p) => p.group === g).length})</span></summary>
       ${PAGES.filter((p) => p.group === g).map((p) => nav("page:" + p.name, p.name, p.dragons)).join("")}</details>`).join("")}
-    <div><div class="lbl">Owned</div><div class="chips">${ownedChips()}</div></div>
-    <div><div class="lbl">Rarity</div><div class="chips">${rarChips()}</div></div>
   </aside>`;
+  // Filters live behind a button; active ones show as removable chips under the title.
+  const fc = filterCount();
+  const fpop = `<span class="more fpopwrap"><button data-act="fpop" class="${fc ? "factive" : ""} ${st.fpop ? "on" : ""}">⏷ Filters${fc ? ` <b class="fbadge">${fc}</b>` : ""}</button>${st.fpop ? `<div class="menu fpop">
+      <div class="lbl">Show</div><span class="seg">${["any", "owned", "missing"].map((o) => `<button data-owned="${o}" class="${st.owned === o ? "on" : ""}">${{ any: "All", owned: "Owned", missing: "Not owned" }[o]}</button>`).join("")}</span>
+      <div class="lbl" style="margin-top:10px">Rarity <span class="muted" style="text-transform:none">(none ticked = all)</span></div>
+      ${RARITIES.map((r) => `<div class="fchk" data-rar="${r}"><input type="checkbox" ${st.rar.has(r) ? "checked" : ""} tabindex="-1"><span class="dot" style="background:${RC[r] || "#999"}"></span>${r}</div>`).join("")}
+      <div style="display:flex;gap:6px;margin-top:10px"><button data-act="clearf" class="small">Clear all</button><span style="flex:1"></span><button data-act="fpop" class="small primary">Done</button></div></div>` : ""}</span>`;
+  const active = fc ? `<div class="b-active"><span class="lbl">Filtered:</span>${st.owned !== "any" ? `<button class="chip on" data-owned="any">${st.owned === "owned" ? "Owned" : "Not owned"} ✕</button>` : ""}${[...st.rar].map((r) => `<button class="chip on" data-rar="${r}">${r} ✕</button>`).join("")}<button class="small" data-act="clearf">Clear all</button></div>` : "";
   return `<div class="B ${st.select ? "selmode" : ""}">${side}${st.drawer ? `<div class="backdrop" data-act="drawer"></div>` : ""}
     <div class="b-main">
       <header class="b-top"><button class="b-burger" data-act="drawer">☰</button>${search()}${moreMenu()}</header>
-      <div class="b-head"><h2>${st.q ? secs[0].title : tabTitle(st.tab)}</h2><span class="bar"><i style="width:${n ? (100 * o) / n : 0}%"></i></span><span class="muted">${o}/${n} owned${filterCount() ? ` · ${filterCount()} filter${filterCount() > 1 ? "s" : ""} on` : ""}</span>
-        <span style="flex:1"></span><button data-act="select" class="${st.select ? "on" : ""}">Select</button>${secs[0].page ? `<button data-act="graph" data-page="${esc(secs[0].page)}">🕸 Graph</button>` : ""}</div>
+      <div class="b-head"><h2>${st.q ? secs[0].title : tabTitle(st.tab)}</h2><span class="bar"><i style="width:${n ? (100 * o) / n : 0}%"></i></span><span class="muted">${o}/${n} owned</span>
+        <span style="flex:1"></span><button data-act="select" class="${st.select ? "on" : ""}">Select</button>${fpop}${secs[0].page ? `<button data-act="graph" data-page="${esc(secs[0].page)}">🕸 Graph</button>` : ""}</div>${active}
       <main class="scroll" data-keep="b">${secs.map((s) => (secs.length > 1 ? `<div class="sechead"><h3>${s.title}</h3><span class="muted">${s.sub || ""} · ${secCount(s)}</span></div>` : "") + gridHtml(s)).join("")}</main>
       ${st.select ? "" : `<nav class="b-bottom"><button data-act="drawer" class="${st.tab.startsWith("page:") ? "on" : ""}"><span>📚</span>Pages</button>${KINDS.map(([k, ico, t]) => `<button data-tab="${k}" class="${st.tab === k ? "on" : ""}"><span>${ico}</span>${t.replace(" rotation", "").replace(" now", "")}</button>`).join("")}</nav>`}
     </div></div>`;
@@ -394,9 +409,10 @@ let suppressClick = false;
 app.addEventListener("click", (e) => {
   if (suppressClick) { suppressClick = false; e.preventDefault(); return; }
   const t = e.target.closest("[data-act],[data-mode],[data-tab],[data-group],[data-owned],[data-rar],[data-tick],[data-bulk],[data-jump],.tile");
-  if (!t) { if (st.menu) { st.menu = false; render(); } return; }
+  if (!t) { if (e.target.closest(".fpopwrap")) return; if (st.menu || st.fpop) { st.menu = false; st.fpop = false; render(); } return; }
   const ds = t.dataset;
   if (ds.act !== "menu") st.menu = false;
+  if (st.fpop && !e.target.closest(".fpopwrap") && !e.target.closest(".b-active")) { st.fpop = false; if (!ds.act && !ds.tab && !ds.mode) return render(); }
   if (ds.tick) { const n = t.closest(".tile").dataset.n; DV.setOwned(n, ds.tick, !DV.owns(n, ds.tick)); bn = null; return render(); }
   if (t.classList.contains("tile")) return tileTap(t);
   if (ds.jump) { const s = $(ds.jump); $("cscroll").scrollTo({ top: s.offsetTop - $("cscroll").offsetTop, behavior: "smooth" }); return; }
@@ -421,15 +437,17 @@ app.addEventListener("click", (e) => {
     case "sheet": st.sheet = true; break;
     case "closesheet": st.sheet = false; break;
     case "drawer": st.drawer = !st.drawer; break;
+    case "fpop": st.fpop = !st.fpop; break;
+    case "clearf": st.owned = "any"; st.rar.clear(); break;
   }
   render();
 });
 let qT = 0;
 app.addEventListener("input", (e) => { if (e.target.id !== "q") return; clearTimeout(qT); qT = setTimeout(() => { st.q = e.target.value.trim(); render(); }, 150); });
-// Long-press a tile to enter select mode (variant C only; A and B use the Select button).
+// Long-press a tile to enter select mode (B and C; A only has the Select button).
 let lpT = 0, lpXY = null;
 app.addEventListener("pointerdown", (e) => {
-  const t = e.target.closest(".tile"); if (!t || st.variant !== "C" || st.select || e.target.closest("[data-tick]")) return;
+  const t = e.target.closest(".tile"); if (!t || st.variant === "A" || st.select || e.target.closest("[data-tick]")) return;
   lpXY = [e.clientX, e.clientY];
   lpT = setTimeout(() => { st.select = true; st.sel.add(t.dataset.n); suppressClick = true; if (navigator.vibrate) navigator.vibrate(20); render(); }, 500);
 });
@@ -446,13 +464,14 @@ $("next").onclick = () => setVariant(keys[(keys.indexOf(st.variant) + 1) % keys.
 $("phone").onclick = () => { document.body.classList.toggle("phone"); render(); };
 $("preset").onchange = () => { DV.preset($("preset").value); bn = null; render(); };
 addEventListener("keydown", (e) => {
-  if (e.key === "Escape") { st.overlay = null; st.sheet = false; st.drawer = false; st.menu = false; return render(); }
+  if (e.key === "Escape") { st.overlay = null; st.sheet = false; st.drawer = false; st.menu = false; st.fpop = false; return render(); }
   if (e.target.closest("input,textarea,select,[contenteditable]")) return;
   if (e.key === "ArrowLeft") $("prev").click(); if (e.key === "ArrowRight") $("next").click();
 });
 window.onerror = (m) => document.body.insertAdjacentHTML("afterbegin", `<pre style="color:red;position:fixed;top:0;z-index:99;background:#fff">${m}</pre>`);
 if (q0.get("phone")) document.body.classList.add("phone");
 DV.preset("mid");
+if (q0.get("demo") === "filters") { st.owned = "missing"; st.rar.add("Epic"); st.fpop = true; }
 render();
 </script>
 </body>
