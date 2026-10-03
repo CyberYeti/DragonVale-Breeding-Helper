@@ -1,0 +1,459 @@
+<!doctype html>
+<!--
+  PROTOTYPE (throwaway) for "Menu layout on desktop and mobile" (#14).
+  Three layouts of the Dragonarium menu, switchable via ?variant=A|B|C and the bottom bar;
+  the 📱 button squeezes the app into a phone frame (the layouts react to the app's width, not the window's).
+    A  Tabs on top        : two rows of tabs (kinds, then pages), toolbar with filters; phone: filters in a bottom sheet. Select = button.
+    B  Sidebar            : page list + filters in a left sidebar; phone: drawer plus a bottom nav bar. Select = button.
+    C  One long scroll    : every section stacked in one scroll, a jump rail on the side, filters in a sticky chip row. Select = long-press a tile.
+  Data: real wiki snapshot (../graph-views/data.js) + Data:Dragonarium.json (pages.js). Collection lives in memory only.
+  Open this file directly in a browser.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Menu Layout Prototype</title>
+<script src="../graph-views/data.js"></script>
+<script src="../graph-views/logic.js"></script>
+<script src="pages.js"></script>
+<script src="images.js"></script>
+<style>
+  :root { --stage:#d8d6cf; --bg:#f6f5f2; --fg:#1d1d1f; --muted:#6b6b70; --card:#fff; --line:#d9d7d0; --own:#2e7d32; --rift:#7b1fa2; --accent:#f2b705; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --stage:#0b0b0d; --bg:#16161a; --fg:#ececf0; --muted:#9a9aa3; --card:#212127; --line:#383840; } }
+  * { box-sizing: border-box; }
+  body { margin:0; font:14px/1.4 system-ui, sans-serif; background:var(--stage); color:var(--fg); height:100vh; overflow:hidden; }
+  #stage { height:calc(100vh - 56px); display:flex; justify-content:center; }
+  #app { container-type:inline-size; transform:translateZ(0); width:100%; height:100%; background:var(--bg); overflow:hidden; position:relative; }
+  body.phone #stage { padding-top:10px; }
+  body.phone #app { width:390px; height:min(844px, calc(100vh - 76px)); border:8px solid #111; border-radius:32px; }
+  button, input, select { font:inherit; color:var(--fg); }
+  button { cursor:pointer; padding:4px 10px; border:1px solid var(--line); border-radius:8px; background:var(--card); white-space:nowrap; }
+  button.on { background:var(--fg); color:var(--bg); border-color:var(--fg); }
+  button.primary { background:var(--own); color:#fff; border-color:var(--own); }
+  button.small { padding:2px 8px; font-size:12px; }
+  input.search { padding:6px 10px; border:1px solid var(--line); border-radius:8px; background:var(--card); min-width:0; }
+  .muted { color:var(--muted); }
+  .seg { display:inline-flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; flex:none; }
+  .seg button { border:0; border-radius:0; padding:4px 10px; }
+  .chips { display:flex; gap:4px; flex-wrap:wrap; align-items:center; }
+  .chip { border-radius:999px; padding:2px 10px; font-size:12px; }
+  .chip.on { background:var(--accent); border-color:var(--accent); color:#000; }
+  .dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:4px; border:1px solid #0003; }
+  .lbl { font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  .scroll { overflow:auto; min-height:0; }
+
+  /* tiles */
+  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(96px, 1fr)); gap:10px; padding:4px 12px 16px; }
+  .tile { position:relative; border:3px solid var(--rc); border-radius:12px; background:var(--card); padding:4px 4px 3px; text-align:center; cursor:pointer; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; }
+  .tile img { width:100%; aspect-ratio:1; object-fit:contain; display:block; pointer-events:none; }
+  .tile.grey img { filter:grayscale(1) opacity(.5); }
+  .tile.pulse img { animation:pulse 2.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { filter:grayscale(1) opacity(.5); } 50% { filter:none; } }
+  @media (prefers-reduced-motion: reduce) { .tile.pulse img { animation:none; filter:grayscale(.4); } }
+  .tile .nm { font-size:11px; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tile .note { font-size:10px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tile .lock { position:absolute; top:3px; left:5px; font-size:13px; }
+  .tile .po { position:absolute; top:32%; left:0; right:0; background:#000b; color:#fff; font-size:10px; font-weight:600; padding:1px 0; }
+  .tile .ticks { display:flex; gap:3px; justify-content:center; margin-top:2px; }
+  .tile .ticks button { font-size:10px; padding:0 6px; border-radius:6px; color:var(--muted); line-height:16px; }
+  .tile .ticks button.on { background:var(--own); color:#fff; border-color:var(--own); }
+  .tile .ticks button.rf.on { background:var(--rift); border-color:var(--rift); }
+  .tile.sel { outline:3px solid var(--accent); outline-offset:2px; }
+  .tile.sel::after { content:"✓"; position:absolute; top:3px; right:5px; background:var(--accent); color:#000; border-radius:50%; width:18px; height:18px; font-size:12px; line-height:18px; font-weight:700; }
+  .selmode .tile .ticks { visibility:hidden; }
+  .sec { content-visibility:auto; contain-intrinsic-size:auto 420px; }
+  .sechead { display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; padding:12px 12px 6px; }
+  .sechead h3 { margin:0; font-size:16px; }
+  .empty { padding:0 12px; }
+
+  /* shared floating bits */
+  .selbar { position:absolute; left:0; right:0; bottom:0; z-index:25; display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:10px 12px; background:var(--card); border-top:2px solid var(--accent); box-shadow:0 -6px 18px #0002; }
+  .toast { position:absolute; left:50%; bottom:70px; transform:translateX(-50%); z-index:40; background:#222; color:#fff; padding:8px 14px; border-radius:10px; display:flex; gap:10px; align-items:center; }
+  .toast button { background:#444; color:#fff; border-color:#666; }
+  .more { position:relative; }
+  .menu { position:absolute; right:0; top:110%; z-index:30; background:var(--card); border:1px solid var(--line); border-radius:10px; box-shadow:0 8px 24px #0003; min-width:220px; padding:6px; }
+  .menu button { display:block; width:100%; text-align:left; border:0; margin:2px 0; }
+  .menu .muted { font-size:12px; padding:4px 10px; }
+  .overlay { position:absolute; inset:0; z-index:35; background:var(--bg); display:flex; flex-direction:column; }
+  .ohead { display:flex; gap:10px; align-items:center; padding:8px 12px; border-bottom:1px solid var(--line); background:var(--card); }
+  .overlay iframe { flex:1; border:0; width:100%; }
+  .obody { padding:16px; max-width:640px; overflow:auto; }
+  .backdrop { position:absolute; inset:0; background:#0006; z-index:28; }
+  .sheet { position:absolute; left:0; right:0; bottom:0; z-index:29; background:var(--card); border-radius:16px 16px 0 0; padding:14px 16px 20px; display:flex; flex-direction:column; gap:12px; }
+
+  /* switcher */
+  #switcher { position:fixed; bottom:12px; left:50%; transform:translateX(-50%); background:#111; color:#fff; border-radius:999px; padding:5px 8px; display:flex; gap:8px; align-items:center; box-shadow:0 6px 24px rgba(0,0,0,.35); z-index:50; font-size:13px; }
+  #switcher button, #switcher select { background:#333; color:#fff; border:none; border-radius:999px; padding:4px 10px; }
+
+  /* ---------- A: tabs on top */
+  .A { display:flex; flex-direction:column; height:100%; }
+  .a-top { display:flex; gap:10px; align-items:center; padding:8px 12px; background:var(--card); border-bottom:1px solid var(--line); }
+  .a-top .logo { font-weight:700; white-space:nowrap; }
+  .a-top .search { flex:1; max-width:420px; }
+  .a-kinds, .a-pages { display:flex; gap:6px; overflow-x:auto; padding:6px 12px; scrollbar-width:thin; }
+  .a-kinds { background:var(--card); }
+  .a-kinds .sep { width:1px; background:var(--line); flex:none; margin:0 4px; }
+  .a-pages { border-bottom:1px solid var(--line); background:var(--bg); }
+  .a-pages button { font-size:13px; padding:3px 10px; }
+  .a-tool { display:flex; gap:10px; align-items:center; flex-wrap:wrap; padding:8px 12px; border-bottom:1px solid var(--line); }
+  .a-tool h2 { font-size:17px; margin:0; }
+  .a-filtbtn, .a-graph-ico { display:none; }
+  .A .scroll { flex:1; padding-bottom:60px; }
+  @container (max-width: 700px) {
+    .a-top { flex-wrap:wrap; gap:8px; }
+    .a-top .logo { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; }
+    .a-top .search { order:5; flex-basis:100%; max-width:none; }
+    .a-tool .filters, .a-graph-txt { display:none; }
+    .a-filtbtn, .a-graph-ico { display:inline-block; }
+    .a-tool h2 { font-size:15px; flex:1; }
+    .grid { grid-template-columns:repeat(auto-fill, minmax(78px, 1fr)); gap:6px; padding:4px 8px 12px; }
+  }
+
+  /* ---------- B: sidebar */
+  .B { display:flex; height:100%; }
+  .b-side { width:250px; flex:none; border-right:1px solid var(--line); background:var(--card); overflow:auto; padding:12px; display:flex; flex-direction:column; gap:12px; }
+  .b-side .navbtn { display:flex; justify-content:space-between; width:100%; text-align:left; border:0; padding:4px 8px; }
+  .b-side details summary { cursor:pointer; padding:4px 0; }
+  .b-side .prog { font-size:11px; color:var(--muted); }
+  .b-side .navbtn.on .prog { color:var(--bg); }
+  .b-main { flex:1; display:flex; flex-direction:column; min-width:0; }
+  .b-top { display:flex; gap:10px; align-items:center; padding:8px 12px; border-bottom:1px solid var(--line); background:var(--card); }
+  .b-top .search { flex:1; max-width:460px; }
+  .b-burger, .b-bottom, .b-close { display:none; }
+  .b-head { display:flex; gap:10px; align-items:center; flex-wrap:wrap; padding:12px 12px 4px; }
+  .b-head h2 { margin:0; font-size:20px; }
+  .bar { height:6px; width:140px; background:var(--line); border-radius:3px; overflow:hidden; }
+  .bar i { display:block; height:100%; background:var(--own); }
+  .B .scroll { flex:1; padding-bottom:60px; }
+  @container (max-width: 700px) {
+    .b-side { position:absolute; top:0; bottom:0; left:0; z-index:29; width:280px; transform:translateX(-105%); transition:transform .2s; box-shadow:4px 0 24px #0004; }
+    .b-side.open { transform:none; }
+    .b-burger, .b-close { display:inline-block; }
+    .b-top .logo { display:none; }
+    .b-head h2 { font-size:16px; }
+    .bar { width:80px; }
+    .b-bottom { display:flex; border-top:1px solid var(--line); background:var(--card); }
+    .b-bottom button { flex:1; border:0; border-radius:0; padding:6px 0 8px; font-size:11px; display:flex; flex-direction:column; align-items:center; gap:1px; }
+    .b-bottom button span { font-size:18px; }
+    .b-bottom button.on { background:var(--bg); color:var(--fg); box-shadow:inset 0 3px 0 var(--accent); }
+    .B .scroll { padding-bottom:12px; }
+    .b-main { height:100%; }
+  }
+
+  /* ---------- C: one long scroll */
+  .C { display:flex; flex-direction:column; height:100%; }
+  .c-top { background:var(--card); border-bottom:1px solid var(--line); padding:8px 12px; display:flex; flex-direction:column; gap:8px; }
+  .c-row { display:flex; gap:10px; align-items:center; }
+  .c-row .search { flex:1; font-size:16px; padding:8px 12px; }
+  .c-chips { display:flex; gap:4px; overflow-x:auto; scrollbar-width:none; align-items:center; }
+  .c-body { flex:1; display:flex; min-height:0; }
+  .C .scroll { flex:1; padding-bottom:60px; }
+  .C .sechead { position:sticky; top:0; z-index:5; background:color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter:blur(4px); border-bottom:1px solid var(--line); }
+  .C .grp { padding:18px 12px 0; font-size:22px; font-weight:700; }
+  .c-rail { width:170px; flex:none; overflow:auto; border-left:1px solid var(--line); padding:6px 4px 60px; font-size:12px; background:var(--card); }
+  .c-rail a { display:block; padding:2px 8px; border-radius:6px; cursor:pointer; color:var(--fg); text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .c-rail a.on { background:var(--accent); color:#000; }
+  .c-rail .short { display:none; }
+  .c-rail .lbl { padding:8px 8px 2px; }
+  .c-hint { font-size:12px; }
+  @container (max-width: 700px) {
+    .c-rail { width:38px; padding:4px 2px 12px; font-size:9px; }
+    .c-rail a { padding:2px 0; text-align:center; }
+    .c-rail .long, .c-rail .lbl { display:none; }
+    .c-rail .short { display:inline; }
+    .c-row .logo, .c-hint { display:none; }
+    .C .scroll { padding-bottom:12px; }
+    .grid { grid-template-columns:repeat(auto-fill, minmax(78px, 1fr)); gap:6px; padding:4px 8px 12px; }
+  }
+</style>
+</head>
+<body>
+<div id="stage"><div id="app"></div></div>
+<div id="switcher">
+  <button id="prev">←</button><span id="vlabel"></span><button id="next">→</button>
+  <button id="phone" title="Toggle phone frame">📱</button>
+  <select id="preset" title="Collection preset"><option value="new">New player</option><option value="mid" selected>Mid-game</option><option value="empty">Empty</option></select>
+</div>
+
+<script>
+const DV = window.DV, S = DV.S, L = S.limitedRaw;
+const VARIANTS = { A: "Tabs on top", B: "Sidebar + bottom nav", C: "One long scroll" };
+const RC = { Primary:"#cfe8cf", Hybrid:"#88ff77", Rare:"#0099FF", Epic:"#8811EE", Galaxy:"#00DDFF", Gemstone:"#FF7711", Legendary:"#EE2200", Mythic:"#FF22BB" };
+const RARITIES = [...new Set(S.dragons.map((d) => d.rarity))].sort((a, b) => (Object.keys(RC).indexOf(a) + 99) % 99 - (Object.keys(RC).indexOf(b) + 99) % 99);
+const GROUPS = [["elemental", "Elemental"], ["epic", "Epic"], ["special", "Special"]];
+const PAGES = window.PAGES.map((p) => ({ ...p, group: p.tags[0], dragons: p.dragons.map((n) => DV.byName.get(n)) }));
+const KINDS = [["breedable", "🥚", "Breedable now"], ["limited", "⏳", "Limited rotation"], ["event", "🎪", "Event"]];
+const EVENTS = Object.entries(L.events || {}).map(([name, ev]) => ({ name, end: ev.countdown,
+  dragons: Object.entries(ev.dragons || {}).filter(([n]) => DV.byName.has(n)).map(([n, v]) => ({ d: DV.byName.get(n), cost: v.Cost, cur: v.Currency, breedable: v.Breedable !== false })) }));
+const eventNames = new Set(EVENTS.flatMap((e) => e.dragons.map((x) => x.d.name)));
+const LIMITED = Object.entries(L.dragons || {}).filter(([n]) => DV.byName.has(n)).map(([n, v]) => ({ d: DV.byName.get(n), end: v.countdown }));
+
+const q0 = new URLSearchParams(location.search);
+const st = { variant: q0.get("variant") || "A", mode: "all", tab: "page:Fire", q: "", owned: "any", rar: new Set(), select: false, sel: new Set(), bulk: "both",
+  undo: null, toast: null, menu: false, sheet: false, drawer: false, overlay: null };
+const app = document.getElementById("app"), $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+
+// ---------- rules per Form mode
+let bn = null;
+function breedSets() { if (!bn) { bn = { normal: new Set(), rift: new Set() }; for (const x of DV.allBreedableNow()) bn[x.form].add(x.d.name); } return bn; }
+const shown = (d) => st.mode === "all" || (st.mode === "normal" ? !d.isRiftDragon : d.hasRiftForm || d.isRiftDragon);
+const ownedM = (d) => st.mode === "rift" && !d.isRiftDragon ? DV.owns(d.name, "rift") : st.mode === "normal" ? DV.owns(d.name, "normal") : DV.ownsAny(d.name);
+const breedM = (d) => { const s = breedSets(); if (st.mode === "normal") return s.normal.has(d.name) && !d.isRiftDragon;
+  if (st.mode === "rift") return d.isRiftDragon ? s.normal.has(d.name) : s.rift.has(d.name); return s.normal.has(d.name) || s.rift.has(d.name); };
+const locked = (d) => !DV.ownsAny(d.name) && d.isLimited && !DV.inRotation.has(d.name) && !eventNames.has(d.name);
+const passes = (d) => shown(d) && (st.owned === "any" || (st.owned === "owned") === ownedM(d)) && (!st.rar.size || st.rar.has(d.rarity));
+const filterCount = () => (st.owned !== "any" ? 1 : 0) + st.rar.size;
+function openForm(d) {
+  if (d.isRiftDragon || !d.hasRiftForm) return "normal";
+  if (st.mode !== "all") return st.mode;
+  const s = breedSets(), nb = s.normal.has(d.name), rb = s.rift.has(d.name);
+  if (nb !== rb) return rb ? "rift" : "normal";
+  const nm = !DV.owns(d.name, "normal"), rm = !DV.owns(d.name, "rift");
+  return nm !== rm && rm ? "rift" : "normal";
+}
+
+// ---------- sections for a tab
+function sectionsFor(tab) {
+  if (st.q) { const q = st.q.toLowerCase(); return [{ id: "search", title: `Search: “${st.q}”`, dragons: S.dragons.filter((d) => d.name.toLowerCase().includes(q)) }]; }
+  if (tab === "breedable") return [{ id: "breedable", title: "Breedable now", sub: "from your Collection", dragons: S.dragons.filter((d) => breedM(d) && !ownedM(d)) }];
+  if (tab === "limited") return [{ id: "limited", title: "Limited rotation", dragons: LIMITED.map((x) => x.d), notes: new Map(LIMITED.map((x) => [x.d.name, x.end ? "until " + x.end.replace(/, \d{4}/, "") : ""])) }];
+  if (tab === "event") return EVENTS.map((e, i) => ({ id: "event" + i, title: "🎪 " + e.name, sub: "ends " + e.end, dragons: e.dragons.map((x) => x.d),
+    notes: new Map(e.dragons.map((x) => [x.d.name, x.cost ? `${x.cost.toLocaleString()} ${x.cur}` : ""])) }));
+  const p = PAGES.find((p) => "page:" + p.name === tab);
+  return [{ id: tab, title: p.name, sub: GROUPS.find((g) => g[0] === p.group)[1] + " page", dragons: p.dragons, page: p.name }];
+}
+const tabTitle = (tab) => tab.startsWith("page:") ? tab.slice(5) : KINDS.find((k) => k[0] === tab)[2];
+const progress = (dragons) => { const all = dragons.filter(shown); return [all.filter(ownedM).length, all.length]; };
+
+// ---------- shared pieces
+const IMG = (d) => (window.IMAGES && IMAGES[d.name]) || SIL;
+const SIL = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path fill="#999" d="M8 46c7-2 11-9 13-15 2-7 9-13 17-13 6 0 10 4 12 8l7-2-3 8c2 4 1 10-3 13-5 4-13 3-17 1l-4 7h-6l3-8c-6 0-12 1-19 1z"/></svg>');
+window.imgErr = (im) => { im.onerror = null; im.src = SIL; };
+function tileHtml(d, note) {
+  const own = ownedM(d), br = !own && breedM(d);
+  const one = d.isRiftDragon || !d.hasRiftForm;
+  const ticks = one ? `<button data-tick="normal" class="${DV.owns(d.name, "normal") ? "on" : ""}">✔ Owned</button>`
+    : `<button data-tick="normal" class="${DV.owns(d.name, "normal") ? "on" : ""}">Normal</button><button data-tick="rift" class="rf ${DV.owns(d.name, "rift") ? "on" : ""}">Rift</button>`;
+  return `<div class="tile ${own ? "" : "grey"} ${br ? "pulse" : ""} ${st.sel.has(d.name) ? "sel" : ""}" data-n="${esc(d.name)}" style="--rc:${RC[d.rarity] || "#999"}" title="${esc(d.name)} · ${d.rarity}${br ? " · Breedable now" : ""}">
+    <img loading="lazy" src="${IMG(d)}" alt="" onerror="imgErr(this)">
+    ${locked(d) ? `<span class="lock" title="Limited, not in rotation">🔒</span>` : ""}${DV.purchaseOnly.has(d.name) && !own ? `<span class="po">Purchase only</span>` : ""}
+    <div class="nm">${d.name}</div>${note ? `<div class="note">${note}</div>` : ""}<div class="ticks">${ticks}</div></div>`;
+}
+function gridHtml(sec) {
+  const vis = sec.dragons.filter(passes);
+  return vis.length ? `<div class="grid">${vis.map((d) => tileHtml(d, sec.notes && sec.notes.get(d.name))).join("")}</div>`
+    : `<p class="muted empty">${sec.dragons.filter(shown).length ? "Nothing here matches the filters." : "Nothing here in this Form mode."}</p>`;
+}
+function secCount(sec) { const [o, n] = progress(sec.dragons), v = sec.dragons.filter(passes).length; return `${o}/${n} owned${v !== n ? ` · ${v} shown` : ""}`; }
+const modeSeg = () => `<span class="seg" title="Form mode">${["all", "normal", "rift"].map((m) => `<button data-mode="${m}" class="${st.mode === m ? "on" : ""}">${{ all: "All", normal: "Normal", rift: "Rift" }[m]}</button>`).join("")}</span>`;
+const search = (ph) => `<input class="search" id="q" data-focuskey="q" placeholder="${ph || "Search every Dragon…"}" value="${esc(st.q)}" autocomplete="off">`;
+const ownedChips = () => ["any", "owned", "missing"].map((o) => `<button class="chip ${st.owned === o ? "on" : ""}" data-owned="${o}">${{ any: "Any", owned: "Owned", missing: "Not owned" }[o]}</button>`).join("");
+const rarChips = () => RARITIES.map((r) => `<button class="chip ${st.rar.has(r) ? "on" : ""}" data-rar="${r}"><span class="dot" style="background:${RC[r] || "#999"}"></span>${r}</button>`).join("");
+const moreMenu = () => `<span class="more"><button data-act="menu" title="More">⋯</button>${st.menu ? `<div class="menu"><button data-act="export">⬇ Export Collection</button><button data-act="import">⬆ Import Collection…</button><div class="muted">Last exported: never</div><div class="muted">Data from the DragonVale Wiki (CC BY-SA)</div></div>` : ""}</span>`;
+function floating() {
+  let h = "";
+  if (st.select) h += `<div class="selbar"><span><b class="selcount">${st.sel.size}</b> selected</span><button data-act="selall">Select all shown</button>
+    ${st.mode === "all" ? `<span class="seg">${["normal", "rift", "both"].map((b) => `<button data-bulk="${b}" class="${st.bulk === b ? "on" : ""}">${{ normal: "Normal", rift: "Rift form", both: "Both" }[b]}</button>`).join("")}</span>` : `<span class="muted">${st.mode === "rift" ? "Rift form" : "Normal form"}</span>`}
+    <button data-act="mark" class="primary">Mark owned</button><button data-act="unmark">Unmark</button><button data-act="cancelsel">Done</button></div>`;
+  if (st.toast) h += `<div class="toast">${st.toast.msg}${st.toast.undo ? ` <button data-act="undo">Undo</button>` : ""}</div>`;
+  if (st.sheet) h += `<div class="backdrop" data-act="closesheet"></div><div class="sheet"><b>Filters</b><div><div class="lbl">Owned</div><div class="chips">${ownedChips()}</div></div>
+    <div><div class="lbl">Rarity</div><div class="chips">${rarChips()}</div></div><button data-act="closesheet" class="primary">Show ${currentShownCount()} Dragons</button></div>`;
+  const o = st.overlay;
+  if (o && o.kind === "focus") h += `<div class="overlay"><div class="ohead"><button data-act="close">← Back</button><b>${o.name}${o.form === "rift" ? " (Rift form)" : ""}</b><span class="muted">Focus view (graph-views prototype, Mid-game Collection)</span></div>
+    <iframe src="../graph-views/index.html?variant=A&target=${encodeURIComponent(o.name)}&form=${o.form}"></iframe></div>`;
+  if (o && o.kind === "graph") {
+    const f = [st.owned !== "any" ? `Owned: ${st.owned === "owned" ? "Owned" : "Not owned"}` : "", st.rar.size ? `Rarity: ${[...st.rar].join(", ")}` : ""].filter(Boolean);
+    h += `<div class="overlay"><div class="ohead"><button data-act="close">← Back</button><b>Whole graph: ${o.page}</b></div><div class="obody">
+      <p>The ${o.page} page's Dragons plus everything they need, bottom-up, Form mode <b>${st.mode}</b>. (Placeholder: the page graph itself is in the graph-views prototype.)</p>
+      <p><b>Filters on right now:</b> ${f.length ? f.join(" · ") : "none"}</p>
+      <p class="muted">Open question for this ticket: should these filters carry into this graph (hide, dim, or ignore), and should the filter controls still be visible here?</p></div></div>`;
+  }
+  return h;
+}
+function currentShownCount() {
+  if (st.variant === "C" && !st.q) return allSectionsC().reduce((a, s) => a + s.dragons.filter(passes).length, 0);
+  return sectionsFor(st.tab).reduce((a, s) => a + s.dragons.filter(passes).length, 0);
+}
+
+// ---------- Variant A: tabs on top
+function renderA() {
+  const grp = st.tab.startsWith("page:") ? PAGES.find((p) => "page:" + p.name === st.tab).group : null;
+  const secs = sectionsFor(st.tab);
+  const pagesRow = grp ? `<nav class="a-pages" data-keepx="ap">${PAGES.filter((p) => p.group === grp).map((p) => `<button data-tab="page:${esc(p.name)}" class="${st.tab === "page:" + p.name && !st.q ? "on" : ""}">${p.name}</button>`).join("")}</nav>` : "";
+  const [o, n] = progress(secs.flatMap((s) => s.dragons));
+  return `<div class="A ${st.select ? "selmode" : ""}">
+    <header class="a-top"><span class="logo">🐉 Breeding Helper</span>${search()}${modeSeg()}${moreMenu()}</header>
+    <nav class="a-kinds" data-keepx="ak">${KINDS.map(([k, ico, t]) => `<button data-tab="${k}" class="${st.tab === k && !st.q ? "on" : ""}">${ico} ${t}</button>`).join("")}<span class="sep"></span>
+      ${GROUPS.map(([g, t]) => `<button data-group="${g}" class="${grp === g && !st.q ? "on" : ""}">${t} ▾</button>`).join("")}</nav>
+    ${pagesRow}
+    <div class="a-tool"><h2>${st.q ? secs[0].title : tabTitle(st.tab)} <span class="muted" style="font-size:13px;font-weight:400">${o}/${n} owned</span></h2>
+      <span class="filters chips"><span class="lbl">Owned</span>${ownedChips()}<span class="lbl" style="margin-left:8px">Rarity</span>${rarChips()}</span>
+      <button class="a-filtbtn" data-act="sheet">Filters${filterCount() ? ` (${filterCount()})` : ""}</button>
+      <button data-act="select" class="${st.select ? "on" : ""}">☑ Select</button>
+      ${secs[0].page ? `<button data-act="graph" data-page="${esc(secs[0].page)}"><span class="a-graph-txt">🕸 Show entire graph</span><span class="a-graph-ico">🕸</span></button>` : ""}</div>
+    <main class="scroll" data-keep="a">${secs.map((s) => (secs.length > 1 ? `<div class="sechead"><h3>${s.title}</h3><span class="muted">${s.sub || ""} · ${secCount(s)}</span></div>` : "") + gridHtml(s)).join("")}</main>
+  </div>`;
+}
+
+// ---------- Variant B: sidebar (drawer + bottom nav on a phone)
+function renderB() {
+  const secs = sectionsFor(st.tab);
+  const [o, n] = progress(secs.flatMap((s) => s.dragons));
+  const curGrp = st.tab.startsWith("page:") ? PAGES.find((p) => "page:" + p.name === st.tab).group : null;
+  const nav = (tab, label, dragons) => { const [po, pn] = progress(dragons); return `<button class="navbtn ${st.tab === tab && !st.q ? "on" : ""}" data-tab="${esc(tab)}"><span>${label}</span><span class="prog">${pn ? `${po}/${pn}` : "—"}</span></button>`; };
+  const side = `<aside class="b-side ${st.drawer ? "open" : ""}" data-keep="bs">
+    <div style="display:flex;justify-content:space-between;align-items:center"><b>🐉 Breeding Helper</b><button class="b-close small" data-act="drawer">✕</button></div>
+    <div><div class="lbl">Form mode</div>${modeSeg()}</div>
+    <div>${KINDS.map(([k, ico, t]) => nav(k, `${ico} ${t}`, sectionsForRaw(k))).join("")}</div>
+    ${GROUPS.map(([g, t]) => `<details ${curGrp === g || (!curGrp && g === "elemental") ? "open" : ""}><summary><b>${t}</b> <span class="muted">(${PAGES.filter((p) => p.group === g).length})</span></summary>
+      ${PAGES.filter((p) => p.group === g).map((p) => nav("page:" + p.name, p.name, p.dragons)).join("")}</details>`).join("")}
+    <div><div class="lbl">Owned</div><div class="chips">${ownedChips()}</div></div>
+    <div><div class="lbl">Rarity</div><div class="chips">${rarChips()}</div></div>
+  </aside>`;
+  return `<div class="B ${st.select ? "selmode" : ""}">${side}${st.drawer ? `<div class="backdrop" data-act="drawer"></div>` : ""}
+    <div class="b-main">
+      <header class="b-top"><button class="b-burger" data-act="drawer">☰</button>${search()}${moreMenu()}</header>
+      <div class="b-head"><h2>${st.q ? secs[0].title : tabTitle(st.tab)}</h2><span class="bar"><i style="width:${n ? (100 * o) / n : 0}%"></i></span><span class="muted">${o}/${n} owned${filterCount() ? ` · ${filterCount()} filter${filterCount() > 1 ? "s" : ""} on` : ""}</span>
+        <span style="flex:1"></span><button data-act="select" class="${st.select ? "on" : ""}">Select</button>${secs[0].page ? `<button data-act="graph" data-page="${esc(secs[0].page)}">🕸 Graph</button>` : ""}</div>
+      <main class="scroll" data-keep="b">${secs.map((s) => (secs.length > 1 ? `<div class="sechead"><h3>${s.title}</h3><span class="muted">${s.sub || ""} · ${secCount(s)}</span></div>` : "") + gridHtml(s)).join("")}</main>
+      ${st.select ? "" : `<nav class="b-bottom"><button data-act="drawer" class="${st.tab.startsWith("page:") ? "on" : ""}"><span>📚</span>Pages</button>${KINDS.map(([k, ico, t]) => `<button data-tab="${k}" class="${st.tab === k ? "on" : ""}"><span>${ico}</span>${t.replace(" rotation", "").replace(" now", "")}</button>`).join("")}</nav>`}
+    </div></div>`;
+}
+function sectionsForRaw(tab) { const q = st.q; st.q = ""; const r = sectionsFor(tab).flatMap((s) => s.dragons); st.q = q; return r; }
+
+// ---------- Variant C: one long scroll with a jump rail
+function allSectionsC() {
+  const out = [];
+  for (const [k] of KINDS) for (const s of sectionsFor(k)) out.push({ ...s, group: "kinds" });
+  for (const [g] of GROUPS) for (const p of PAGES.filter((p) => p.group === g)) out.push({ id: "page:" + p.name, title: p.name, dragons: p.dragons, page: p.name, group: g });
+  return out;
+}
+function renderC() {
+  const secs = st.q ? sectionsFor() : allSectionsC();
+  let body = "", lastG = null;
+  for (const s of secs) {
+    if (!st.q && s.group !== lastG && s.group !== "kinds") body += `<div class="grp">${GROUPS.find((g) => g[0] === s.group)[1]} pages</div>`;
+    lastG = s.group;
+    body += `<section class="sec" id="sec-${esc(s.id)}"><div class="sechead"><h3>${s.title}</h3><span class="muted">${s.sub ? s.sub + " · " : ""}${secCount(s)}</span>
+      ${s.page ? `<button class="small" data-act="graph" data-page="${esc(s.page)}">🕸 Graph</button>` : ""}</div>${gridHtml(s)}</section>`;
+  }
+  const rail = st.q ? "" : `<nav class="c-rail" data-keep="cr">${secs.map((s, i) => {
+    const g = s.group !== (secs[i - 1] || {}).group && s.group !== "kinds" ? `<div class="lbl">${GROUPS.find((x) => x[0] === s.group)[1]}</div>` : "";
+    const short = s.group === "kinds" ? s.title.slice(0, 2) : s.title.slice(0, 3);
+    return g + `<a data-jump="sec-${esc(s.id)}" title="${esc(s.title)}"><span class="long">${s.title}</span><span class="short">${short}</span></a>`; }).join("")}</nav>`;
+  return `<div class="C ${st.select ? "selmode" : ""}">
+    <header class="c-top"><div class="c-row"><b class="logo">🐉</b>${search("Search every Dragon…")}${modeSeg()}${moreMenu()}</div>
+      <div class="c-chips">${ownedChips()}<span class="lbl" style="margin:0 4px 0 8px">Rarity</span>${rarChips()}<span class="muted c-hint" style="margin-left:10px;white-space:nowrap">Long-press a tile to select</span></div></header>
+    <div class="c-body"><main class="scroll" id="cscroll" data-keep="c">${body}</main>${rail}</div></div>`;
+}
+
+// ---------- render with scroll / focus kept
+function render() {
+  const keep = {}; app.querySelectorAll("[data-keep]").forEach((e) => (keep[e.dataset.keep] = e.scrollTop));
+  app.querySelectorAll("[data-keepx]").forEach((e) => (keep["x" + e.dataset.keepx] = e.scrollLeft));
+  const ae = document.activeElement, fk = ae && ae.dataset && ae.dataset.focuskey, caret = fk ? ae.selectionStart : 0;
+  if (!VARIANTS[st.variant]) st.variant = "A";
+  app.innerHTML = ({ A: renderA, B: renderB, C: renderC })[st.variant]() + floating();
+  app.querySelectorAll("[data-keep]").forEach((e) => { if (keep[e.dataset.keep] != null) e.scrollTop = keep[e.dataset.keep]; });
+  app.querySelectorAll("[data-keepx]").forEach((e) => { if (keep["x" + e.dataset.keepx] != null) e.scrollLeft = keep["x" + e.dataset.keepx]; });
+  if (fk) { const el = app.querySelector(`[data-focuskey="${fk}"]`); if (el) { el.focus(); el.setSelectionRange(caret, caret); } }
+  $("vlabel").textContent = `${st.variant} (${VARIANTS[st.variant]})`;
+  const u = new URL(location); u.searchParams.set("variant", st.variant); document.body.classList.contains("phone") ? u.searchParams.set("phone", "1") : u.searchParams.delete("phone"); history.replaceState(null, "", u);
+  const cs = $("cscroll"); if (cs) { cs.onscroll = spy; spy(); }
+}
+function spy() {
+  const cs = $("cscroll"); if (!cs) return;
+  let cur = null; for (const s of cs.querySelectorAll("section")) { if (s.offsetTop - cs.offsetTop <= cs.scrollTop + 20) cur = s.id; else break; }
+  app.querySelectorAll(".c-rail a").forEach((a) => a.classList.toggle("on", a.dataset.jump === cur));
+}
+let toastT = 0;
+function toast(msg, undo) { st.toast = { msg, undo }; clearTimeout(toastT); toastT = setTimeout(() => { st.toast = null; render(); }, 6000); }
+
+// ---------- interaction
+function bulk(val) {
+  const names = [...st.sel];
+  st.undo = names.map((n) => [n, DV.coll.has(n) ? { ...DV.coll.get(n) } : null]);
+  const forms = st.mode === "all" ? (st.bulk === "both" ? ["normal", "rift"] : [st.bulk]) : [st.mode];
+  for (const n of names) { const d = DV.byName.get(n); if (d.isRiftDragon || !d.hasRiftForm) DV.setOwned(n, "normal", val); else forms.forEach((f) => DV.setOwned(n, f, val)); }
+  bn = null; st.select = false; st.sel.clear();
+  toast(`${val ? "Marked" : "Unmarked"} ${names.length} Dragon${names.length === 1 ? "" : "s"}${st.mode === "all" ? ` (${st.bulk === "both" ? "both forms" : st.bulk === "rift" ? "Rift form" : "Normal"})` : ""}`, true);
+}
+function tileTap(t) {
+  const name = t.dataset.n;
+  if (st.select) {
+    st.sel.has(name) ? st.sel.delete(name) : st.sel.add(name);
+    app.querySelectorAll(`.tile[data-n="${CSS.escape(name)}"]`).forEach((x) => x.classList.toggle("sel", st.sel.has(name)));
+    const c = app.querySelector(".selcount"); if (c) c.textContent = st.sel.size;
+    return;
+  }
+  const d = DV.byName.get(name); st.overlay = { kind: "focus", name, form: openForm(d) }; render();
+}
+let suppressClick = false;
+app.addEventListener("click", (e) => {
+  if (suppressClick) { suppressClick = false; e.preventDefault(); return; }
+  const t = e.target.closest("[data-act],[data-mode],[data-tab],[data-group],[data-owned],[data-rar],[data-tick],[data-bulk],[data-jump],.tile");
+  if (!t) { if (st.menu) { st.menu = false; render(); } return; }
+  const ds = t.dataset;
+  if (ds.act !== "menu") st.menu = false;
+  if (ds.tick) { const n = t.closest(".tile").dataset.n; DV.setOwned(n, ds.tick, !DV.owns(n, ds.tick)); bn = null; return render(); }
+  if (t.classList.contains("tile")) return tileTap(t);
+  if (ds.jump) { const s = $(ds.jump); $("cscroll").scrollTo({ top: s.offsetTop - $("cscroll").offsetTop, behavior: "smooth" }); return; }
+  if (ds.mode) st.mode = ds.mode;
+  if (ds.tab) { st.tab = ds.tab; st.q = ""; st.drawer = false; app.querySelectorAll("[data-keep]").forEach((x) => { if (x.tagName === "MAIN") x.scrollTop = 0; }); }
+  if (ds.group) { const first = PAGES.find((p) => p.group === ds.group); if (!(st.tab.startsWith("page:") && PAGES.find((p) => "page:" + p.name === st.tab).group === ds.group)) st.tab = "page:" + first.name; st.q = ""; }
+  if (ds.owned) st.owned = ds.owned;
+  if (ds.rar) st.rar.has(ds.rar) ? st.rar.delete(ds.rar) : st.rar.add(ds.rar);
+  if (ds.bulk) st.bulk = ds.bulk;
+  switch (ds.act) {
+    case "menu": st.menu = !st.menu; break;
+    case "export": toast("Export: would download breeding-helper-collection.json"); break;
+    case "import": toast("Import: would pick a file, validate it, then warn before replacing your Collection"); break;
+    case "select": st.select = !st.select; if (!st.select) st.sel.clear(); break;
+    case "cancelsel": st.select = false; st.sel.clear(); break;
+    case "selall": app.querySelectorAll(".scroll .tile").forEach((x) => st.sel.add(x.dataset.n)); break;
+    case "mark": bulk(true); break;
+    case "unmark": bulk(false); break;
+    case "undo": for (const [n, prev] of st.undo || []) prev ? DV.coll.set(n, prev) : DV.coll.delete(n); st.undo = null; bn = null; st.toast = null; break;
+    case "graph": st.overlay = { kind: "graph", page: ds.page }; break;
+    case "close": st.overlay = null; break;
+    case "sheet": st.sheet = true; break;
+    case "closesheet": st.sheet = false; break;
+    case "drawer": st.drawer = !st.drawer; break;
+  }
+  render();
+});
+let qT = 0;
+app.addEventListener("input", (e) => { if (e.target.id !== "q") return; clearTimeout(qT); qT = setTimeout(() => { st.q = e.target.value.trim(); render(); }, 150); });
+// Long-press a tile to enter select mode (variant C only; A and B use the Select button).
+let lpT = 0, lpXY = null;
+app.addEventListener("pointerdown", (e) => {
+  const t = e.target.closest(".tile"); if (!t || st.variant !== "C" || st.select || e.target.closest("[data-tick]")) return;
+  lpXY = [e.clientX, e.clientY];
+  lpT = setTimeout(() => { st.select = true; st.sel.add(t.dataset.n); suppressClick = true; if (navigator.vibrate) navigator.vibrate(20); render(); }, 500);
+});
+const lpCancel = () => clearTimeout(lpT);
+app.addEventListener("pointerup", lpCancel); app.addEventListener("pointercancel", lpCancel);
+app.addEventListener("pointermove", (e) => { if (lpXY && Math.hypot(e.clientX - lpXY[0], e.clientY - lpXY[1]) > 8) lpCancel(); });
+app.addEventListener("contextmenu", (e) => { if (e.target.closest(".tile")) e.preventDefault(); });
+
+// ---------- switcher
+const keys = Object.keys(VARIANTS);
+const setVariant = (v) => { st.variant = v; st.overlay = null; st.sheet = false; st.drawer = false; render(); };
+$("prev").onclick = () => setVariant(keys[(keys.indexOf(st.variant) + keys.length - 1) % keys.length]);
+$("next").onclick = () => setVariant(keys[(keys.indexOf(st.variant) + 1) % keys.length]);
+$("phone").onclick = () => { document.body.classList.toggle("phone"); render(); };
+$("preset").onchange = () => { DV.preset($("preset").value); bn = null; render(); };
+addEventListener("keydown", (e) => {
+  if (e.key === "Escape") { st.overlay = null; st.sheet = false; st.drawer = false; st.menu = false; return render(); }
+  if (e.target.closest("input,textarea,select,[contenteditable]")) return;
+  if (e.key === "ArrowLeft") $("prev").click(); if (e.key === "ArrowRight") $("next").click();
+});
+window.onerror = (m) => document.body.insertAdjacentHTML("afterbegin", `<pre style="color:red;position:fixed;top:0;z-index:99;background:#fff">${m}</pre>`);
+if (q0.get("phone")) document.body.classList.add("phone");
+DV.preset("mid");
+render();
+</script>
+</body>
+</html>
