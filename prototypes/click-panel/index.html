@@ -1,0 +1,549 @@
+<!doctype html>
+<!--
+  PROTOTYPE (throwaway) for "Click panel layout in the bottom-up graphs" (#15).
+  Three variants of the click panel on a real bottom-up Focus tree, switchable via ?variant=A|B|C and the bottom bar:
+    A  Side sheet   : docked panel on the right (bottom sheet on a phone); text lists, pairs grouped by parent.
+    B  Popover      : a compact card next to the tapped node; headline + top 3, "Show all" expands in place.
+    C  Tile tray    : a dock under the graph; pairs, carriers and suggestions as game-style tiles with ownership ticks.
+  Same data and rules as graph-views (../graph-views/data.js + logic.js), art from ../menu-layout/images.js.
+  Collection lives in memory only. Open this file directly in a browser.
+  URL: ?variant=A&target=Mesmer&form=normal&preset=mid
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Click Panel Prototype</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dagre/0.8.5/dagre.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
+<script src="../graph-views/data.js"></script>
+<script src="../graph-views/logic.js"></script>
+<script src="../menu-layout/images.js"></script>
+<style>
+  :root { color-scheme:light; --bg:#f6f5f2; --fg:#1d1d1f; --muted:#6b6b70; --card:#fff; --line:#d9d7d0; --own:#2e7d32; --rift:#7b1fa2; --accent:#f2b705; --bad:#c62828; --warn:#b26a00; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme:dark; --bg:#16161a; --fg:#ececf0; --muted:#9a9aa3; --card:#212127; --line:#383840; --bad:#ef6c6c; --warn:#f0a840; } }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.4 system-ui, sans-serif; background:var(--bg); color:var(--fg); height:100vh; height:100dvh; display:flex; flex-direction:column; overflow:hidden; }
+  button, input, select { font:inherit; color:var(--fg); }
+  button { cursor:pointer; padding:4px 10px; border:1px solid var(--line); border-radius:8px; background:var(--card); white-space:nowrap; }
+  button.primary { background:var(--own); color:#fff; border-color:var(--own); }
+  input.search { padding:5px 9px; border:1px solid var(--line); border-radius:8px; background:var(--card); min-width:0; width:100%; }
+  header { display:flex; gap:8px; align-items:center; padding:8px 12px; border-bottom:1px solid var(--line); background:var(--card); flex-wrap:wrap; }
+  header b { margin-right:6px; }
+  header select, header input { padding:4px 6px; border:1px solid var(--line); border-radius:8px; background:var(--bg); }
+  .muted { color:var(--muted); }
+  .ok { color:var(--own); font-weight:600; }
+  .bad { color:var(--bad); font-weight:600; }
+  .warn { color:var(--warn); font-weight:600; }
+  .lbl { font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin:12px 0 4px; }
+  .badge { display:inline-block; font-size:11px; padding:1px 6px; border-radius:4px; background:var(--bg); border:1px solid var(--line); margin:1px; }
+  .chip { display:inline-flex; align-items:center; gap:3px; padding:1px 7px 1px 3px; border-radius:10px; font-size:12px; border:1px solid var(--line); margin:1px 2px; background:var(--card); }
+  .chip img { width:16px; height:16px; }
+  .chip.miss { border-color:var(--bad); color:var(--bad); }
+  .chip.cov { border-color:var(--own); }
+  a.dl { color:inherit; text-decoration:underline dotted; cursor:pointer; }
+  #wrap { flex:1; display:flex; min-height:0; position:relative; }
+  #graphcol { flex:1; display:flex; flex-direction:column; min-width:0; }
+  #main { flex:1; position:relative; min-height:0; }
+  #cy { position:absolute; inset:0; }
+  .why { position:absolute; left:10px; top:10px; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:6px 10px; z-index:2; max-width:min(460px, calc(100% - 20px)); font-size:13px; }
+  .hint { position:absolute; right:10px; top:10px; z-index:2; font-size:12px; }
+
+  /* tiles (same system as menu-layout) */
+  .tile { position:relative; border:3px solid var(--rc); border-radius:12px; background:var(--card); padding:3px 3px 2px; text-align:center; cursor:pointer; overflow:hidden; width:86px; flex:none; }
+  .tile img { width:100%; aspect-ratio:1; object-fit:contain; display:block; pointer-events:none; }
+  .tile.grey img { filter:grayscale(1) opacity(.5); }
+  .tile.breed::before { content:""; position:absolute; inset:0; z-index:3; pointer-events:none;
+    background:linear-gradient(135deg, rgba(255,255,255,.22), rgba(255,255,255,.04) 35%, rgba(255,255,255,.18) 55%, rgba(255,255,255,.04) 80%, rgba(255,255,255,.22));
+    background-size:250% 250%; mix-blend-mode:screen; animation:drift 7s ease-in-out infinite alternate; }
+  @keyframes drift { 0% { background-position:0% 0%; } 100% { background-position:100% 100%; } }
+  @media (prefers-reduced-motion: reduce) { .tile.breed::before { animation:none; } }
+  .tile .nm { font-size:11px; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tile .note { font-size:10px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tile .po { position:absolute; top:30%; left:0; right:0; background:#000b; color:#fff; font-size:10px; font-weight:600; padding:1px 2px; z-index:4; }
+  .tile .tag { position:absolute; top:3px; left:3px; background:var(--accent); color:#000; font-size:10px; font-weight:700; border-radius:6px; padding:0 5px; z-index:4; }
+  .tile .ticks { display:flex; gap:2px; justify-content:center; margin-top:2px; position:relative; z-index:5; }
+  .tile .ticks button { font-size:10px; padding:0 5px; border-radius:6px; color:var(--muted); line-height:16px; }
+  .tile .ticks button.on { background:var(--own); color:#fff; border-color:var(--own); }
+  .tile .ticks button.rf.on { background:var(--rift); border-color:var(--rift); }
+  .tile.sm { width:64px; border-width:2px; border-radius:10px; }
+  .tile.sm .nm { font-size:10px; }
+
+  /* ---------- A: side sheet */
+  #sheet { width:360px; flex:none; border-left:1px solid var(--line); background:var(--card); overflow:auto; padding:12px 14px 80px; display:none; }
+  #sheet.open { display:block; }
+  #sheet h2 { font-size:17px; margin:0; }
+  .hd { display:flex; gap:10px; align-items:center; margin-bottom:6px; }
+  .hd img { width:54px; height:54px; object-fit:contain; border:3px solid var(--rc); border-radius:10px; background:var(--bg); }
+  .hd img.grey { filter:grayscale(1) opacity(.55); }
+  .status { padding:6px 8px; border-radius:8px; background:var(--bg); margin:6px 0; }
+  .grp { border-bottom:1px solid var(--line); padding:5px 0; }
+  .grp > b { display:block; font-size:13px; }
+  .grp .with { font-size:13px; color:var(--muted); }
+  .grp .with span { color:var(--fg); }
+  ul.plain { list-style:none; padding:0; margin:4px 0; }
+  ul.plain li { padding:3px 0; border-bottom:1px solid var(--line); display:flex; gap:6px; align-items:center; }
+  ul.plain li img { width:24px; height:24px; object-fit:contain; }
+  ul.plain li img.grey { filter:grayscale(1) opacity(.55); }
+  ul.plain li .r { margin-left:auto; }
+  .ticks2 button { font-size:11px; padding:0 6px; border-radius:6px; color:var(--muted); }
+  .ticks2 button.on { background:var(--own); color:#fff; border-color:var(--own); }
+  .ticks2 button.rf.on { background:var(--rift); border-color:var(--rift); }
+  details summary { cursor:pointer; color:var(--muted); margin-top:6px; }
+
+  /* ---------- B: popover */
+  #pop { position:absolute; z-index:20; width:300px; max-height:70%; overflow:auto; background:var(--card); border:1px solid var(--line); border-radius:12px; box-shadow:0 10px 30px #0004; padding:10px 12px; display:none; }
+  #pop.open { display:block; }
+  #pop h2 { font-size:15px; margin:0; }
+  #pop .head { font-size:15px; margin:6px 0; }
+  #pop .top3 li { font-size:13px; }
+  #pop .more { margin-top:6px; width:100%; }
+  #pop .x { position:absolute; top:6px; right:6px; border:none; background:none; font-size:16px; }
+
+  /* ---------- C: tile tray */
+  #tray { flex:none; border-top:2px solid var(--line); background:var(--card); display:none; flex-direction:column; max-height:48%; }
+  #tray.open { display:flex; }
+  .trhead { display:flex; gap:10px; align-items:center; padding:8px 12px 4px; flex-wrap:wrap; }
+  .trhead h2 { font-size:15px; margin:0; }
+  .trhead .search { width:180px; }
+  .trbody { overflow:auto; padding:4px 12px 12px; }
+  .row { display:flex; gap:10px; overflow-x:auto; padding:4px 0 8px; scrollbar-width:thin; }
+  .pair { display:flex; align-items:center; gap:3px; flex:none; padding:4px; border:1px solid var(--line); border-radius:12px; background:var(--bg); }
+  .pair .plus { font-weight:700; color:var(--muted); }
+  .pair .x2 { font-size:10px; color:var(--muted); writing-mode:vertical-rl; }
+  .chev { color:var(--muted); font-size:12px; }
+
+  #switcher { position:fixed; bottom:14px; left:50%; transform:translateX(-50%); background:#111; color:#fff; border-radius:999px; padding:6px 8px; display:flex; gap:8px; align-items:center; box-shadow:0 6px 24px rgba(0,0,0,.35); z-index:60; font-size:13px; }
+  #switcher button { background:#333; color:#fff; border:none; border-radius:999px; width:28px; height:28px; padding:0; }
+  body.C #switcher { bottom:auto; top:60px; }
+
+  @media (max-width: 700px) {
+    #sheet { position:fixed; left:0; right:0; bottom:0; width:auto; height:58vh; z-index:30; border-left:none; border-top:1px solid var(--line); border-radius:16px 16px 0 0; box-shadow:0 -8px 24px #0003; }
+    #pop { left:8px !important; right:8px; top:auto !important; bottom:60px; width:auto; max-height:55%; }
+    .hint { display:none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <b>🐉 Click panel <span class="muted">(prototype)</span></b>
+  <select id="scen" title="Scenario"></select>
+  <label>Collection <select id="preset"><option value="new">New player (12)</option><option value="mid">Mid-game (~150)</option><option value="empty">Empty</option></select></label>
+  <input id="target" list="names" placeholder="Target…" size="14" />
+  <select id="form"><option value="normal">Normal</option><option value="rift">Rift form</option></select>
+  <datalist id="names"></datalist>
+</header>
+<div id="wrap"><div id="graphcol"><div id="main"></div><div id="tray"></div></div><aside id="sheet"></aside></div>
+<div id="switcher"><button id="prev">←</button><span id="vlabel"></span><button id="next">→</button></div>
+
+<script>
+const DV = window.DV, S = DV.S;
+const $ = (id) => document.getElementById(id);
+const VARIANTS = { A: "Side sheet", B: "Popover", C: "Tile tray" };
+const RC = { Primary:"#cfe8cf", Hybrid:"#88ff77", Rare:"#0099FF", Epic:"#8811EE", Galaxy:"#00DDFF", Gemstone:"#FF7711", Legendary:"#EE2200", Mythic:"#FF22BB" };
+const SIL = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#888" opacity=".35"/></svg>');
+const IMG = (d) => (window.IMAGES && IMAGES[d.name]) || SIL;
+const EIMG = (e) => (window.ELEMENT_ICONS && ELEMENT_ICONS[e]) || SIL;
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" })[c]);
+const SCENARIOS = [
+  ["Mesmer · Mid-game (deep tree, named parents)", "mid", "Mesmer", "normal"],
+  ["Gold · Mid-game (Route met, 200+ pairs)", "mid", "Gold", "normal"],
+  ["Sailback · Mid-game (Elements covered, no Valid pair)", "mid", "Sailback", "normal"],
+  ["Apocalypse · New player (missing Elements)", "new", "Apocalypse", "normal"],
+  ["Scorch Rift form · Mid-game", "mid", "Scorch", "rift"],
+  ["Monte · New player", "new", "Monte", "normal"],
+];
+const q0 = new URLSearchParams(location.search);
+const st = { variant: q0.get("variant") || "A", target: q0.get("target") || "Mesmer", form: q0.get("form") || "normal", preset: q0.get("preset") || "mid", sel: null, q: "", expanded: false };
+let cy = null, bnow = null;
+
+// ---------- header
+$("names").innerHTML = S.dragons.map((d) => `<option value="${esc(d.name)}">`).join("");
+$("scen").innerHTML = `<option value="">Scenario…</option>` + SCENARIOS.map((s, i) => `<option value="${i}">${s[0]}</option>`).join("");
+$("scen").onchange = () => { const s = SCENARIOS[$("scen").value]; if (!s) return; st.preset = s[1]; DV.preset(s[1]); setTarget(s[2], s[3]); };
+$("preset").onchange = () => { st.preset = $("preset").value; DV.preset(st.preset); changed(); };
+$("target").onchange = () => { if (DV.byName.has($("target").value)) setTarget($("target").value, $("form").value); };
+$("form").onchange = () => setTarget(st.target, $("form").value);
+function setTarget(name, form) {
+  const d = DV.byName.get(name); if (form === "rift" && !d.hasRiftForm) form = "normal";
+  st.target = name; st.form = form; st.sel = null; render();
+}
+function changed() { bnow = null; render(true); }
+function breedSet() { if (!bnow) { bnow = new Set(DV.allBreedableNow().map((x) => x.d.name + "|" + x.form)); } return bnow; }
+const isBreed = (d, form) => breedSet().has(d.name + "|" + (form || "normal"));
+const formOf = (rift) => (rift ? "rift" : "normal");
+
+// ---------- switcher
+const keys = Object.keys(VARIANTS);
+$("prev").onclick = () => { st.variant = keys[(keys.indexOf(st.variant) + 2) % 3]; render(true); };
+$("next").onclick = () => { st.variant = keys[(keys.indexOf(st.variant) + 1) % 3]; render(true); };
+addEventListener("keydown", (e) => { if (e.target.closest("input,textarea,select,[contenteditable]")) return; if (e.key === "ArrowLeft") $("prev").click(); if (e.key === "ArrowRight") $("next").click(); if (e.key === "Escape") select(null); });
+
+// ---------- view model: what a click panel knows about a node (shared by all variants)
+function allPairs(r, rift) {
+  rift = rift || r.rift === "only";
+  const c = DV.candidates(rift), out = [];
+  for (let i = 0; i < c.length; i++) for (let j = i; j < c.length; j++) {
+    const a = c[i], b = c[j];
+    if (r.parents && r.parents.length === 2 && [a.name, b.name].sort().join() !== [...r.parents].sort().join()) continue;
+    if (r.parents && r.parents.length === 1 && a.name !== r.parents[0] && b.name !== r.parents[0]) continue;
+    if (!whyInvalid(r, a, b)) out.push([a, b]);
+  }
+  // Simplest first: fewest breeding elements between them, then earliest release.
+  const w = (p) => p[0].breedingElements.length + p[1].breedingElements.length;
+  return out.sort((x, y) => w(x) - w(y) || x[0].order + x[1].order - y[0].order - y[1].order);
+}
+function whyInvalid(r, a, b) {
+  if (!a.canBeParent || !b.canBeParent) return "x";
+  if (S.opposites.some(([x, y]) => (a.name === x && b.name === y) || (a.name === y && b.name === x))) return "x";
+  const pool = new Set([...a.breedingElements, ...b.breedingElements]);
+  if ((r.elements || []).some((e) => !pool.has(e))) return "x";
+  if (r.minDistinctElements && pool.size < r.minDistinctElements) return "x";
+  if ((r.elementOnBothParents || []).some((e) => !a.breedingElements.includes(e) || !b.breedingElements.includes(e))) return "x";
+  return null;
+}
+function suggestions(r, rift, ownerName) {
+  const owned = DV.candidates(rift);
+  const out = [];
+  for (const d of S.dragons) {
+    if (!d.canBeParent || owned.includes(d) || d.name === ownerName || d.name === st.target) continue;
+    if (rift && !(d.isRiftDragon || d.hasRiftForm)) continue;
+    const partner = owned.find((o) => {
+      if (r.parents && r.parents.length && !r.parents.includes(d.name) && !r.parents.includes(o.name)) return false;
+      if (r.parents && r.parents.length === 2 && [d.name, o.name].sort().join() !== [...r.parents].sort().join()) return false;
+      return !whyInvalid(r, d, o);
+    });
+    if (partner) out.push({ d, with: partner, now: isBreed(d, formOf(rift)), locked: DV.outOfRotation(d) || DV.purchaseOnly.has(d.name) });
+  }
+  return out.sort((a, b) => b.now - a.now || a.locked - b.locked || a.d.breedingElements.length - b.d.breedingElements.length || a.d.order - b.d.order).slice(0, 12);
+}
+function vm(n) {
+  if (n.type === "dragon") {
+    const d = DV.byName.get(n.name), form = n.form || "normal";
+    const b = DV.breedableNow(d, form);
+    let status, tone;
+    if (DV.owns(d.name, form)) { status = "Owned" + (form === "rift" && !d.isRiftDragon ? " (Rift form)" : ""); tone = "ok"; }
+    else if (b) { status = `Breedable now: ${b.pair[0].name} + ${b.pair[1].name}`; tone = "ok"; }
+    else {
+      const why = [];
+      if (DV.outOfRotation(d)) why.push("not in the Limited rotation");
+      if (DV.purchaseOnly.has(d.name)) why.push("Purchase only right now");
+      if (d.routes.every((r) => r.kind !== "Bred")) why.push("no Bred Route (" + d.routes.map((r) => r.kind).join(", ") + ")");
+      if (!why.length) why.push("no Route is met by a Valid pair yet");
+      status = "Can't breed now: " + why.join("; "); tone = "bad";
+    }
+    return { kind: "dragon", d, form, status, tone, isTarget: d.name === st.target && form === st.form };
+  }
+  if (n.type === "route") {
+    const r = n.r, rift = n.rift, owner = DV.byName.get(n.owner);
+    const base = { kind: "route", r, rift, owner, ownerForm: n.ownerForm, badges: DV.conditionBadges(r), purchaseOnly: n.purchaseOnly, oor: n.oor, text: DV.routeText(r) };
+    if (r.kind !== "Bred") return { ...base, state: "other" };
+    const pairs = allPairs(r, rift);
+    if (pairs.length) return { ...base, state: "met", pairs };
+    const uncovered = (r.elements || []).concat(r.elementOnBothParents || []).filter((e) => !DV.elementCovered(e, rift));
+    const missingParents = (r.parents || []).filter((p) => !DV.candidates(rift).some((c) => c.name === p));
+    if (uncovered.length || missingParents.length)
+      return { ...base, state: "missing", uncovered: [...new Set(uncovered)].map((e) => ({ e, basic: DV.basicDragon(e)[0] })), missingParents: missingParents.map((p) => DV.byName.get(p)), sugg: suggestions(r, rift, n.owner) };
+    return { ...base, state: "nopair", reason: DV.noPairReason(r, rift), sugg: suggestions(r, rift, n.owner) };
+  }
+  if (n.type === "element") {
+    const carriers = DV.candidates(n.rift).filter((d) => d.breedingElements.includes(n.name))
+      .sort((a, b) => a.breedingElements.length - b.breedingElements.length || a.order - b.order);
+    const all = DV.basicDragon(n.name).filter((d) => !n.rift || d.isRiftDragon || d.hasRiftForm);
+    return { kind: "element", e: n.name, rift: n.rift, carriers, basic: all[0], alts: all.slice(1, 25), nAlts: Math.max(0, all.length - 1) };
+  }
+  if (n.type === "friend") return { kind: "note", title: n.name, text: "A friend's Dragon, used in the Cooperative cave. Never checked against your Collection and never expanded." };
+  if (n.type === "rule") return { kind: "note", title: n.name, text: "Not a specific Element: any pair whose combined elements meet the rule. Tap the Route for Valid pairs." };
+}
+const routeHead = (v) => v.state === "met" ? [`✔ Met · ${v.pairs.length} Valid pair${v.pairs.length > 1 ? "s" : ""}`, "ok"]
+  : v.state === "nopair" ? ["No Valid pair yet", "warn"] : v.state === "missing" ? ["Not met: something's missing", "bad"] : [v.r.kind, "muted"];
+const formLbl = (d, form) => (form === "rift" && !d.isRiftDragon ? " (Rift form)" : "");
+
+// ---------- graph (bottom-up Focus tree, tile-style nodes)
+function cyStyle() {
+  const fg = getComputedStyle(document.body).color, card = getComputedStyle(document.body).getPropertyValue("--card");
+  return [
+    { selector: "node", style: { label: "data(label)", "font-size": 11, color: fg, "text-valign": "bottom", "text-margin-y": 4, "text-wrap": "wrap", "text-max-width": 130, "min-zoomed-font-size": 6 } },
+    { selector: "node.dragon", style: { shape: "round-rectangle", width: 62, height: 62, "background-color": card, "background-image": "data(img)", "background-fit": "contain", "background-image-crossorigin": "anonymous", "border-width": 4, "border-color": "data(rc)" } },
+    // Cytoscape can't greyscale an image; the real app uses pre-made greyscale art. Here: faded art.
+    { selector: "node.dragon.notown", style: { "background-image-opacity": 0.35, "background-color": "#9e9e9e" } },
+    { selector: "node.dragon.breed", style: { "underlay-color": "#ffffff", "underlay-opacity": 0.85, "underlay-padding": 6, "underlay-shape": "round-rectangle" } },
+    { selector: "node.dragon.root", style: { width: 92, height: 92, "border-width": 6, "font-size": 14, "font-weight": "bold" } },
+    { selector: "node.element", style: { shape: "round-rectangle", width: 40, height: 40, "background-opacity": 0, "background-image": "data(img)", "background-fit": "contain", "background-image-crossorigin": "anonymous", "font-weight": "bold" } },
+    { selector: "node.element.uncovered", style: { "border-width": 3, "border-color": "#c62828", "border-style": "dashed" } },
+    { selector: "node.route", style: { shape: "round-rectangle", width: "label", height: "label", padding: 6, "text-valign": "center", "text-margin-y": 0, "font-size": 11, color: "#111", "background-color": "#e0e0e0", "border-width": 1, "border-color": "#999", "text-max-width": 170 } },
+    { selector: "node.route.met", style: { "background-color": "#a5d6a7", "border-color": "#2e7d32" } },
+    { selector: "node.route.nopair", style: { "background-color": "#ffe0a3", "border-color": "#b26a00" } },
+    { selector: "node.route.missing", style: { "background-color": "#f3d0d0", "border-color": "#c62828" } },
+    { selector: "node.friend", style: { shape: "hexagon", "background-color": "#cfd8dc", width: 40, height: 36 } },
+    { selector: "node.rule", style: { shape: "tag", "background-color": "#ffe082", width: 34, height: 22 } },
+    { selector: ".dim", style: { opacity: 0.35 } },
+    { selector: "edge", style: { width: 1.5, "line-color": "#999", "curve-style": "bezier", "target-arrow-shape": "triangle", "target-arrow-color": "#999", "arrow-scale": 0.8 } },
+    { selector: "edge.parent", style: { width: 2.5, "line-color": "#555", "target-arrow-color": "#555" } },
+    { selector: "edge.evolves", style: { "line-style": "dashed", "line-color": "#8e24aa", "target-arrow-color": "#8e24aa" } },
+    { selector: "edge.coop", style: { "line-style": "dotted" } },
+    { selector: "edge[label]", style: { label: "data(label)", "font-size": 9, color: fg } },
+    { selector: "node.picked", style: { "overlay-color": "#f2b705", "overlay-opacity": 0.35, "overlay-padding": 6 } },
+    { selector: "edge.picked", style: { "line-color": "#f2b705", "target-arrow-color": "#f2b705", width: 4 } },
+  ];
+}
+function graphElements() {
+  const f = DV.focus(st.target, st.form);
+  const els = [];
+  for (const n of f.nodes) {
+    let label = n.name || "", cls = n.type;
+    const data = { id: n.id, n };
+    if (n.type === "dragon") {
+      const d = n.d; data.img = IMG(d); data.rc = RC[d.rarity] || "#999";
+      cls += (n.owned ? " own" : " notown") + (!n.owned && isBreed(d, n.form) ? " breed" : "") + (n.root ? " root" : "") + (n.dimmed ? " dim" : "");
+      label = d.name + formLbl(d, n.form) + (n.badges ? "\n" + n.badges.join(" ") : "") + (n.root && n.owned ? "\nOwned" : "") + (n.dimmed ? "\nNot in rotation" : "");
+    }
+    if (n.type === "route") {
+      const v = vm({ ...n });
+      cls += " " + v.state + (n.dimmed ? " dim" : "");
+      const bits = [routeHead(v)[0].replace("Not met: something's missing", "Not met")];
+      if (n.kind !== "Bred") bits[0] = n.kind === "Evolved" ? "Evolves" : n.kind;
+      if (n.purchaseOnly) bits.push("🔒 Purchase only");
+      if (n.oor.length) bits.push("⏳ Not in rotation");
+      bits.push(...DV.conditionBadges(n.r));
+      label = bits.join("\n");
+    }
+    if (n.type === "element") { data.img = EIMG(n.name); if (!n.covered) cls += " uncovered"; label = n.name + (n.rift ? " (Rift)" : ""); }
+    data.label = label;
+    els.push({ data, classes: cls });
+  }
+  for (const e of f.edges) els.push({ data: { id: e.source + ">" + e.target, source: e.source, target: e.target, label: e.label }, classes: e.kind });
+  return { els, f };
+}
+// The Focus tree hands route nodes their owner; give them the owner's form too.
+function mount(keepView) {
+  const view = keepView && cy ? { zoom: cy.zoom(), pan: { ...cy.pan() } } : null;
+  if (cy) { cy.destroy(); cy = null; }
+  const { els, f } = graphElements();
+  for (const el of els) if (el.data.n && el.data.n.type === "route") { const o = f.nodes.find((x) => x.type === "dragon" && x.name === el.data.n.owner && f.edges.some((e) => e.source === el.data.id && e.target === x.id)); el.data.n.ownerForm = o ? o.form : "normal"; }
+  $("main").innerHTML = `<div id="cy"></div><div class="why" id="why"></div><div class="hint muted">Tap a Route pill, Element or Dragon · Esc closes</div>`;
+  cy = cytoscape({ container: $("cy"), elements: els, style: cyStyle(), layout: { name: "dagre", rankDir: "BT", nodeSep: 26, rankSep: 60, padding: 30 }, wheelSensitivity: 0.25, minZoom: 0.1, maxZoom: 2.5 });
+  if (view) cy.viewport(view);
+  else if (cy.zoom() > 1) { cy.zoom(1); cy.center(); }
+  cy.on("tap", "node", (e) => select(e.target.id()));
+  cy.on("tap", (e) => { if (e.target === cy) select(null); });
+  cy.on("viewport", () => { if (st.variant === "B") placePop(); });
+  const rv = vm(f.nodes.find((n) => n.root));
+  $("why").innerHTML = `<b>${esc(st.target)}${formLbl(DV.byName.get(st.target), st.form)}</b> · <span class="${rv.tone}">${esc(rv.status)}</span>`;
+}
+
+// ---------- selection
+function select(id) {
+  st.sel = id; st.q = ""; st.expanded = false;
+  if (cy) {
+    cy.elements().removeClass("picked");
+    if (id) { const n = cy.getElementById(id); n.addClass("picked"); if (n.data("n").type === "route") n.incomers("edge").addClass("picked"); }
+  }
+  drawPanel();
+}
+function selNode() { return st.sel && cy && cy.getElementById(st.sel).nonempty() ? cy.getElementById(st.sel).data("n") : null; }
+// A Dragon named in a panel: select its node if it's in the tree, otherwise make it the Target.
+function goDragon(name, form) {
+  const id = "D:" + name + (form === "rift" && !DV.byName.get(name).isRiftDragon ? "~rift" : "");
+  if (cy && cy.getElementById(id).nonempty()) { select(id); cy.animate({ center: { eles: cy.getElementById(id) } }, { duration: 300 }); }
+  else setTarget(name, form);
+}
+
+// ---------- shared bits
+function ticks(d, cls) {
+  const one = d.isRiftDragon || !d.hasRiftForm;
+  return `<span class="${cls}">` + (one ? `<button data-tick="normal" data-d="${esc(d.name)}" class="${DV.owns(d.name, "normal") ? "on" : ""}">✔ Owned</button>`
+    : `<button data-tick="normal" data-d="${esc(d.name)}" class="${DV.owns(d.name, "normal") ? "on" : ""}">Normal</button><button data-tick="rift" data-d="${esc(d.name)}" class="rf ${DV.owns(d.name, "rift") ? "on" : ""}">Rift</button>`) + `</span>`;
+}
+function tile(d, form, opt = {}) {
+  const own = DV.owns(d.name, form), br = !own && isBreed(d, form);
+  return `<div class="tile ${opt.sm ? "sm" : ""} ${own ? "" : "grey"} ${br ? "breed" : ""}" data-go="${esc(d.name)}" data-form="${form}" style="--rc:${RC[d.rarity] || "#999"}" title="${esc(d.name)}${br ? " · Breedable now" : ""}">
+    ${opt.tag ? `<span class="tag">${opt.tag}</span>` : ""}${DV.purchaseOnly.has(d.name) && !own ? `<span class="po">Purchase only</span>` : DV.outOfRotation(d) && !own ? `<span class="po">Not available</span>` : ""}
+    <img loading="lazy" src="${IMG(d)}" alt=""><div class="nm">${esc(d.name)}</div>${opt.note ? `<div class="note">${esc(opt.note)}</div>` : ""}${opt.noticks ? "" : `<div class="ticks">${ticks(d, "")}</div>`}</div>`;
+}
+const dl = (d, form) => `<a class="dl" data-go="${esc(d.name)}" data-form="${form}">${esc(d.name)}</a>`;
+const mini = (d, form) => `<img src="${IMG(d)}" class="${DV.owns(d.name, form) ? "" : "grey"}" alt="">`;
+const reqChips = (v) => (v.r.elements || []).concat(v.r.elementOnBothParents || []).map((e) => `<span class="chip ${DV.elementCovered(e, v.rift) ? "cov" : "miss"}"><img src="${EIMG(e)}" alt="">${esc(e)}</span>`).join("")
+  + (v.r.parents || []).map((p) => `<span class="chip">${esc(p)}</span>`).join("");
+const routeExtras = (v) => `${v.rift ? `<div class="badge" style="color:var(--rift)">Rift breeding: only Rift forms and Rift dragons count</div>` : ""}
+  ${v.badges.length ? `<div>${v.badges.map((b) => `<span class="badge">${b}</span>`).join("")} <span class="muted" style="font-size:11px">conditions aren't checked</span></div>` : ""}
+  ${v.purchaseOnly ? `<p class="bad">🔒 Purchase only right now: breeding is switched off for ${esc(v.owner.name)}</p>` : ""}
+  ${v.oor && v.oor.length ? `<p class="bad">⏳ Not in rotation: ${v.oor.map(esc).join(", ")}. Locked unless you get it another way.</p>` : ""}`;
+function wire(root) {
+  root.querySelectorAll("[data-tick]").forEach((b) => (b.onclick = (e) => { e.stopPropagation(); DV.setOwned(b.dataset.d, b.dataset.tick, !DV.owns(b.dataset.d, b.dataset.tick)); changed(); }));
+  root.querySelectorAll("[data-go]").forEach((a) => (a.onclick = (e) => { if (e.target.closest("[data-tick]")) return; e.stopPropagation(); goDragon(a.dataset.go, a.dataset.form); }));
+  root.querySelectorAll("[data-target]").forEach((a) => (a.onclick = () => setTarget(a.dataset.target, a.dataset.form)));
+  root.querySelectorAll("[data-x]").forEach((a) => (a.onclick = () => select(null)));
+  root.querySelectorAll("[data-more]").forEach((a) => (a.onclick = () => { st.expanded = !st.expanded; drawPanel(); }));
+  root.querySelectorAll("input.search").forEach((inp) => {
+    inp.oninput = () => { st.q = inp.value; const s = inp.selectionStart; drawPanel(); const again = document.querySelector(`#${root.id} input.search`); if (again) { again.focus(); again.setSelectionRange(s, s); } };
+  });
+}
+const matchQ = (...names) => !st.q || names.some((n) => n.toLowerCase().includes(st.q.toLowerCase()));
+
+// ---------- A: side sheet
+function panelA(v) {
+  if (v.kind === "note") return `<h2>${esc(v.title)}</h2><p>${esc(v.text)}</p>`;
+  if (v.kind === "dragon") {
+    const d = v.d;
+    return `<div class="hd"><img src="${IMG(d)}" class="${DV.owns(d.name, v.form) ? "" : "grey"}" style="--rc:${RC[d.rarity]}"><div><h2>${esc(d.name)}${formLbl(d, v.form)}</h2>
+      <div class="muted">${d.rarity}${d.isLimited ? " · limited" : ""}</div>${ticks(d, "ticks2")}</div></div>
+      <div class="status ${v.tone}">${esc(v.status)}</div>
+      <div class="lbl">Breeds as</div><div>${d.breedingElements.map((e) => `<span class="chip"><img src="${EIMG(e)}">${e}</span>`).join("")}</div>
+      <div class="lbl">Routes</div><ul class="plain">${d.routes.map((r) => `<li>${r.kind}: ${esc(DV.routeText(r))}</li>`).join("")}</ul>
+      ${v.isTarget ? "" : `<p><button class="primary" data-target="${esc(d.name)}" data-form="${v.form}">🎯 Make this the Target</button></p>`}`;
+  }
+  if (v.kind === "route") {
+    const [head, tone] = routeHead(v);
+    let h = `<h2>Route to ${esc(v.owner.name)}${formLbl(v.owner, v.ownerForm)}</h2><div class="muted">${v.r.kind}</div><div style="margin:6px 0">${reqChips(v)}</div>${routeExtras(v)}
+      <div class="status ${tone}">${head}</div>`;
+    if (v.state === "met") {
+      const form = formOf(v.rift);
+      const groups = new Map();
+      for (const [a, b] of v.pairs) { if (!matchQ(a.name, b.name)) continue; (groups.get(a) || groups.set(a, []).get(a)).push(b); }
+      h += `<input class="search" placeholder="Search ${v.pairs.length} pairs by Dragon…" value="${esc(st.q)}">
+        <div class="lbl">Grouped by parent · simplest first</div>
+        ${[...groups].slice(0, 60).map(([a, bs]) => `<div class="grp"><b>${dl(a, form)}</b><div class="with">with ${bs.slice(0, 14).map((b) => `<span>${dl(b, form)}</span>`).join(", ")}${bs.length > 14 ? ` <span class="muted">+${bs.length - 14} more</span>` : ""}</div></div>`).join("") || `<p class="muted">No pair matches.</p>`}`;
+    }
+    if (v.state === "nopair") h += `<p>${esc(v.reason)}.</p>` + suggA(v);
+    if (v.state === "missing") {
+      h += v.uncovered.map((u) => `<p class="bad">Nothing you own carries <span class="chip miss"><img src="${EIMG(u.e)}">${u.e}</span>${u.basic ? ` <span class="muted" style="font-weight:400">basic dragon:</span> ${dl(u.basic, formOf(v.rift))}` : ""}</p>`).join("");
+      h += v.missingParents.map((p) => `<p class="bad">You don't own the named parent ${dl(p, formOf(v.rift))}</p>`).join("");
+      h += suggA(v);
+    }
+    return h;
+  }
+  if (v.kind === "element") {
+    const form = formOf(v.rift);
+    return `<h2><span class="chip" style="font-size:15px"><img src="${EIMG(v.e)}" style="width:26px;height:26px">${esc(v.e)}</span> Element${v.rift ? " (Rift)" : ""}</h2>
+      ${v.rift ? `<div class="badge" style="color:var(--rift)">Rift breeding: only Rift forms and Rift dragons count</div>` : ""}
+      <div class="status ${v.carriers.length ? "ok" : "bad"}">${v.carriers.length ? `Covered by ${v.carriers.length} Dragon${v.carriers.length > 1 ? "s" : ""} you own` : "You own nothing that carries it"}</div>
+      ${v.carriers.length ? `<input class="search" placeholder="Search…" value="${esc(st.q)}"><ul class="plain">${v.carriers.filter((d) => matchQ(d.name)).slice(0, 40).map((d) => `<li>${mini(d, form)} ${dl(d, form)} <span class="r muted">${d.breedingElements.length} el.</span></li>`).join("")}</ul>` : ""}
+      <div class="lbl">Basic dragon</div>${v.basic ? `<ul class="plain"><li>${mini(v.basic, form)} ${dl(v.basic, form)} <span class="r">${ticks(v.basic, "ticks2")}</span></li></ul>` : "—"}
+      <details><summary>Alternatives (${v.nAlts})</summary><ul class="plain">${v.alts.map((d) => `<li>${mini(d, form)} ${dl(d, form)} <span class="muted">${d.breedingElements.length} el.</span><span class="r">${ticks(d, "ticks2")}</span></li>`).join("")}</ul></details>`;
+  }
+}
+function suggA(v) {
+  const form = formOf(v.rift);
+  return `<div class="lbl">Get one of these to make a Valid pair</div><ul class="plain">${v.sugg.map((s) => `<li>${mini(s.d, form)} ${dl(s.d, form)} <span class="muted">+ your ${esc(s.with.name)}</span>${s.now ? ` <span class="badge ok">Breedable now</span>` : ""}<span class="r">${ticks(s.d, "ticks2")}</span></li>`).join("") || `<li class="muted">None: you need more than one new Dragon</li>`}</ul>`;
+}
+
+// ---------- B: popover (headline + top 3, Show all expands in place)
+function panelB(v) {
+  const x = `<button class="x" data-x>✕</button>`;
+  if (v.kind === "note") return x + `<h2>${esc(v.title)}</h2><p class="muted">${esc(v.text)}</p>`;
+  if (v.kind === "dragon") {
+    const d = v.d;
+    return x + `<h2>${esc(d.name)}${formLbl(d, v.form)}</h2><div class="head ${v.tone}">${esc(v.status)}</div><div>${ticks(d, "ticks2")}</div>
+      ${v.isTarget ? "" : `<button class="more primary" data-target="${esc(d.name)}" data-form="${v.form}">🎯 Make Target</button>`}`;
+  }
+  if (v.kind === "route") {
+    const [head, tone] = routeHead(v), form = formOf(v.rift);
+    let h = x + `<h2>→ ${esc(v.owner.name)}${formLbl(v.owner, v.ownerForm)}</h2><div class="head ${tone}">${head}</div>${routeExtras(v)}`;
+    let items = [], total = 0, more = "";
+    if (v.state === "met") { const ps = v.pairs.filter(([a, b]) => matchQ(a.name, b.name)); total = v.pairs.length; items = ps.map(([a, b]) => `<li>${mini(a, form)}${dl(a, form)} + ${mini(b, form)}${dl(b, form)}</li>`); more = "pairs"; }
+    else if (v.state === "nopair" || v.state === "missing") {
+      if (v.state === "nopair") h += `<div class="muted">${esc(v.reason)}.</div>`;
+      else h += v.uncovered.map((u) => `<div>Missing <b>${u.e}</b>${u.basic ? ` → get ${dl(u.basic, form)}` : ""}</div>`).join("") + v.missingParents.map((p) => `<div>Missing ${dl(p, form)}</div>`).join("");
+      items = v.sugg.map((s) => `<li>${mini(s.d, form)}${dl(s.d, form)} <span class="muted">+ ${esc(s.with.name)}</span>${s.now ? ` <span class="badge ok">now</span>` : ""}</li>`); total = items.length; more = "suggestions";
+      if (items.length) h += `<div class="lbl">Would make a Valid pair</div>`;
+    }
+    if (st.expanded && v.state === "met") h += `<input class="search" placeholder="Search pairs…" value="${esc(st.q)}" style="margin-top:6px">`;
+    h += `<ul class="plain top3">${(st.expanded ? items.slice(0, 200) : items.slice(0, 3)).join("")}</ul>`;
+    if (total > 3) h += `<button class="more" data-more>${st.expanded ? "Show fewer" : `Show all ${total} ${more}`}</button>`;
+    return h;
+  }
+  if (v.kind === "element") {
+    const form = formOf(v.rift);
+    const list = v.carriers.filter((d) => matchQ(d.name));
+    let h = x + `<h2><img src="${EIMG(v.e)}" style="width:22px;vertical-align:middle"> ${esc(v.e)}${v.rift ? " (Rift)" : ""}</h2>
+      <div class="head ${v.carriers.length ? "ok" : "bad"}">${v.carriers.length ? `You own ${v.carriers.length} carrying it` : "You own nothing that carries it"}</div>
+      ${v.basic ? `<div>Basic dragon: ${mini(v.basic, form).replace("<img", "<img style='width:22px;vertical-align:middle'")} ${dl(v.basic, form)} ${DV.owns(v.basic.name, form) ? "<span class='ok'>✔</span>" : ""}</div>` : ""}`;
+    if (st.expanded) h += `<input class="search" placeholder="Search…" value="${esc(st.q)}" style="margin-top:6px"><div class="lbl">Yours</div><ul class="plain">${list.slice(0, 60).map((d) => `<li>${mini(d, form)}${dl(d, form)}</li>`).join("")}</ul>
+      <div class="lbl">Alternatives</div><ul class="plain">${v.alts.map((d) => `<li>${mini(d, form)}${dl(d, form)} <span class="muted">${d.breedingElements.length} el.</span></li>`).join("")}</ul>`;
+    h += `<button class="more" data-more>${st.expanded ? "Show fewer" : `Show yours and ${v.nAlts} alternatives`}</button>`;
+    return h;
+  }
+}
+function placePop() {
+  const pop = $("pop"); if (!pop || !st.sel || !cy) return;
+  if (innerWidth <= 700) return;
+  const n = cy.getElementById(st.sel); if (n.empty()) return;
+  const bb = n.renderedBoundingBox(), W = $("main").clientWidth, H = $("main").clientHeight, pw = pop.offsetWidth, ph = pop.offsetHeight;
+  let left = bb.x2 + 12; if (left + pw > W - 8) left = bb.x1 - pw - 12; if (left < 8) left = Math.min(W - pw - 8, Math.max(8, bb.x1));
+  let top = Math.min(Math.max(8, (bb.y1 + bb.y2) / 2 - 40), H - ph - 8);
+  pop.style.left = left + "px"; pop.style.top = Math.max(8, top) + "px";
+}
+
+// ---------- C: tile tray
+function panelC(v) {
+  const x = `<button data-x title="Close">✕</button>`;
+  if (v.kind === "note") return `<div class="trhead"><h2>${esc(v.title)}</h2><span class="muted">${esc(v.text)}</span><span style="flex:1"></span>${x}</div>`;
+  if (v.kind === "dragon") {
+    const d = v.d;
+    const parents = d.routes.flatMap((r) => r.parents || []).map((p) => DV.byName.get(p)).filter(Boolean);
+    return `<div class="trhead"><h2>${esc(d.name)}${formLbl(d, v.form)}</h2><span class="${v.tone}">${esc(v.status)}</span><span style="flex:1"></span>
+      ${v.isTarget ? "" : `<button class="primary" data-target="${esc(d.name)}" data-form="${v.form}">🎯 Make Target</button>`}${x}</div>
+      <div class="trbody"><div class="row">${tile(d, v.form)}${parents.length ? `<span class="chev" style="align-self:center">needs</span>` + parents.map((p) => tile(p, v.form)).join("") : ""}
+      <div style="align-self:center" class="muted">${d.breedingElements.map((e) => `<span class="chip"><img src="${EIMG(e)}">${e}</span>`).join("")}</div></div></div>`;
+  }
+  if (v.kind === "route") {
+    const [head, tone] = routeHead(v), form = formOf(v.rift);
+    let h = `<div class="trhead"><h2>→ ${esc(v.owner.name)}${formLbl(v.owner, v.ownerForm)}</h2><span class="${tone}">${head}</span>${reqChips(v)}
+      ${v.state === "met" ? `<input class="search" placeholder="Search pairs…" value="${esc(st.q)}">` : ""}<span style="flex:1"></span>${x}</div><div class="trbody">${routeExtras(v)}`;
+    if (v.state === "met") {
+      const ps = v.pairs.filter(([a, b]) => matchQ(a.name, b.name));
+      h += `<div class="lbl">Simplest first · ${ps.length} pair${ps.length === 1 ? "" : "s"}</div><div class="row">${ps.slice(0, 80).map(([a, b]) => `<div class="pair">${tile(a, form, { sm: true, noticks: true })}${a === b ? `<span class="x2">×2</span>` : `<span class="plus">+</span>${tile(b, form, { sm: true, noticks: true })}`}</div>`).join("") || `<span class="muted">No pair matches.</span>`}</div>`;
+    } else if (v.state === "nopair" || v.state === "missing") {
+      if (v.state === "nopair") h += `<div>${esc(v.reason)}.</div>`;
+      if (v.state === "missing" && (v.uncovered.length || v.missingParents.length)) h += `<div class="lbl">Missing</div><div class="row">${v.uncovered.map((u) => u.basic ? tile(u.basic, form, { tag: u.e, note: "basic " + u.e }) : "").join("")}${v.missingParents.map((p) => tile(p, form, { tag: "Parent" })).join("")}</div>`;
+      h += `<div class="lbl">Get one to make a Valid pair (with what you own)</div><div class="row">${v.sugg.map((s) => tile(s.d, form, { note: "+ " + s.with.name })).join("") || `<span class="muted">None: you need more than one new Dragon</span>`}</div>`;
+    }
+    return h + `</div>`;
+  }
+  if (v.kind === "element") {
+    const form = formOf(v.rift);
+    return `<div class="trhead"><h2><img src="${EIMG(v.e)}" style="width:24px;vertical-align:middle"> ${esc(v.e)}${v.rift ? " (Rift)" : ""}</h2>
+      <span class="${v.carriers.length ? "ok" : "bad"}">${v.carriers.length ? `${v.carriers.length} of yours carry it` : "You own nothing that carries it"}</span>
+      <input class="search" placeholder="Search…" value="${esc(st.q)}"><span style="flex:1"></span>${x}</div>
+      <div class="trbody">
+      <div class="lbl">Basic dragon, then alternatives</div><div class="row">${v.basic ? tile(v.basic, form, { tag: "Basic" }) : ""}${v.alts.filter((d) => matchQ(d.name)).map((d) => tile(d, form, { note: d.breedingElements.length + " elements" })).join("")}</div>
+      ${v.carriers.length ? `<div class="lbl">Yours</div><div class="row">${v.carriers.filter((d) => matchQ(d.name)).slice(0, 60).map((d) => tile(d, form, { sm: true, noticks: true })).join("")}</div>` : ""}</div>`;
+  }
+}
+
+// ---------- draw
+function drawPanel() {
+  const n = selNode();
+  const sheet = $("sheet"), tray = $("tray");
+  sheet.className = ""; tray.className = ""; const old = $("pop"); if (old) old.remove();
+  if (!n) { requestAnimationFrame(() => cy && cy.resize()); return; }
+  const v = vm(n);
+  if (st.variant === "A") { sheet.className = "open"; sheet.innerHTML = `<button style="float:right" data-x>✕</button>` + panelA(v); wire(sheet); }
+  if (st.variant === "B") {
+    $("main").insertAdjacentHTML("beforeend", `<div id="pop" class="open"></div>`);
+    $("pop").innerHTML = panelB(v); wire($("pop")); placePop();
+  }
+  if (st.variant === "C") { tray.className = "open"; tray.innerHTML = panelC(v); wire(tray); }
+  requestAnimationFrame(() => cy && cy.resize());
+}
+function render(keepView) {
+  if (!VARIANTS[st.variant]) st.variant = "A";
+  document.body.className = st.variant;
+  $("vlabel").textContent = `${st.variant} (${VARIANTS[st.variant]})`;
+  $("preset").value = st.preset; $("target").value = st.target; $("form").value = st.form;
+  const u = new URL(location); for (const [k, val] of Object.entries({ variant: st.variant, target: st.target, form: st.form, preset: st.preset })) u.searchParams.set(k, val); history.replaceState(null, "", u);
+  const sel = st.sel, q = st.q, ex = st.expanded;
+  mount(keepView);
+  // Open on the Target's first Route so there's always something to judge.
+  const first = cy.nodes(".route").filter((r) => r.outgoers("node").some((t) => t.data("n").root)).first();
+  select(sel && cy.getElementById(sel).nonempty() ? sel : first.nonempty() ? first.id() : null);
+  st.q = q; st.expanded = ex; if (q || ex) drawPanel();
+}
+window.onerror = (m) => document.body.insertAdjacentHTML("afterbegin", `<pre style="color:red">${m}</pre>`);
+DV.preset(st.preset);
+render();
+</script>
+</body>
+</html>
