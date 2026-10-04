@@ -32,7 +32,8 @@ console.log("element icons:", Object.keys(icons).length, "of", elems.size, "miss
 globalThis.window = {};
 await import("file://" + join(here, "pages.js").replace(/\\/g, "/"));
 const squash = (s) => s.replace(/[^A-Za-z0-9]/g, "");
-const want = { breedable: "BreedingHeartIcon.png", limited: "LimitedTimeDragonariumHelpIcon.png", dragonarium: "DragonariumBasic.png", unavailable: "UnavailableDragonariumHourGlass.png" };
+const want = { breedable: "BreedingHeartIcon.png", limited: "LimitedTimeDragonariumHelpIcon.png", dragonarium: "DragonariumBasic.png", unavailable: "UnavailableDragonariumHourGlass.png",
+  "cave:normal": "BreedingCave2015.png", "cave:rift": "RiftBreedingCave.png", "cave:coop": "CooperativeBreedingCave2015.png" };
 for (const g of ["Elemental", "Epic", "Special"]) want["group:" + g.toLowerCase()] = `${g}DragonariumIcon.png`;
 for (const p of window.PAGES) want["page:" + p.name] = `${squash(p.name)}DragonariumIcon.png`;
 for (const ev of Object.keys(S.limitedRaw.events || {})) want["event:" + ev] = `${squash(ev.split(":")[0])}DragonariumIcon.png`;

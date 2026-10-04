@@ -148,6 +148,10 @@
   .b-side details[open] summary::before { content:"▾"; }
   .b-head h2 { display:flex; align-items:center; }
   .b-head h2 img.mi { width:28px; height:28px; }
+  .caves { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-top:4px; }
+  .caves .cave { display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px 2px; font-size:12px; }
+  .caves .cave img.mi { width:44px; height:34px; margin:0; }
+  .caves .cave.on { background:var(--bg); color:var(--fg); border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent); }
   .switch { display:flex; gap:8px; align-items:center; cursor:pointer; font-size:13px; }
   .fullcolour .tile.grey img, .fullcolour .tile.pulse img { filter:none; animation:none; }
   .fullcolour .tile.grey .nm { color:var(--muted); }
@@ -227,33 +231,42 @@ const LIMITED = Object.entries(L.dragons || {}).filter(([n]) => DV.byName.has(n)
 
 const q0 = new URLSearchParams(location.search);
 const st = { variant: q0.get("variant") || "A", mode: "all", tab: "page:Fire", q: "", owned: "any", rar: new Set(), select: false, sel: new Set(), bulk: "both",
-  undo: null, toast: null, openGrp: "elemental", colour: false, menu: false, sheet: false, drawer: false, overlay: null };
+  undo: null, toast: null, openGrp: "elemental", colour: false, cave: "normal", dpop: false, menu: false, sheet: false, drawer: false, overlay: null };
 const app = document.getElementById("app"), $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 
-// ---------- rules per Form mode
+// ---------- Form mode decides what is shown and counted as owned; the Breeding cave decides what can be bred.
+// Normal cave: normal forms (no Rift dragons, no Galaxy). Rift cave: Rift forms and Rift dragons.
+// Co-op cave: everything the Normal cave can make, plus Galaxy Dragons with a friend's Dragon (assumed always on offer).
+const CAVES = [["normal", "Normal"], ["rift", "Rift"], ["coop", "Co-op"]];
 let bn = null;
-function breedSets() { if (!bn) { bn = { normal: new Set(), rift: new Set() }; for (const x of DV.allBreedableNow()) bn[x.form].add(x.d.name); } return bn; }
+function breedSets() {
+  if (bn) return bn;
+  bn = { normal: new Set(), rift: new Set(), coop: new Set() };
+  for (const x of DV.allBreedableNow()) bn[x.form].add(x.d.name);
+  const anyParent = DV.candidates(false).length > 0;
+  for (const d of S.dragons) if (anyParent && d.routes.some((r) => r.kind === "Co-op bred") && !DV.outOfRotation(d) && !DV.purchaseOnly.has(d.name)) bn.coop.add(d.name);
+  return bn;
+}
+const caveForm = () => st.cave === "rift" ? "rift" : "normal";
+const caveMakes = (d) => { const s = breedSets();
+  if (st.cave === "rift") return d.isRiftDragon ? s.normal.has(d.name) : s.rift.has(d.name);
+  const n = s.normal.has(d.name) && !d.isRiftDragon;
+  return st.cave === "coop" ? n || s.coop.has(d.name) : n; };
+// Breedable now in the chosen cave: the cave can make it and you don't own the form it makes.
+const breedNow = (d) => caveMakes(d) && !DV.owns(d.name, d.isRiftDragon ? "normal" : caveForm());
 const shown = (d) => st.mode === "all" || (st.mode === "normal" ? !d.isRiftDragon : d.hasRiftForm || d.isRiftDragon);
-const ownedM = (d) => st.mode === "rift" && !d.isRiftDragon ? DV.owns(d.name, "rift") : st.mode === "normal" ? DV.owns(d.name, "normal") : DV.ownsAny(d.name);
-const breedM = (d) => { const s = breedSets(); if (st.mode === "normal") return s.normal.has(d.name) && !d.isRiftDragon;
-  if (st.mode === "rift") return d.isRiftDragon ? s.normal.has(d.name) : s.rift.has(d.name); return s.normal.has(d.name) || s.rift.has(d.name); };
+// In All mode, "owned" follows the cave: the Rift cave counts Rift forms, the other caves count either form.
+const ownedM = (d) => (st.mode === "rift" || (st.mode === "all" && st.cave === "rift")) && !d.isRiftDragon ? DV.owns(d.name, "rift") : st.mode === "normal" ? DV.owns(d.name, "normal") : DV.ownsAny(d.name);
 const locked = (d) => !DV.ownsAny(d.name) && d.isLimited && !DV.inRotation.has(d.name) && !eventNames.has(d.name);
 const passes = (d) => shown(d) && (st.owned === "any" || (st.owned === "owned") === ownedM(d)) && (!st.rar.size || st.rar.has(d.rarity));
 const filterCount = () => (st.owned !== "any" ? 1 : 0) + st.rar.size;
-function openForm(d) {
-  if (d.isRiftDragon || !d.hasRiftForm) return "normal";
-  if (st.mode !== "all") return st.mode;
-  const s = breedSets(), nb = s.normal.has(d.name), rb = s.rift.has(d.name);
-  if (nb !== rb) return rb ? "rift" : "normal";
-  const nm = !DV.owns(d.name, "normal"), rm = !DV.owns(d.name, "rift");
-  return nm !== rm && rm ? "rift" : "normal";
-}
+function openForm(d) { return d.isRiftDragon || !d.hasRiftForm ? "normal" : caveForm(); }
 
 // ---------- sections for a tab
 function sectionsFor(tab) {
   if (st.q) { const q = st.q.toLowerCase(); return [{ id: "search", title: `Search: “${st.q}”`, dragons: S.dragons.filter((d) => d.name.toLowerCase().includes(q)) }]; }
-  if (tab === "breedable") return [{ id: "breedable", title: "Breedable now", sub: "from your Collection", dragons: S.dragons.filter((d) => breedM(d) && !ownedM(d)) }];
+  if (tab === "breedable") return [{ id: "breedable", title: "Breedable now", sub: `in the ${CAVES.find((c) => c[0] === st.cave)[1]} cave`, dragons: S.dragons.filter(breedNow) }];
   if (tab === "limited") return [{ id: "limited", title: "Limited rotation", dragons: LIMITED.map((x) => x.d), notes: new Map(LIMITED.map((x) => [x.d.name, x.end ? "until " + x.end.replace(/, \d{4}/, "") : ""])) }];
   if (tab === "event") return EVENTS.map((e, i) => ({ id: "event" + i, title: icon("event:" + e.name) + e.name, sub: "ends " + e.end, dragons: e.dragons.map((x) => x.d),
     notes: new Map(e.dragons.map((x) => [x.d.name, x.cost ? `${x.cost.toLocaleString()} ${x.cur}` : ""])) }));
@@ -268,7 +281,7 @@ const IMG = (d) => (window.IMAGES && IMAGES[d.name]) || SIL;
 const SIL = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path fill="#999" d="M8 46c7-2 11-9 13-15 2-7 9-13 17-13 6 0 10 4 12 8l7-2-3 8c2 4 1 10-3 13-5 4-13 3-17 1l-4 7h-6l3-8c-6 0-12 1-19 1z"/></svg>');
 window.imgErr = (im) => { im.onerror = null; im.src = SIL; };
 function tileHtml(d, note) {
-  const own = ownedM(d), br = !own && breedM(d);
+  const own = ownedM(d), br = breedNow(d);
   const one = d.isRiftDragon || !d.hasRiftForm;
   const ticks = one ? `<button data-tick="normal" class="${DV.owns(d.name, "normal") ? "on" : ""}">✔ Owned</button>`
     : `<button data-tick="normal" class="${DV.owns(d.name, "normal") ? "on" : ""}">Normal</button><button data-tick="rift" class="rf ${DV.owns(d.name, "rift") ? "on" : ""}">Rift</button>`;
@@ -302,7 +315,7 @@ function floating() {
   if (o && o.kind === "graph") {
     const f = [st.owned !== "any" ? `Owned: ${st.owned === "owned" ? "Owned" : "Not owned"}` : "", st.rar.size ? `Rarity: ${[...st.rar].join(", ")}` : ""].filter(Boolean);
     h += `<div class="overlay"><div class="ohead"><button data-act="close">← Back</button><b>Whole graph: ${o.page}</b></div><div class="obody">
-      <p>Every Dragon in <b>${o.page}</b> plus everything they need, bottom-up, Form mode <b>${st.mode}</b>. (Placeholder: the page graph itself is in the graph-views prototype.)</p>
+      <p>Every Dragon in <b>${o.page}</b> plus everything they need, bottom-up, as bred in the <b>${CAVES.find((c) => c[0] === st.cave)[1]}</b> cave. (Placeholder: the page graph itself is in the graph-views prototype.)</p>
       <p><b>Filters on right now:</b> ${f.length ? f.join(" · ") : "none"}</p>
       <p class="muted">Open question for this ticket: should these filters carry into this graph (hide, dim, or ignore), and should the filter controls still be visible here?</p></div></div>`;
   }
@@ -341,8 +354,7 @@ function renderB() {
   const nav = (tab, label, dragons) => { const [po, pn] = progress(dragons); return `<button class="navbtn ${st.tab === tab && !st.q ? "on" : ""}" data-tab="${esc(tab)}"><span>${label}</span><span class="prog">${pn ? `${po}/${pn}` : "—"}</span></button>`; };
   const side = `<aside class="b-side ${st.drawer ? "open" : ""}" data-keep="bs">
     <div style="display:flex;justify-content:space-between;align-items:center"><b>Breeding Helper</b><button class="b-close small" data-act="drawer">✕</button></div>
-    <div><div class="lbl">Form mode</div>${modeSeg()}</div>
-    <label class="switch"><input type="checkbox" data-colour ${st.colour ? "checked" : ""}><span>Show all Dragons in colour</span></label>
+    <div><div class="lbl">Breeding cave</div><div class="caves">${CAVES.map(([c, t]) => `<button data-cave="${c}" class="cave ${st.cave === c ? "on" : ""}">${icon("cave:" + c, "ci")}<span>${t}</span></button>`).join("")}</div></div>
     <div>${KINDS.map(([k, ico, t]) => nav(k, `${ico} ${t}`, sectionsForRaw(k))).join("")}</div>
     ${GROUPS.map(([g, t]) => `<details name="pagegroups" data-grp="${g}" ${st.openGrp === g ? "open" : ""}><summary>${icon("group:" + g, "gi")}<b>${t}</b> <span class="muted">(${PAGES.filter((p) => p.group === g).length})</span></summary>
       ${PAGES.filter((p) => p.group === g).map((p) => nav("page:" + p.name, icon("page:" + p.name) + p.name, p.dragons)).join("")}</details>`).join("")}
@@ -354,12 +366,17 @@ function renderB() {
       <div class="lbl" style="margin-top:10px">Rarity <span class="muted" style="text-transform:none">(none ticked = all)</span></div>
       ${RARITIES.map((r) => `<div class="fchk" data-rar="${r}"><input type="checkbox" ${st.rar.has(r) ? "checked" : ""} tabindex="-1"><span class="dot" style="background:${RC[r] || "#999"}"></span>${r}</div>`).join("")}
       <div style="display:flex;gap:6px;margin-top:10px"><button data-act="clearf" class="small">Clear all</button><span style="flex:1"></span><button data-act="fpop" class="small primary">Done</button></div></div>` : ""}</span>`;
+  const dchg = st.mode !== "all" || st.colour;
+  const dpop = `<span class="more fpopwrap"><button data-act="dpop" class="${dchg ? "factive" : ""} ${st.dpop ? "on" : ""}">${st.dpop ? "▾" : "▸"} Display</button>${st.dpop ? `<div class="menu fpop">
+      <div class="lbl">Form mode</div>${modeSeg()}
+      <label class="switch" style="margin-top:12px"><input type="checkbox" data-colour ${st.colour ? "checked" : ""}><span>Show all Dragons in colour</span></label>
+      <div style="display:flex;margin-top:10px"><span style="flex:1"></span><button data-act="dpop" class="small primary">Done</button></div></div>` : ""}</span>`;
   const active = fc ? `<div class="b-active"><span class="lbl">Filtered:</span>${st.owned !== "any" ? `<button class="chip on" data-owned="any">${st.owned === "owned" ? "Owned" : "Not owned"} ✕</button>` : ""}${[...st.rar].map((r) => `<button class="chip on" data-rar="${r}">${r} ✕</button>`).join("")}<button class="small" data-act="clearf">Clear all</button></div>` : "";
   return `<div class="B ${st.select ? "selmode" : ""} ${st.colour ? "fullcolour" : ""}">${side}${st.drawer ? `<div class="backdrop" data-act="drawer"></div>` : ""}
     <div class="b-main">
       <header class="b-top"><button class="b-burger" data-act="drawer">☰</button>${search()}${moreMenu()}</header>
       <div class="b-head"><h2>${st.q ? secs[0].title : icon(st.tab === "event" ? "event:" + firstEvent : st.tab) + tabTitle(st.tab)}</h2><span class="bar"><i style="width:${n ? (100 * o) / n : 0}%"></i></span><span class="muted">${o}/${n} owned</span>
-        <span style="flex:1"></span><button data-act="select" class="${st.select ? "on" : ""}">Select</button>${fpop}${st.q ? "" : `<button data-act="graph" data-page="${esc(tabTitle(st.tab))}">Graph</button>`}</div>${active}
+        <span style="flex:1"></span><button data-act="select" class="${st.select ? "on" : ""}">Select</button>${fpop}${dpop}${st.q ? "" : `<button data-act="graph" data-page="${esc(tabTitle(st.tab))}">Graph</button>`}</div>${active}
       <main class="scroll" data-keep="b">${secs.map((s) => (secs.length > 1 ? `<div class="sechead"><h3>${s.title}</h3><span class="muted">${s.sub || ""} · ${secCount(s)}</span></div>` : "") + gridHtml(s)).join("")}</main>
       ${st.select ? "" : `<nav class="b-bottom"><button data-act="drawer" class="${st.tab.startsWith("page:") ? "on" : ""}"><span class="bi">${icon("dragonarium")}</span>Dragonarium</button>${KINDS.map(([k, ico, t]) => `<button data-tab="${k}" class="${st.tab === k ? "on" : ""}"><span class="bi">${ico}</span>${t.replace(" rotation", "").replace(" now", "")}</button>`).join("")}</nav>`}
     </div></div>`;
@@ -436,15 +453,16 @@ function tileTap(t) {
 let suppressClick = false;
 app.addEventListener("click", (e) => {
   if (suppressClick) { suppressClick = false; e.preventDefault(); return; }
-  const t = e.target.closest("[data-act],[data-mode],[data-tab],[data-group],[data-owned],[data-rar],[data-tick],[data-bulk],[data-jump],.tile");
-  if (!t) { if (e.target.closest(".fpopwrap")) return; if (st.menu || st.fpop) { st.menu = false; st.fpop = false; render(); } return; }
+  const t = e.target.closest("[data-act],[data-mode],[data-cave],[data-tab],[data-group],[data-owned],[data-rar],[data-tick],[data-bulk],[data-jump],.tile");
+  if (!t) { if (e.target.closest(".fpopwrap")) return; if (st.menu || st.fpop || st.dpop) { st.menu = false; st.fpop = false; st.dpop = false; render(); } return; }
   const ds = t.dataset;
   if (ds.act !== "menu") st.menu = false;
-  if (st.fpop && !e.target.closest(".fpopwrap") && !e.target.closest(".b-active")) { st.fpop = false; if (!ds.act && !ds.tab && !ds.mode) return render(); }
+  if ((st.fpop || st.dpop) && !e.target.closest(".fpopwrap") && !e.target.closest(".b-active")) { st.fpop = false; st.dpop = false; if (!ds.act && !ds.tab && !ds.mode) return render(); }
   if (ds.tick) { const n = t.closest(".tile").dataset.n; DV.setOwned(n, ds.tick, !DV.owns(n, ds.tick)); bn = null; return render(); }
   if (t.classList.contains("tile")) return tileTap(t);
   if (ds.jump) { const s = $(ds.jump); $("cscroll").scrollTo({ top: s.offsetTop - $("cscroll").offsetTop, behavior: "smooth" }); return; }
   if (ds.mode) st.mode = ds.mode;
+  if (ds.cave) st.cave = ds.cave;
   if (ds.tab) { st.tab = ds.tab; st.q = ""; st.drawer = false; app.querySelectorAll("[data-keep]").forEach((x) => { if (x.tagName === "MAIN") x.scrollTop = 0; }); }
   if (ds.group) { const first = PAGES.find((p) => p.group === ds.group); if (!(st.tab.startsWith("page:") && PAGES.find((p) => "page:" + p.name === st.tab).group === ds.group)) st.tab = "page:" + first.name; st.q = ""; }
   if (ds.owned) st.owned = ds.owned;
@@ -465,7 +483,8 @@ app.addEventListener("click", (e) => {
     case "sheet": st.sheet = true; break;
     case "closesheet": st.sheet = false; break;
     case "drawer": st.drawer = !st.drawer; break;
-    case "fpop": st.fpop = !st.fpop; break;
+    case "fpop": st.fpop = !st.fpop; st.dpop = false; break;
+    case "dpop": st.dpop = !st.dpop; st.fpop = false; break;
     case "clearf": st.owned = "any"; st.rar.clear(); break;
   }
   render();
@@ -494,7 +513,7 @@ $("next").onclick = () => setVariant(keys[(keys.indexOf(st.variant) + 1) % keys.
 $("phone").onclick = () => { document.body.classList.toggle("phone"); render(); };
 $("preset").onchange = () => { DV.preset($("preset").value); bn = null; render(); };
 addEventListener("keydown", (e) => {
-  if (e.key === "Escape") { st.overlay = null; st.sheet = false; st.drawer = false; st.menu = false; st.fpop = false; return render(); }
+  if (e.key === "Escape") { st.overlay = null; st.sheet = false; st.drawer = false; st.menu = false; st.fpop = false; st.dpop = false; return render(); }
   if (e.target.closest("input,textarea,select,[contenteditable]")) return;
   if (e.key === "ArrowLeft") $("prev").click(); if (e.key === "ArrowRight") $("next").click();
 });
@@ -502,6 +521,8 @@ window.onerror = (m) => document.body.insertAdjacentHTML("afterbegin", `<pre sty
 if (q0.get("phone")) document.body.classList.add("phone");
 DV.preset("mid");
 if (q0.get("colour")) st.colour = true;
+if (q0.get("cave")) st.cave = q0.get("cave");
+if (q0.get("demo") === "display") st.dpop = true;
 if (q0.get("tab")) { st.tab = q0.get("tab"); const p = PAGES.find((x) => "page:" + x.name === st.tab); if (p) st.openGrp = p.group; }
 if (q0.get("demo") === "filters") { st.owned = "missing"; st.rar.add("Epic"); st.fpop = true; }
 render();
