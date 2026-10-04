@@ -1,0 +1,23 @@
+<!doctype html>
+<!--
+  PROTOTYPE (throwaway) for "Graph nodes reuse the Dragon tile component" (#17).
+  Question: can every graph node be the SAME Dragon tile component as the menu, and does it stay smooth at 983 tiles?
+  Three approaches, switchable via ?variant=A|B|C and the bottom bar:
+    A  Svelte Flow, full tile on every node (no culling)
+    B  Svelte Flow, off-screen culling + the same tile in its `lite` mode for faded background tiles
+    C  Cytoscape (current stack choice) with the real tile components floated over invisible nodes (the fallback)
+  Run: npm install && npm run dev   (from prototypes/tile-nodes)
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<!-- static.wikia.nocookie.net returns 404 for images requested with a non-Fandom Referer -->
+<meta name="referrer" content="no-referrer" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tile Nodes Spike</title>
+</head>
+<body>
+<div id="app"></div>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
