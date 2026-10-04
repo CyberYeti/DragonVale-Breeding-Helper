@@ -296,7 +296,7 @@ function gridHtml(sec) {
     : `<p class="muted empty">${sec.dragons.filter(shown).length ? "Nothing here matches the filters." : "Nothing here in this Form mode."}</p>`;
 }
 function secCount(sec) { const [o, n] = progress(sec.dragons), v = sec.dragons.filter(passes).length; return `${o}/${n} owned${v !== n ? ` · ${v} shown` : ""}`; }
-const modeSeg = () => `<span class="seg" title="Form mode">${["all", "normal", "rift"].map((m) => `<button data-mode="${m}" class="${st.mode === m ? "on" : ""}">${{ all: "All", normal: "Normal", rift: "Rift" }[m]}</button>`).join("")}</span>`;
+const modeSeg = () => `<span class="seg" title="Owned forms">${["all", "normal", "rift"].map((m) => `<button data-mode="${m}" class="${st.mode === m ? "on" : ""}">${{ all: "Either", normal: "Normal", rift: "Rift" }[m]}</button>`).join("")}</span>`;
 const search = (ph) => `<input class="search" id="q" data-focuskey="q" placeholder="${ph || "Search every Dragon…"}" value="${esc(st.q)}" autocomplete="off">`;
 const ownedChips = () => ["any", "owned", "missing"].map((o) => `<button class="chip ${st.owned === o ? "on" : ""}" data-owned="${o}">${{ any: "Any", owned: "Owned", missing: "Not owned" }[o]}</button>`).join("");
 const rarChips = () => RARITIES.map((r) => `<button class="chip ${st.rar.has(r) ? "on" : ""}" data-rar="${r}"><span class="dot" style="background:${RC[r] || "#999"}"></span>${r}</button>`).join("");
@@ -368,7 +368,7 @@ function renderB() {
       <div style="display:flex;gap:6px;margin-top:10px"><button data-act="clearf" class="small">Clear all</button><span style="flex:1"></span><button data-act="fpop" class="small primary">Done</button></div></div>` : ""}</span>`;
   const dchg = st.mode !== "all" || st.colour;
   const dpop = `<span class="more fpopwrap"><button data-act="dpop" class="${dchg ? "factive" : ""} ${st.dpop ? "on" : ""}">${st.dpop ? "▾" : "▸"} Display</button>${st.dpop ? `<div class="menu fpop">
-      <div class="lbl">Form mode</div>${modeSeg()}
+      <div class="lbl">Owned forms</div>${modeSeg()}
       <label class="switch" style="margin-top:12px"><input type="checkbox" data-colour ${st.colour ? "checked" : ""}><span>Show all Dragons in colour</span></label>
       <div style="display:flex;margin-top:10px"><span style="flex:1"></span><button data-act="dpop" class="small primary">Done</button></div></div>` : ""}</span>`;
   const active = fc ? `<div class="b-active"><span class="lbl">Filtered:</span>${st.owned !== "any" ? `<button class="chip on" data-owned="any">${st.owned === "owned" ? "Owned" : "Not owned"} ✕</button>` : ""}${[...st.rar].map((r) => `<button class="chip on" data-rar="${r}">${r} ✕</button>`).join("")}<button class="small" data-act="clearf">Clear all</button></div>` : "";
