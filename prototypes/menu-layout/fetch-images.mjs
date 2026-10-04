@@ -32,7 +32,7 @@ console.log("element icons:", Object.keys(icons).length, "of", elems.size, "miss
 globalThis.window = {};
 await import("file://" + join(here, "pages.js").replace(/\\/g, "/"));
 const squash = (s) => s.replace(/[^A-Za-z0-9]/g, "");
-const want = { breedable: "EggTab.png", limited: "LimitedTimeDragonariumHelpIcon.png" };
+const want = { breedable: "BreedingHeartIcon.png", limited: "LimitedTimeDragonariumHelpIcon.png", dragonarium: "DragonariumBasic.png", unavailable: "UnavailableDragonariumHourGlass.png" };
 for (const g of ["Elemental", "Epic", "Special"]) want["group:" + g.toLowerCase()] = `${g}DragonariumIcon.png`;
 for (const p of window.PAGES) want["page:" + p.name] = `${squash(p.name)}DragonariumIcon.png`;
 for (const ev of Object.keys(S.limitedRaw.events || {})) want["event:" + ev] = `${squash(ev.split(":")[0])}DragonariumIcon.png`;
@@ -40,7 +40,7 @@ const ui = {};
 const keys = Object.keys(want);
 for (let i = 0; i < keys.length; i += 50) {
   const batch = keys.slice(i, i + 50);
-  const u = "https://dragonvale.fandom.com/api.php?action=query&prop=imageinfo&iiprop=url&iiurlwidth=48&format=json&formatversion=2&titles=" + encodeURIComponent(batch.map((k) => "File:" + want[k]).join("|"));
+  const u = "https://dragonvale.fandom.com/api.php?action=query&prop=imageinfo&iiprop=url&iiurlwidth=96&format=json&formatversion=2&titles=" + encodeURIComponent(batch.map((k) => "File:" + want[k]).join("|"));
   const j = await (await fetch(u, { headers: { "User-Agent": "DragonValeBreedingHelper-prototype/0.1 (personal tool)" } })).json();
   const norm = new Map((j.query.normalized || []).map((n) => [n.from, n.to]));
   const byTitle = new Map(j.query.pages.map((p) => [p.title, p.imageinfo && (p.imageinfo[0].thumburl || p.imageinfo[0].url)]));
