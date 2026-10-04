@@ -254,6 +254,8 @@ const hasRoute = (d, kind) => d.routes.some((r) => r.kind === kind);
 const caveCanBreed = (d, cave) => cave === "rift" ? (d.isRiftDragon || d.hasRiftForm) && hasRoute(d, "Bred")
   : !d.isRiftDragon && (hasRoute(d, "Bred") || (cave === "coop" && hasRoute(d, "Co-op bred")));
 const bredSomewhere = (d) => CAVES.some(([c]) => caveCanBreed(d, c));
+// Banner for a Dragon no cave can breed: how it is obtained instead.
+const notBredLabel = (d) => hasRoute(d, "Summoned") ? "Summoning only" : hasRoute(d, "Evolved") ? "Evolution only" : hasRoute(d, "Purchased") ? "Shop only" : "Can't be bred";
 const caveName = () => CAVES.find((c) => c[0] === st.cave)[1];
 const caveForm = () => st.cave === "rift" ? "rift" : "normal";
 const caveMakes = (d) => { const s = breedSets();
@@ -294,7 +296,7 @@ function tileHtml(d, note) {
     : `<button data-tick="normal" class="${DV.owns(d.name, "normal") ? "on" : ""}">Normal</button><button data-tick="rift" class="rf ${DV.owns(d.name, "rift") ? "on" : ""}">Rift</button>`;
   return `<div class="tile ${own ? "" : "grey"} ${br ? "pulse" : ""} ${st.sel.has(d.name) ? "sel" : ""}" data-n="${esc(d.name)}" style="--rc:${RC[d.rarity] || "#999"}" title="${esc(d.name)} · ${d.rarity}${br ? " · Breedable now" : ""}">
     <img loading="lazy" src="${IMG(d)}" alt="" onerror="imgErr(this)">
-    ${locked(d) ? `<span class="lock" title="Not available">${UI.unavailable ? `<img src="${UI.unavailable}" alt="Not available">` : "🔒"}</span>` : ""}${bredSomewhere(d) && !caveCanBreed(d, st.cave) ? `<span class="po nocave">Not breedable in ${caveName()} cave</span>` : DV.purchaseOnly.has(d.name) && !own ? `<span class="po">Purchase only</span>` : ""}
+    ${locked(d) ? `<span class="lock" title="Not available">${UI.unavailable ? `<img src="${UI.unavailable}" alt="Not available">` : "🔒"}</span>` : ""}${!bredSomewhere(d) ? `<span class="po nocave">${notBredLabel(d)}</span>` : !caveCanBreed(d, st.cave) ? `<span class="po nocave">Not breedable in ${caveName()} cave</span>` : DV.purchaseOnly.has(d.name) && !own ? `<span class="po">Purchase only</span>` : ""}
     <div class="nm">${d.name}</div>${note ? `<div class="note">${note}</div>` : ""}<div class="ticks">${ticks}</div></div>`;
 }
 function gridHtml(sec) {
