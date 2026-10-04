@@ -281,7 +281,7 @@ function floating() {
   if (o && o.kind === "graph") {
     const f = [st.owned !== "any" ? `Owned: ${st.owned === "owned" ? "Owned" : "Not owned"}` : "", st.rar.size ? `Rarity: ${[...st.rar].join(", ")}` : ""].filter(Boolean);
     h += `<div class="overlay"><div class="ohead"><button data-act="close">← Back</button><b>Whole graph: ${o.page}</b></div><div class="obody">
-      <p>The ${o.page} page's Dragons plus everything they need, bottom-up, Form mode <b>${st.mode}</b>. (Placeholder: the page graph itself is in the graph-views prototype.)</p>
+      <p>Every Dragon in <b>${o.page}</b> plus everything they need, bottom-up, Form mode <b>${st.mode}</b>. (Placeholder: the page graph itself is in the graph-views prototype.)</p>
       <p><b>Filters on right now:</b> ${f.length ? f.join(" · ") : "none"}</p>
       <p class="muted">Open question for this ticket: should these filters carry into this graph (hide, dim, or ignore), and should the filter controls still be visible here?</p></div></div>`;
   }
@@ -338,7 +338,7 @@ function renderB() {
     <div class="b-main">
       <header class="b-top"><button class="b-burger" data-act="drawer">☰</button>${search()}${moreMenu()}</header>
       <div class="b-head"><h2>${st.q ? secs[0].title : tabTitle(st.tab)}</h2><span class="bar"><i style="width:${n ? (100 * o) / n : 0}%"></i></span><span class="muted">${o}/${n} owned</span>
-        <span style="flex:1"></span><button data-act="select" class="${st.select ? "on" : ""}">Select</button>${fpop}${secs[0].page ? `<button data-act="graph" data-page="${esc(secs[0].page)}">🕸 Graph</button>` : ""}</div>${active}
+        <span style="flex:1"></span><button data-act="select" class="${st.select ? "on" : ""}">Select</button>${fpop}${st.q ? "" : `<button data-act="graph" data-page="${esc(tabTitle(st.tab))}">🕸 Graph</button>`}</div>${active}
       <main class="scroll" data-keep="b">${secs.map((s) => (secs.length > 1 ? `<div class="sechead"><h3>${s.title}</h3><span class="muted">${s.sub || ""} · ${secCount(s)}</span></div>` : "") + gridHtml(s)).join("")}</main>
       ${st.select ? "" : `<nav class="b-bottom"><button data-act="drawer" class="${st.tab.startsWith("page:") ? "on" : ""}"><span>📚</span>Pages</button>${KINDS.map(([k, ico, t]) => `<button data-tab="${k}" class="${st.tab === k ? "on" : ""}"><span>${ico}</span>${t.replace(" rotation", "").replace(" now", "")}</button>`).join("")}</nav>`}
     </div></div>`;
