@@ -49,18 +49,31 @@
   .tile img { width:100%; aspect-ratio:1; object-fit:contain; display:block; pointer-events:none; }
   .tile.grey img { filter:grayscale(1) opacity(.5); }
   .tile { overflow:hidden; }
-  /* Breedable now, variant "glint": a shine sweeping across the card */
-  body.bm-glint .tile.breed::before { content:""; position:absolute; inset:0; z-index:3; pointer-events:none;
-    background:linear-gradient(115deg, transparent 35%, rgba(255,255,255,.75) 48%, rgba(255,230,140,.45) 52%, transparent 65%);
-    background-size:300% 100%; animation:glint 2.6s ease-in-out infinite; mix-blend-mode:screen; }
-  @keyframes glint { 0% { background-position:120% 0; } 55%,100% { background-position:-20% 0; } }
-  body.bm-glint .tile.breed .nm::before { content:"✦ "; color:var(--accent); }
-  /* Breedable now, variant "glow": a pulsing gold glow round the card */
-  body.bm-glow .tile.breed { overflow:visible; animation:glow2 2.2s ease-in-out infinite; }
-  @keyframes glow2 { 0%,100% { box-shadow:0 0 0 2px var(--accent), 0 0 6px 1px rgba(242,183,5,.35); } 50% { box-shadow:0 0 0 2px var(--accent), 0 0 18px 6px rgba(242,183,5,.85); } }
+  /* Breedable now: a constant overlay (never fades out) or a steady glow; the variant is picked in the switcher. */
+  body.bm-sheen .tile.breed::before, body.bm-sparkle .tile.breed::before, body.bm-stripes .tile.breed::before, body.bm-foil .tile.breed::before {
+    content:""; position:absolute; inset:0; z-index:3; pointer-events:none; }
+  body.bm-sheen .tile.breed::before { background:linear-gradient(135deg, rgba(255,214,90,.34), rgba(255,255,255,.06) 35%, rgba(255,214,90,.30) 55%, rgba(255,255,255,.06) 80%, rgba(255,214,90,.34));
+    background-size:250% 250%; mix-blend-mode:screen; animation:drift 7s ease-in-out infinite alternate; }
+  body.bm-sparkle .tile.breed::before {
+    background:radial-gradient(circle, rgba(255,236,150,.95) 0 1.2px, transparent 2.2px) 0 0 / 18px 18px,
+               radial-gradient(circle, rgba(255,255,255,.85) 0 0.9px, transparent 1.8px) 9px 9px / 18px 18px,
+               linear-gradient(rgba(255,214,90,.12), rgba(255,214,90,.12));
+    animation:twinkle 1.8s ease-in-out infinite alternate; }
+  body.bm-stripes .tile.breed::before { background:repeating-linear-gradient(45deg, rgba(255,210,80,.26) 0 5px, transparent 5px 13px);
+    background-size:200% 200%; animation:drift 10s linear infinite; }
+  body.bm-foil .tile.breed::before { background:linear-gradient(120deg, rgba(255,60,160,.30), rgba(255,210,60,.30), rgba(60,255,200,.30), rgba(120,90,255,.30), rgba(255,60,160,.30));
+    background-size:300% 300%; mix-blend-mode:overlay; animation:drift 8s linear infinite alternate; }
+  @keyframes drift { 0% { background-position:0% 0%; } 100% { background-position:100% 100%; } }
+  @keyframes twinkle { 0% { opacity:.65; } 100% { opacity:1; } }
+  /* Glow: always at about 75% strength; the colour cycles instead of the strength */
+  body.bm-glow .tile.breed { overflow:visible; animation:glowhue 2.4s ease-in-out infinite; }
+  @keyframes glowhue {
+    0%,100% { box-shadow:0 0 0 2px #f2b705, 0 0 14px 4px rgba(242,183,5,.7); }
+    33% { box-shadow:0 0 0 2px #ff7a1a, 0 0 14px 4px rgba(255,122,26,.7); }
+    66% { box-shadow:0 0 0 2px #fff08a, 0 0 14px 4px rgba(255,240,138,.7); } }
   @media (prefers-reduced-motion: reduce) {
-    body.bm-glint .tile.breed::before { animation:none; background-position:50% 0; }
-    body.bm-glow .tile.breed { animation:none; box-shadow:0 0 0 2px var(--accent), 0 0 12px 3px rgba(242,183,5,.6); } }
+    body .tile.breed::before { animation:none !important; }
+    body.bm-glow .tile.breed { animation:none; box-shadow:0 0 0 2px #f2b705, 0 0 14px 4px rgba(242,183,5,.7); } }
   .tile .nm { font-size:11px; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .tile .note { font-size:10px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .tile .lock { position:absolute; top:3px; left:5px; font-size:13px; }
@@ -217,7 +230,7 @@
 <div id="switcher">
   <button id="prev">←</button><span id="vlabel"></span><button id="next">→</button>
   <button id="phone" title="Toggle phone frame">📱</button>
-  <select id="bmode" title="How Breedable now is shown"><option value="glint">Breedable: glint</option><option value="glow">Breedable: glow</option></select>
+  <select id="bmode" title="How Breedable now is shown"><option value="glow">Breedable: glow</option><option value="sheen">Breedable: sheen</option><option value="sparkle">Breedable: sparkle</option><option value="stripes">Breedable: stripes</option><option value="foil">Breedable: foil</option></select>
   <select id="preset" title="Collection preset"><option value="new">New player</option><option value="mid" selected>Mid-game</option><option value="empty">Empty</option></select>
 </div>
 
@@ -528,10 +541,10 @@ const setVariant = (v) => { st.variant = v; st.overlay = null; st.sheet = false;
 $("prev").onclick = () => setVariant(keys[(keys.indexOf(st.variant) + keys.length - 1) % keys.length]);
 $("next").onclick = () => setVariant(keys[(keys.indexOf(st.variant) + 1) % keys.length]);
 $("phone").onclick = () => { document.body.classList.toggle("phone"); render(); };
-const setBmode = (m) => { document.body.classList.remove("bm-glint", "bm-glow"); document.body.classList.add("bm-" + m); $("bmode").value = m;
+const setBmode = (m) => { document.body.classList.remove(...[...document.body.classList].filter((c) => c.startsWith("bm-"))); document.body.classList.add("bm-" + m); $("bmode").value = m;
   const u = new URL(location); u.searchParams.set("breed", m); history.replaceState(null, "", u); };
 $("bmode").onchange = () => setBmode($("bmode").value);
-setBmode(q0.get("breed") === "glow" ? "glow" : "glint");
+setBmode(["glow", "sheen", "sparkle", "stripes", "foil"].includes(q0.get("breed")) ? q0.get("breed") : "glow");
 $("preset").onchange = () => { DV.preset($("preset").value); bn = null; render(); };
 addEventListener("keydown", (e) => {
   if (e.key === "Escape") { st.overlay = null; st.sheet = false; st.drawer = false; st.menu = false; st.fpop = false; st.dpop = false; return render(); }
