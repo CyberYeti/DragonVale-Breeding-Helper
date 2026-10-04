@@ -48,9 +48,19 @@
   .tile { position:relative; border:3px solid var(--rc); border-radius:12px; background:var(--card); padding:4px 4px 3px; text-align:center; cursor:pointer; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; }
   .tile img { width:100%; aspect-ratio:1; object-fit:contain; display:block; pointer-events:none; }
   .tile.grey img { filter:grayscale(1) opacity(.5); }
-  .tile.pulse img { animation:pulse 2.4s ease-in-out infinite; }
-  @keyframes pulse { 0%,100% { filter:grayscale(1) opacity(.5); } 50% { filter:none; } }
-  @media (prefers-reduced-motion: reduce) { .tile.pulse img { animation:none; filter:grayscale(.4); } }
+  .tile { overflow:hidden; }
+  /* Breedable now, variant "glint": a shine sweeping across the card */
+  body.bm-glint .tile.breed::before { content:""; position:absolute; inset:0; z-index:3; pointer-events:none;
+    background:linear-gradient(115deg, transparent 35%, rgba(255,255,255,.75) 48%, rgba(255,230,140,.45) 52%, transparent 65%);
+    background-size:300% 100%; animation:glint 2.6s ease-in-out infinite; mix-blend-mode:screen; }
+  @keyframes glint { 0% { background-position:120% 0; } 55%,100% { background-position:-20% 0; } }
+  body.bm-glint .tile.breed .nm::before { content:"✦ "; color:var(--accent); }
+  /* Breedable now, variant "glow": a pulsing gold glow round the card */
+  body.bm-glow .tile.breed { overflow:visible; animation:glow2 2.2s ease-in-out infinite; }
+  @keyframes glow2 { 0%,100% { box-shadow:0 0 0 2px var(--accent), 0 0 6px 1px rgba(242,183,5,.35); } 50% { box-shadow:0 0 0 2px var(--accent), 0 0 18px 6px rgba(242,183,5,.85); } }
+  @media (prefers-reduced-motion: reduce) {
+    body.bm-glint .tile.breed::before { animation:none; background-position:50% 0; }
+    body.bm-glow .tile.breed { animation:none; box-shadow:0 0 0 2px var(--accent), 0 0 12px 3px rgba(242,183,5,.6); } }
   .tile .nm { font-size:11px; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .tile .note { font-size:10px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .tile .lock { position:absolute; top:3px; left:5px; font-size:13px; }
@@ -154,11 +164,8 @@
   .caves .cave img.mi { width:44px; height:34px; margin:0; }
   .caves .cave.on { background:var(--bg); color:var(--fg); border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent); }
   .switch { display:flex; gap:8px; align-items:center; cursor:pointer; font-size:13px; }
-  .fullcolour .tile.grey img, .fullcolour .tile.pulse img { filter:none; animation:none; }
+  .fullcolour .tile.grey img { filter:none; }
   .fullcolour .tile.grey .nm { color:var(--muted); }
-  .fullcolour .tile.pulse { animation:glow 2.4s ease-in-out infinite; }
-  @keyframes glow { 0%,100% { box-shadow:0 0 0 0 transparent; } 50% { box-shadow:0 0 0 4px var(--accent); } }
-  @media (prefers-reduced-motion: reduce) { .fullcolour .tile.pulse { animation:none; box-shadow:0 0 0 3px var(--accent); } }
   .bar { height:6px; width:140px; background:var(--line); border-radius:3px; overflow:hidden; }
   .bar i { display:block; height:100%; background:var(--own); }
   .B .scroll { flex:1; padding-bottom:60px; }
@@ -210,6 +217,7 @@
 <div id="switcher">
   <button id="prev">←</button><span id="vlabel"></span><button id="next">→</button>
   <button id="phone" title="Toggle phone frame">📱</button>
+  <select id="bmode" title="How Breedable now is shown"><option value="glint">Breedable: glint</option><option value="glow">Breedable: glow</option></select>
   <select id="preset" title="Collection preset"><option value="new">New player</option><option value="mid" selected>Mid-game</option><option value="empty">Empty</option></select>
 </div>
 
@@ -294,9 +302,9 @@ function tileHtml(d, note) {
   const one = d.isRiftDragon || !d.hasRiftForm;
   const ticks = one ? `<button data-tick="normal" class="${DV.owns(d.name, "normal") ? "on" : ""}">✔ Owned</button>`
     : `<button data-tick="normal" class="${DV.owns(d.name, "normal") ? "on" : ""}">Normal</button><button data-tick="rift" class="rf ${DV.owns(d.name, "rift") ? "on" : ""}">Rift</button>`;
-  return `<div class="tile ${own ? "" : "grey"} ${br ? "pulse" : ""} ${st.sel.has(d.name) ? "sel" : ""}" data-n="${esc(d.name)}" style="--rc:${RC[d.rarity] || "#999"}" title="${esc(d.name)} · ${d.rarity}${br ? " · Breedable now" : ""}">
+  return `<div class="tile ${own ? "" : "grey"} ${br ? "breed" : ""} ${st.sel.has(d.name) ? "sel" : ""}" data-n="${esc(d.name)}" style="--rc:${RC[d.rarity] || "#999"}" title="${esc(d.name)} · ${d.rarity}${br ? " · Breedable now" : ""}">
     <img loading="lazy" src="${IMG(d)}" alt="" onerror="imgErr(this)">
-    ${locked(d) ? `<span class="lock" title="Not available">${UI.unavailable ? `<img src="${UI.unavailable}" alt="Not available">` : "🔒"}</span>` : ""}${!bredSomewhere(d) ? `<span class="po nocave">${notBredLabel(d)}</span>` : !caveCanBreed(d, st.cave) ? `<span class="po nocave">Not breedable in ${caveName()} cave</span>` : DV.purchaseOnly.has(d.name) && !own ? `<span class="po">Purchase only</span>` : ""}
+    ${!bredSomewhere(d) ? `<span class="po nocave">${notBredLabel(d)}</span>` : locked(d) ? `<span class="po nocave">Not available</span>` : !caveCanBreed(d, st.cave) ? `<span class="po nocave">Not breedable in ${caveName()} cave</span>` : DV.purchaseOnly.has(d.name) && !own ? `<span class="po">Purchase only</span>` : ""}
     <div class="nm">${d.name}</div>${note ? `<div class="note">${note}</div>` : ""}<div class="ticks">${ticks}</div></div>`;
 }
 function gridHtml(sec) {
@@ -520,6 +528,10 @@ const setVariant = (v) => { st.variant = v; st.overlay = null; st.sheet = false;
 $("prev").onclick = () => setVariant(keys[(keys.indexOf(st.variant) + keys.length - 1) % keys.length]);
 $("next").onclick = () => setVariant(keys[(keys.indexOf(st.variant) + 1) % keys.length]);
 $("phone").onclick = () => { document.body.classList.toggle("phone"); render(); };
+const setBmode = (m) => { document.body.classList.remove("bm-glint", "bm-glow"); document.body.classList.add("bm-" + m); $("bmode").value = m;
+  const u = new URL(location); u.searchParams.set("breed", m); history.replaceState(null, "", u); };
+$("bmode").onchange = () => setBmode($("bmode").value);
+setBmode(q0.get("breed") === "glow" ? "glow" : "glint");
 $("preset").onchange = () => { DV.preset($("preset").value); bn = null; render(); };
 addEventListener("keydown", (e) => {
   if (e.key === "Escape") { st.overlay = null; st.sheet = false; st.drawer = false; st.menu = false; st.fpop = false; st.dpop = false; return render(); }
