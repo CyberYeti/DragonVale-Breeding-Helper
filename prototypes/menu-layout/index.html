@@ -19,8 +19,8 @@
 <script src="pages.js"></script>
 <script src="images.js"></script>
 <style>
-  :root { --stage:#d8d6cf; --bg:#f6f5f2; --fg:#1d1d1f; --muted:#6b6b70; --card:#fff; --line:#d9d7d0; --own:#2e7d32; --rift:#7b1fa2; --accent:#f2b705; }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --stage:#0b0b0d; --bg:#16161a; --fg:#ececf0; --muted:#9a9aa3; --card:#212127; --line:#383840; } }
+  :root { color-scheme:light; --stage:#d8d6cf; --bg:#f6f5f2; --fg:#1d1d1f; --muted:#6b6b70; --card:#fff; --line:#d9d7d0; --own:#2e7d32; --rift:#7b1fa2; --accent:#f2b705; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme:dark; --stage:#0b0b0d; --bg:#16161a; --fg:#ececf0; --muted:#9a9aa3; --card:#212127; --line:#383840; } }
   * { box-sizing: border-box; }
   body { margin:0; font:14px/1.4 system-ui, sans-serif; background:var(--stage); color:var(--fg); height:100vh; overflow:hidden; }
   #stage { height:calc(100vh - 56px); display:flex; justify-content:center; }
@@ -118,6 +118,8 @@
 
   /* ---------- B: sidebar */
   .B { display:flex; height:100%; }
+  .b-side { scrollbar-width:none; }
+  .b-side::-webkit-scrollbar { display:none; }
   .b-side { width:250px; flex:none; border-right:1px solid var(--line); background:var(--card); overflow:auto; padding:12px; display:flex; flex-direction:column; gap:12px; }
   .b-side .navbtn { display:flex; justify-content:space-between; width:100%; text-align:left; border:0; padding:4px 8px; }
   .b-side details summary { cursor:pointer; padding:4px 0; }
@@ -225,9 +227,12 @@ const PAGES = window.PAGES.map((p) => ({ ...p, group: p.tags[0], dragons: p.drag
 const UI = window.UI_ICONS || {};
 const CROP = new Set(["limited"]);
 const icon = (key, cls) => !UI[key] ? "" : CROP.has(key) ? `<span class="mi crop ${cls || ""}"><img src="${UI[key]}" alt=""></span>` : `<img class="mi ${cls || ""}" src="${UI[key]}" alt="">`;
-const firstEvent = Object.keys(L.events || {})[0];
-const KINDS = [["breedable", icon("breedable"), "Breedable now"], ["limited", icon("limited"), "Limited rotation"], ["event", firstEvent ? icon("event:" + firstEvent) : "", "Event"]];
-const EVENTS = Object.entries(L.events || {}).map(([name, ev]) => ({ name, end: ev.countdown,
+// ?noevent=1 simulates a Data:Limited.json with no running event.
+const EVENT_SRC = new URLSearchParams(location.search).get("noevent") ? {} : (L.events || {});
+const firstEvent = Object.keys(EVENT_SRC)[0];
+// Built on each render, so the Event tab picks up its icon once the live lookup returns.
+const kinds = () => [["breedable", icon("breedable"), "Breedable now"], ["limited", icon("limited"), "Limited rotation"], ["event", firstEvent ? icon("event:" + firstEvent) : "", firstEvent ? "Event" : "No event"]];
+const EVENTS = Object.entries(EVENT_SRC).map(([name, ev]) => ({ name, end: ev.countdown,
   dragons: Object.entries(ev.dragons || {}).filter(([n]) => DV.byName.has(n)).map(([n, v]) => ({ d: DV.byName.get(n), cost: v.Cost, cur: v.Currency, breedable: v.Breedable !== false })) }));
 const eventNames = new Set(EVENTS.flatMap((e) => e.dragons.map((x) => x.d.name)));
 const LIMITED = Object.entries(L.dragons || {}).filter(([n]) => DV.byName.has(n)).map(([n, v]) => ({ d: DV.byName.get(n), end: v.countdown }));
@@ -279,12 +284,13 @@ function sectionsFor(tab) {
   if (st.q) { const q = st.q.toLowerCase(); return [{ id: "search", title: `Search: “${st.q}”`, dragons: S.dragons.filter((d) => d.name.toLowerCase().includes(q)) }]; }
   if (tab === "breedable") return [{ id: "breedable", title: "Breedable now", sub: `in the ${CAVES.find((c) => c[0] === st.cave)[1]} cave`, dragons: S.dragons.filter(breedNow) }];
   if (tab === "limited") return [{ id: "limited", title: "Limited rotation", dragons: LIMITED.map((x) => x.d), notes: new Map(LIMITED.map((x) => [x.d.name, x.end ? "until " + x.end.replace(/, \d{4}/, "") : ""])) }];
+  if (tab === "event" && !EVENTS.length) return [{ id: "event", title: "No event", dragons: [], empty: "No event is running right now. This tab fills in by itself when the next event starts." }];
   if (tab === "event") return EVENTS.map((e, i) => ({ id: "event" + i, title: icon("event:" + e.name) + e.name, sub: "ends " + e.end, dragons: e.dragons.map((x) => x.d),
     notes: new Map(e.dragons.map((x) => [x.d.name, x.cost ? `${x.cost.toLocaleString()} ${x.cur}` : ""])) }));
   const p = PAGES.find((p) => "page:" + p.name === tab);
   return [{ id: tab, title: p.name, sub: GROUPS.find((g) => g[0] === p.group)[1] + " page", dragons: p.dragons, page: p.name }];
 }
-const tabTitle = (tab) => tab.startsWith("page:") ? tab.slice(5) : KINDS.find((k) => k[0] === tab)[2];
+const tabTitle = (tab) => tab.startsWith("page:") ? tab.slice(5) : kinds().find((k) => k[0] === tab)[2];
 const progress = (dragons) => { const all = dragons.filter(shown); return [all.filter(ownedM).length, all.length]; };
 
 // ---------- shared pieces
@@ -304,7 +310,7 @@ function tileHtml(d, note) {
 function gridHtml(sec) {
   const vis = sec.dragons.filter(passes);
   return vis.length ? `<div class="grid">${vis.map((d) => tileHtml(d, sec.notes && sec.notes.get(d.name))).join("")}</div>`
-    : `<p class="muted empty">${sec.dragons.filter(shown).length ? "Nothing here matches the filters." : "Nothing here in this Form mode."}</p>`;
+    : `<p class="muted empty">${sec.empty || (sec.dragons.filter(shown).length ? "Nothing here matches the filters." : "Nothing here with this Owned forms setting.")}</p>`;
 }
 function secCount(sec) { const [o, n] = progress(sec.dragons), v = sec.dragons.filter(passes).length; return `${o}/${n} owned${v !== n ? ` · ${v} shown` : ""}`; }
 const modeSeg = () => `<span class="seg" title="Owned forms">${["all", "normal", "rift"].map((m) => `<button data-mode="${m}" class="${st.mode === m ? "on" : ""}">${{ all: "Either", normal: "Normal", rift: "Rift" }[m]}</button>`).join("")}</span>`;
@@ -345,7 +351,7 @@ function renderA() {
   const [o, n] = progress(secs.flatMap((s) => s.dragons));
   return `<div class="A ${st.select ? "selmode" : ""}">
     <header class="a-top"><span class="logo">Breeding Helper</span>${search()}${modeSeg()}${moreMenu()}</header>
-    <nav class="a-kinds" data-keepx="ak">${KINDS.map(([k, ico, t]) => `<button data-tab="${k}" class="${st.tab === k && !st.q ? "on" : ""}">${ico} ${t}</button>`).join("")}<span class="sep"></span>
+    <nav class="a-kinds" data-keepx="ak">${kinds().map(([k, ico, t]) => `<button data-tab="${k}" class="${st.tab === k && !st.q ? "on" : ""}">${ico} ${t}</button>`).join("")}<span class="sep"></span>
       ${GROUPS.map(([g, t]) => `<button data-group="${g}" class="${grp === g && !st.q ? "on" : ""}">${icon("group:" + g)}${t} ▾</button>`).join("")}</nav>
     ${pagesRow}
     <div class="a-tool"><h2>${st.q ? secs[0].title : tabTitle(st.tab)} <span class="muted" style="font-size:13px;font-weight:400">${o}/${n} owned</span></h2>
@@ -366,7 +372,7 @@ function renderB() {
   const side = `<aside class="b-side ${st.drawer ? "open" : ""}" data-keep="bs">
     <div style="display:flex;justify-content:space-between;align-items:center"><b>Breeding Helper</b><button class="b-close small" data-act="drawer">✕</button></div>
     <div><div class="lbl">Breeding cave</div><div class="caves">${CAVES.map(([c, t]) => `<button data-cave="${c}" class="cave ${st.cave === c ? "on" : ""}">${icon("cave:" + c, "ci")}<span>${t}</span></button>`).join("")}</div></div>
-    <div>${KINDS.map(([k, ico, t]) => nav(k, `${ico} ${t}`, sectionsForRaw(k))).join("")}</div>
+    <div>${kinds().map(([k, ico, t]) => nav(k, `${ico} ${t}`, sectionsForRaw(k))).join("")}</div>
     ${GROUPS.map(([g, t]) => `<details name="pagegroups" data-grp="${g}" ${st.openGrp === g ? "open" : ""}><summary>${icon("group:" + g, "gi")}<b>${t}</b> <span class="muted">(${PAGES.filter((p) => p.group === g).length})</span></summary>
       ${PAGES.filter((p) => p.group === g).map((p) => nav("page:" + p.name, icon("page:" + p.name) + p.name, p.dragons)).join("")}</details>`).join("")}
   </aside>`;
@@ -390,7 +396,7 @@ function renderB() {
       <div class="b-head"><h2>${st.q ? secs[0].title : icon(st.tab === "event" ? "event:" + firstEvent : st.tab) + tabTitle(st.tab)}</h2><span class="bar"><i style="width:${n ? (100 * o) / n : 0}%"></i></span><span class="muted">${o}/${n} owned</span>
         <span style="flex:1"></span><button data-act="select" class="${st.select ? "on" : ""}">Select</button>${fpop}${dpop}${st.q ? "" : `<button data-act="graph" data-page="${esc(tabTitle(st.tab))}">Graph</button>`}</div>${active}
       <main class="scroll" data-keep="b">${secs.map((s) => (secs.length > 1 ? `<div class="sechead"><h3>${s.title}</h3><span class="muted">${s.sub || ""} · ${secCount(s)}</span></div>` : "") + gridHtml(s)).join("")}</main>
-      ${st.select ? "" : `<nav class="b-bottom"><button data-act="drawer" class="${st.tab.startsWith("page:") ? "on" : ""}"><span class="bi">${icon("dragonarium")}</span>Dragonarium</button>${KINDS.map(([k, ico, t]) => `<button data-tab="${k}" class="${st.tab === k ? "on" : ""}"><span class="bi">${ico}</span>${t.replace(" rotation", "").replace(" now", "")}</button>`).join("")}</nav>`}
+      ${st.select ? "" : `<nav class="b-bottom"><button data-act="drawer" class="${st.tab.startsWith("page:") ? "on" : ""}"><span class="bi">${icon("dragonarium")}</span>Dragonarium</button>${kinds().map(([k, ico, t]) => `<button data-tab="${k}" class="${st.tab === k ? "on" : ""}"><span class="bi">${ico}</span>${t.replace(" rotation", "").replace(" now", "")}</button>`).join("")}</nav>`}
     </div></div>`;
 }
 function sectionsForRaw(tab) { const q = st.q; st.q = ""; const r = sectionsFor(tab).flatMap((s) => s.dragons); st.q = q; return r; }
@@ -398,7 +404,7 @@ function sectionsForRaw(tab) { const q = st.q; st.q = ""; const r = sectionsFor(
 // ---------- Variant C: one long scroll with a jump rail
 function allSectionsC() {
   const out = [];
-  for (const [k] of KINDS) for (const s of sectionsFor(k)) out.push({ ...s, group: "kinds" });
+  for (const [k] of kinds()) for (const s of sectionsFor(k)) out.push({ ...s, group: "kinds" });
   for (const [g] of GROUPS) for (const p of PAGES.filter((p) => p.group === g)) out.push({ id: "page:" + p.name, title: p.name, dragons: p.dragons, page: p.name, group: g });
   return out;
 }
@@ -533,6 +539,14 @@ addEventListener("keydown", (e) => {
 window.onerror = (m) => document.body.insertAdjacentHTML("afterbegin", `<pre style="color:red;position:fixed;top:0;z-index:99;background:#fff">${m}</pre>`);
 if (q0.get("phone")) document.body.classList.add("phone");
 DV.preset("mid");
+// Event icon: resolved live from the event's name ("Om of Noms: …" -> OmOfNomsDragonariumIcon.png); blank if the wiki has none.
+for (const name of Object.keys(EVENT_SRC)) {
+  delete UI["event:" + name];
+  const file = "File:" + name.split(":")[0].replace(/[^A-Za-z0-9]/g, "") + "DragonariumIcon.png";
+  fetch("https://dragonvale.fandom.com/api.php?action=query&prop=imageinfo&iiprop=url&iiurlwidth=96&format=json&formatversion=2&origin=*&titles=" + encodeURIComponent(file))
+    .then((r) => r.json()).then((j) => { const ii = j.query.pages[0].imageinfo; if (ii) { UI["event:" + name] = ii[0].thumburl || ii[0].url; render(); } })
+    .catch(() => {});
+}
 if (q0.get("colour")) st.colour = true;
 if (q0.get("cave")) st.cave = q0.get("cave");
 if (q0.get("demo") === "display") st.dpop = true;
