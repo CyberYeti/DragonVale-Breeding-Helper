@@ -55,6 +55,7 @@
   .tile .note { font-size:10px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .tile .lock { position:absolute; top:3px; left:5px; font-size:13px; }
   .tile .po { position:absolute; top:32%; left:0; right:0; background:#000b; color:#fff; font-size:10px; font-weight:600; padding:1px 0; }
+  .tile .po.nocave { background:#5a1a1ae6; line-height:1.2; padding:2px 4px; }
   .tile .ticks { display:flex; gap:3px; justify-content:center; margin-top:2px; }
   .tile .ticks button { font-size:10px; padding:0 6px; border-radius:6px; color:var(--muted); line-height:16px; }
   .tile .ticks button.on { background:var(--own); color:#fff; border-color:var(--own); }
@@ -248,6 +249,12 @@ function breedSets() {
   for (const d of S.dragons) if (anyParent && d.routes.some((r) => r.kind === "Co-op bred") && !DV.outOfRotation(d) && !DV.purchaseOnly.has(d.name)) bn.coop.add(d.name);
   return bn;
 }
+// Whether a cave can ever breed this Dragon, whatever the Collection holds.
+const hasRoute = (d, kind) => d.routes.some((r) => r.kind === kind);
+const caveCanBreed = (d, cave) => cave === "rift" ? (d.isRiftDragon || d.hasRiftForm) && hasRoute(d, "Bred")
+  : !d.isRiftDragon && (hasRoute(d, "Bred") || (cave === "coop" && hasRoute(d, "Co-op bred")));
+const bredSomewhere = (d) => CAVES.some(([c]) => caveCanBreed(d, c));
+const caveName = () => CAVES.find((c) => c[0] === st.cave)[1];
 const caveForm = () => st.cave === "rift" ? "rift" : "normal";
 const caveMakes = (d) => { const s = breedSets();
   if (st.cave === "rift") return d.isRiftDragon ? s.normal.has(d.name) : s.rift.has(d.name);
@@ -287,7 +294,7 @@ function tileHtml(d, note) {
     : `<button data-tick="normal" class="${DV.owns(d.name, "normal") ? "on" : ""}">Normal</button><button data-tick="rift" class="rf ${DV.owns(d.name, "rift") ? "on" : ""}">Rift</button>`;
   return `<div class="tile ${own ? "" : "grey"} ${br ? "pulse" : ""} ${st.sel.has(d.name) ? "sel" : ""}" data-n="${esc(d.name)}" style="--rc:${RC[d.rarity] || "#999"}" title="${esc(d.name)} · ${d.rarity}${br ? " · Breedable now" : ""}">
     <img loading="lazy" src="${IMG(d)}" alt="" onerror="imgErr(this)">
-    ${locked(d) ? `<span class="lock" title="Not available">${UI.unavailable ? `<img src="${UI.unavailable}" alt="Not available">` : "🔒"}</span>` : ""}${DV.purchaseOnly.has(d.name) && !own ? `<span class="po">Purchase only</span>` : ""}
+    ${locked(d) ? `<span class="lock" title="Not available">${UI.unavailable ? `<img src="${UI.unavailable}" alt="Not available">` : "🔒"}</span>` : ""}${bredSomewhere(d) && !caveCanBreed(d, st.cave) ? `<span class="po nocave">Not breedable in ${caveName()} cave</span>` : DV.purchaseOnly.has(d.name) && !own ? `<span class="po">Purchase only</span>` : ""}
     <div class="nm">${d.name}</div>${note ? `<div class="note">${note}</div>` : ""}<div class="ticks">${ticks}</div></div>`;
 }
 function gridHtml(sec) {
