@@ -131,6 +131,18 @@
   button.factive { border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent); }
   .fbadge { background:var(--accent); color:#000; border-radius:999px; padding:0 6px; font-size:11px; margin-left:2px; }
   .b-active { display:flex; gap:6px; align-items:center; flex-wrap:wrap; padding:2px 12px 6px; }
+  img.mi { width:20px; height:20px; object-fit:contain; vertical-align:middle; margin-right:6px; }
+  img.mi.gi { width:22px; height:22px; }
+  .navbtn > span:first-child { display:flex; align-items:center; }
+  .sechead h3 img.mi { width:24px; height:24px; }
+  .b-bottom .bi { height:24px; display:flex; align-items:center; }
+  .b-bottom .bi img.mi { width:24px; height:24px; margin:0; }
+  .b-side details summary { display:flex; align-items:center; gap:2px; list-style:none; }
+  .b-side details summary::-webkit-details-marker { display:none; }
+  .b-side details summary::before { content:"▸"; width:14px; color:var(--muted); }
+  .b-side details[open] summary::before { content:"▾"; }
+  .b-head h2 { display:flex; align-items:center; }
+  .b-head h2 img.mi { width:28px; height:28px; }
   .switch { display:flex; gap:8px; align-items:center; cursor:pointer; font-size:13px; }
   .fullcolour .tile.grey img, .fullcolour .tile.pulse img { filter:none; animation:none; }
   .fullcolour .tile.grey .nm { color:var(--muted); }
@@ -198,7 +210,10 @@ const RC = { Primary:"#cfe8cf", Hybrid:"#88ff77", Rare:"#0099FF", Epic:"#8811EE"
 const RARITIES = [...new Set(S.dragons.map((d) => d.rarity))].sort((a, b) => (Object.keys(RC).indexOf(a) + 99) % 99 - (Object.keys(RC).indexOf(b) + 99) % 99);
 const GROUPS = [["elemental", "Elemental"], ["epic", "Epic"], ["special", "Special"]];
 const PAGES = window.PAGES.map((p) => ({ ...p, group: p.tags[0], dragons: p.dragons.map((n) => DV.byName.get(n)) }));
-const KINDS = [["breedable", "🥚", "Breedable now"], ["limited", "⏳", "Limited rotation"], ["event", "🎪", "Event"]];
+const UI = window.UI_ICONS || {};
+const icon = (key, cls) => UI[key] ? `<img class="mi ${cls || ""}" src="${UI[key]}" alt="">` : "";
+const firstEvent = Object.keys(L.events || {})[0];
+const KINDS = [["breedable", icon("breedable"), "Breedable now"], ["limited", icon("limited"), "Limited rotation"], ["event", firstEvent ? icon("event:" + firstEvent) : "", "Event"]];
 const EVENTS = Object.entries(L.events || {}).map(([name, ev]) => ({ name, end: ev.countdown,
   dragons: Object.entries(ev.dragons || {}).filter(([n]) => DV.byName.has(n)).map(([n, v]) => ({ d: DV.byName.get(n), cost: v.Cost, cur: v.Currency, breedable: v.Breedable !== false })) }));
 const eventNames = new Set(EVENTS.flatMap((e) => e.dragons.map((x) => x.d.name)));
@@ -234,7 +249,7 @@ function sectionsFor(tab) {
   if (st.q) { const q = st.q.toLowerCase(); return [{ id: "search", title: `Search: “${st.q}”`, dragons: S.dragons.filter((d) => d.name.toLowerCase().includes(q)) }]; }
   if (tab === "breedable") return [{ id: "breedable", title: "Breedable now", sub: "from your Collection", dragons: S.dragons.filter((d) => breedM(d) && !ownedM(d)) }];
   if (tab === "limited") return [{ id: "limited", title: "Limited rotation", dragons: LIMITED.map((x) => x.d), notes: new Map(LIMITED.map((x) => [x.d.name, x.end ? "until " + x.end.replace(/, \d{4}/, "") : ""])) }];
-  if (tab === "event") return EVENTS.map((e, i) => ({ id: "event" + i, title: "🎪 " + e.name, sub: "ends " + e.end, dragons: e.dragons.map((x) => x.d),
+  if (tab === "event") return EVENTS.map((e, i) => ({ id: "event" + i, title: icon("event:" + e.name) + e.name, sub: "ends " + e.end, dragons: e.dragons.map((x) => x.d),
     notes: new Map(e.dragons.map((x) => [x.d.name, x.cost ? `${x.cost.toLocaleString()} ${x.cur}` : ""])) }));
   const p = PAGES.find((p) => "page:" + p.name === tab);
   return [{ id: tab, title: p.name, sub: GROUPS.find((g) => g[0] === p.group)[1] + " page", dragons: p.dragons, page: p.name }];
@@ -299,9 +314,9 @@ function renderA() {
   const pagesRow = grp ? `<nav class="a-pages" data-keepx="ap">${PAGES.filter((p) => p.group === grp).map((p) => `<button data-tab="page:${esc(p.name)}" class="${st.tab === "page:" + p.name && !st.q ? "on" : ""}">${p.name}</button>`).join("")}</nav>` : "";
   const [o, n] = progress(secs.flatMap((s) => s.dragons));
   return `<div class="A ${st.select ? "selmode" : ""}">
-    <header class="a-top"><span class="logo">🐉 Breeding Helper</span>${search()}${modeSeg()}${moreMenu()}</header>
+    <header class="a-top"><span class="logo">Breeding Helper</span>${search()}${modeSeg()}${moreMenu()}</header>
     <nav class="a-kinds" data-keepx="ak">${KINDS.map(([k, ico, t]) => `<button data-tab="${k}" class="${st.tab === k && !st.q ? "on" : ""}">${ico} ${t}</button>`).join("")}<span class="sep"></span>
-      ${GROUPS.map(([g, t]) => `<button data-group="${g}" class="${grp === g && !st.q ? "on" : ""}">${t} ▾</button>`).join("")}</nav>
+      ${GROUPS.map(([g, t]) => `<button data-group="${g}" class="${grp === g && !st.q ? "on" : ""}">${icon("group:" + g)}${t} ▾</button>`).join("")}</nav>
     ${pagesRow}
     <div class="a-tool"><h2>${st.q ? secs[0].title : tabTitle(st.tab)} <span class="muted" style="font-size:13px;font-weight:400">${o}/${n} owned</span></h2>
       <span class="filters chips"><span class="lbl">Owned</span>${ownedChips()}<span class="lbl" style="margin-left:8px">Rarity</span>${rarChips()}</span>
@@ -319,12 +334,12 @@ function renderB() {
   const curGrp = st.tab.startsWith("page:") ? PAGES.find((p) => "page:" + p.name === st.tab).group : null;
   const nav = (tab, label, dragons) => { const [po, pn] = progress(dragons); return `<button class="navbtn ${st.tab === tab && !st.q ? "on" : ""}" data-tab="${esc(tab)}"><span>${label}</span><span class="prog">${pn ? `${po}/${pn}` : "—"}</span></button>`; };
   const side = `<aside class="b-side ${st.drawer ? "open" : ""}" data-keep="bs">
-    <div style="display:flex;justify-content:space-between;align-items:center"><b>🐉 Breeding Helper</b><button class="b-close small" data-act="drawer">✕</button></div>
+    <div style="display:flex;justify-content:space-between;align-items:center"><b>Breeding Helper</b><button class="b-close small" data-act="drawer">✕</button></div>
     <div><div class="lbl">Form mode</div>${modeSeg()}</div>
-    <label class="switch"><input type="checkbox" data-colour ${st.colour ? "checked" : ""}><span>🎨 Show all Dragons in colour</span></label>
+    <label class="switch"><input type="checkbox" data-colour ${st.colour ? "checked" : ""}><span>Show all Dragons in colour</span></label>
     <div>${KINDS.map(([k, ico, t]) => nav(k, `${ico} ${t}`, sectionsForRaw(k))).join("")}</div>
-    ${GROUPS.map(([g, t]) => `<details name="pagegroups" data-grp="${g}" ${st.openGrp === g ? "open" : ""}><summary><b>${t}</b> <span class="muted">(${PAGES.filter((p) => p.group === g).length})</span></summary>
-      ${PAGES.filter((p) => p.group === g).map((p) => nav("page:" + p.name, p.name, p.dragons)).join("")}</details>`).join("")}
+    ${GROUPS.map(([g, t]) => `<details name="pagegroups" data-grp="${g}" ${st.openGrp === g ? "open" : ""}><summary>${icon("group:" + g, "gi")}<b>${t}</b> <span class="muted">(${PAGES.filter((p) => p.group === g).length})</span></summary>
+      ${PAGES.filter((p) => p.group === g).map((p) => nav("page:" + p.name, icon("page:" + p.name) + p.name, p.dragons)).join("")}</details>`).join("")}
   </aside>`;
   // Filters live behind a button; active ones show as removable chips under the title.
   const fc = filterCount();
@@ -337,10 +352,10 @@ function renderB() {
   return `<div class="B ${st.select ? "selmode" : ""} ${st.colour ? "fullcolour" : ""}">${side}${st.drawer ? `<div class="backdrop" data-act="drawer"></div>` : ""}
     <div class="b-main">
       <header class="b-top"><button class="b-burger" data-act="drawer">☰</button>${search()}${moreMenu()}</header>
-      <div class="b-head"><h2>${st.q ? secs[0].title : tabTitle(st.tab)}</h2><span class="bar"><i style="width:${n ? (100 * o) / n : 0}%"></i></span><span class="muted">${o}/${n} owned</span>
+      <div class="b-head"><h2>${st.q ? secs[0].title : icon(st.tab === "event" ? "event:" + firstEvent : st.tab) + tabTitle(st.tab)}</h2><span class="bar"><i style="width:${n ? (100 * o) / n : 0}%"></i></span><span class="muted">${o}/${n} owned</span>
         <span style="flex:1"></span><button data-act="select" class="${st.select ? "on" : ""}">Select</button>${fpop}${st.q ? "" : `<button data-act="graph" data-page="${esc(tabTitle(st.tab))}">🕸 Graph</button>`}</div>${active}
       <main class="scroll" data-keep="b">${secs.map((s) => (secs.length > 1 ? `<div class="sechead"><h3>${s.title}</h3><span class="muted">${s.sub || ""} · ${secCount(s)}</span></div>` : "") + gridHtml(s)).join("")}</main>
-      ${st.select ? "" : `<nav class="b-bottom"><button data-act="drawer" class="${st.tab.startsWith("page:") ? "on" : ""}"><span>📚</span>Pages</button>${KINDS.map(([k, ico, t]) => `<button data-tab="${k}" class="${st.tab === k ? "on" : ""}"><span>${ico}</span>${t.replace(" rotation", "").replace(" now", "")}</button>`).join("")}</nav>`}
+      ${st.select ? "" : `<nav class="b-bottom"><button data-act="drawer" class="${st.tab.startsWith("page:") ? "on" : ""}"><span>📚</span>Pages</button>${KINDS.map(([k, ico, t]) => `<button data-tab="${k}" class="${st.tab === k ? "on" : ""}"><span class="bi">${ico}</span>${t.replace(" rotation", "").replace(" now", "")}</button>`).join("")}</nav>`}
     </div></div>`;
 }
 function sectionsForRaw(tab) { const q = st.q; st.q = ""; const r = sectionsFor(tab).flatMap((s) => s.dragons); st.q = q; return r; }
@@ -366,7 +381,7 @@ function renderC() {
     const short = s.group === "kinds" ? s.title.slice(0, 2) : s.title.slice(0, 3);
     return g + `<a data-jump="sec-${esc(s.id)}" title="${esc(s.title)}"><span class="long">${s.title}</span><span class="short">${short}</span></a>`; }).join("")}</nav>`;
   return `<div class="C ${st.select ? "selmode" : ""}">
-    <header class="c-top"><div class="c-row"><b class="logo">🐉</b>${search("Search every Dragon…")}${modeSeg()}${moreMenu()}</div>
+    <header class="c-top"><div class="c-row">${search("Search every Dragon…")}${modeSeg()}${moreMenu()}</div>
       <div class="c-chips">${ownedChips()}<span class="lbl" style="margin:0 4px 0 8px">Rarity</span>${rarChips()}<span class="muted c-hint" style="margin-left:10px;white-space:nowrap">Long-press a tile to select</span></div></header>
     <div class="c-body"><main class="scroll" id="cscroll" data-keep="c">${body}</main>${rail}</div></div>`;
 }

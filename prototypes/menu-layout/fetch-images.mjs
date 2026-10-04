@@ -26,5 +26,26 @@ const eurl = "https://dragonvale.fandom.com/api.php?action=query&prop=imageinfo&
 const ej = await (await fetch(eurl, { headers: { "User-Agent": "DragonValeBreedingHelper-prototype/0.1 (personal tool)" } })).json();
 for (const p of ej.query.pages) if (p.imageinfo) icons[p.title.replace(/^File:Icon /, "").replace(/\.png$/, "")] = p.imageinfo[0].thumburl || p.imageinfo[0].url;
 console.log("element icons:", Object.keys(icons).length, "of", elems.size, "missing:", [...elems].filter((e) => !icons[e]).join(", "));
-writeFileSync(join(here, "images.js"), "// PROTOTYPE (throwaway): Dragon -> thumbnail URL, Element -> icon URL\nwindow.IMAGES = " + JSON.stringify(out) + ";\nwindow.ELEMENT_ICONS = " + JSON.stringify(icons) + ";\n");
+
+// Menu icons from the game: Dragonarium page/group icons, the egg tab, the limited hourglass,
+// and an event's icon guessed from its name ("Om of Noms: …" -> OmOfNomsDragonariumIcon.png).
+globalThis.window = {};
+await import("file://" + join(here, "pages.js").replace(/\\/g, "/"));
+const squash = (s) => s.replace(/[^A-Za-z0-9]/g, "");
+const want = { breedable: "EggTab.png", limited: "LimitedTimeDragonariumHelpIcon.png" };
+for (const g of ["Elemental", "Epic", "Special"]) want["group:" + g.toLowerCase()] = `${g}DragonariumIcon.png`;
+for (const p of window.PAGES) want["page:" + p.name] = `${squash(p.name)}DragonariumIcon.png`;
+for (const ev of Object.keys(S.limitedRaw.events || {})) want["event:" + ev] = `${squash(ev.split(":")[0])}DragonariumIcon.png`;
+const ui = {};
+const keys = Object.keys(want);
+for (let i = 0; i < keys.length; i += 50) {
+  const batch = keys.slice(i, i + 50);
+  const u = "https://dragonvale.fandom.com/api.php?action=query&prop=imageinfo&iiprop=url&iiurlwidth=48&format=json&formatversion=2&titles=" + encodeURIComponent(batch.map((k) => "File:" + want[k]).join("|"));
+  const j = await (await fetch(u, { headers: { "User-Agent": "DragonValeBreedingHelper-prototype/0.1 (personal tool)" } })).json();
+  const norm = new Map((j.query.normalized || []).map((n) => [n.from, n.to]));
+  const byTitle = new Map(j.query.pages.map((p) => [p.title, p.imageinfo && (p.imageinfo[0].thumburl || p.imageinfo[0].url)]));
+  for (const k of batch) { const t = byTitle.get(norm.get("File:" + want[k]) || "File:" + want[k]); if (t) ui[k] = t; }
+}
+console.log("menu icons:", Object.keys(ui).length, "of", keys.length, "missing:", keys.filter((k) => !ui[k]).join(", "));
+writeFileSync(join(here, "images.js"), "// PROTOTYPE (throwaway): Dragon -> thumbnail URL, Element -> icon URL, menu key -> icon URL\nwindow.IMAGES = " + JSON.stringify(out) + ";\nwindow.ELEMENT_ICONS = " + JSON.stringify(icons) + ";\nwindow.UI_ICONS = " + JSON.stringify(ui) + ";\n");
 console.log(Object.keys(out).length, "of", names.length, "resolved; missing:", names.filter((n) => !out[n]).join(", "));
