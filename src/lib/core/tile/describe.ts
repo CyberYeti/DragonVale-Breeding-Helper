@@ -1,10 +1,10 @@
 // describeTile: what one Dragon tile shows in a cave (spec §8 Dragon tile).
 
 import type { Dragon } from '../../snapshot';
-import { breedableNow, caveCanMake, caveForm, type Cave } from '../breeding';
-import { formsOf, isOwned, ticks, type Collection, type Form } from '../collection';
+import { breedableNow, caveCanMake, caveForm, ownedPerSetting, type Cave } from '../breeding';
+import { formsOf, isOwned, ticks, type Collection } from '../collection';
 import type { World } from '../world';
-import type { Banner, Display, OwnedForms, Tick, TileView } from './types';
+import type { Banner, Display, Tick, TileView } from './types';
 
 /** The tile for `dragon` in `cave` under the Display settings. */
 export function describeTile(world: World, dragon: Dragon, cave: Cave, display: Display): TileView {
@@ -20,21 +20,6 @@ export function describeTile(world: World, dragon: Dragon, cave: Cave, display: 
     opensAs,
     ownedBanner: isOwned(world.collection, dragon, opensAs),
   };
-}
-
-/**
- * Whether `dragon` counts as owned under Owned forms in `cave`: Either counts
- * either form (the Rift form in the Rift cave), Normal the normal form, Rift
- * the Rift form. A single-form Dragon always counts its one form, so an
- * owned Fire stays owned in the Rift cave and an owned Rift dragon under
- * Normal (the menu hides those Dragons; graphs still draw them).
- */
-export function ownedPerSetting(collection: Collection, dragon: Dragon, cave: Cave, ownedForms: OwnedForms): boolean {
-  const forms = formsOf(dragon);
-  if (forms.length === 1) return isOwned(collection, dragon);
-  const counted: Form | undefined =
-    ownedForms === 'either' ? (cave === 'rift' ? 'rift' : undefined) : ownedForms;
-  return isOwned(collection, dragon, counted);
 }
 
 /** The first banner that applies, in spec §8's order. */

@@ -6,6 +6,13 @@ import type { Dragon } from '../../snapshot';
 export type Cave = 'normal' | 'rift' | 'coop';
 
 /**
+ * The Owned forms display setting: which owned forms count. Either counts
+ * either form, except in the Rift cave, where it counts the Rift form.
+ * Display only: it never changes what is breedable (see `ownedPerSetting`).
+ */
+export type OwnedForms = 'either' | 'normal' | 'rift';
+
+/**
  * Two parents. Unordered, except that a named parent comes first (for a
  * one-name Requirement) and a Co-op bred Route's friend's Dragon comes first.
  * Both can be the same Dragon: the Collection has no counts.
