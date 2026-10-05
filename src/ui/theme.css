@@ -1,0 +1,63 @@
+/*
+ * App-wide design tokens. Components read these custom properties and keep
+ * their own styles scoped. Dark mode follows the OS unless
+ * <html data-theme="light"> forces light.
+ */
+:root {
+  color-scheme: light;
+  --bg: #f6f5f2;
+  --fg: #1d1d1f;
+  --muted: #6b6b70;
+  --card: #fff;
+  --line: #d9d7d0;
+  /* Owned / Normal form tick on */
+  --own: #2e7d32;
+  /* Rift form tick on */
+  --rift: #7b1fa2;
+  --accent: #f2b705;
+  /* Banners across the art */
+  --banner-bg: #000b;
+  --banner-blocked-bg: #5a1a1ae6;
+  --banner-fg: #fff;
+
+  /* Rarity border colours, from the wiki's MediaWiki:Dragons.css (spec §8). */
+  --rarity-primary: #eeffee;
+  --rarity-hybrid: #88ff77;
+  --rarity-rare: #0099ff;
+  --rarity-epic: #8811ee;
+  --rarity-galaxy: #00ddff;
+  --rarity-gemstone: #ff7711;
+  --rarity-legendary: #ee2200;
+  --rarity-mythic: #ff22bb;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #16161a;
+    --fg: #ececf0;
+    --muted: #9a9aa3;
+    --card: #212127;
+    --line: #383840;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font: 14px/1.4 system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
