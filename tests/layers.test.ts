@@ -1,7 +1,10 @@
 // Checks the layer rules in eslint.config.js by linting small snippets as if
 // they lived at a given path. The files don't need to exist.
 import { ESLint } from 'eslint';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+// Spinning up ESLint is slow on a cold start; the 5s default isn't enough.
+vi.setConfig({ testTimeout: 30_000 });
 
 const eslint = new ESLint();
 
