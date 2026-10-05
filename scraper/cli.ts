@@ -4,14 +4,18 @@
 //   npm run snapshot -- --offline      read the committed raw pages, no network
 //   add --fixture to (re)cut fixtures/real-records.json from the pages read
 //
-// The snapshot is built and its report printed; writing public/data/snapshot.json
-// comes with Routes, renames and images (#26-#28).
+// The snapshot is built against the committed public/data/snapshot.json (if
+// any), the person running it confirms or rejects each rename candidate, and
+// the snapshot is written to public/data/snapshot.json with its report printed.
+// Images come later (#28).
 
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { createInterface } from 'node:readline';
 import { loadSnapshot, type Snapshot } from '../src/lib/snapshot';
 import { buildSnapshot, type BuildReport } from './build';
+import { applyRenames, confirmRenames, type AskRename, type RenameCandidate } from './renames';
 import { fetchPages, writeRawPages, PAGE_TITLES, RAW_DIR, type RawPages } from './pages';
 import { cutRealRecords, REAL_RECORDS_FILE } from './fixture';
 
@@ -47,9 +51,23 @@ async function main(args: string[]): Promise<void> {
   }
 
   if (fetchOnly) return;
-  const { report } = buildSnapshot(raw, await readPrevious());
+  const built = buildSnapshot(raw, await readPrevious());
+  const { report } = built;
   printReport(report);
-  console.log('Writing the snapshot is not implemented yet.');
+
+  let snapshot = built.snapshot;
+  if (report.renameCandidates.length > 0) {
+    const confirmed = await withTerminalPrompt((ask) => confirmRenames(report.renameCandidates, ask));
+    snapshot = applyRenames(snapshot, confirmed);
+    for (const { from, to } of confirmed) console.log(`Renamed: ${from} -> ${to}`);
+    if (confirmed.length === 0) console.log('No renames confirmed.');
+  }
+
+  const json = JSON.stringify(snapshot, null, 2) + '\n';
+  loadSnapshot(JSON.parse(json));
+  await mkdir(dirname(join(root, SNAPSHOT_FILE)), { recursive: true });
+  await writeFile(join(root, SNAPSHOT_FILE), json, 'utf8');
+  console.log(`Wrote ${SNAPSHOT_FILE}.`);
 }
 
 /** The committed snapshot, if there is one: renames carry over from it. */
@@ -63,7 +81,7 @@ async function readPrevious(): Promise<Snapshot | null> {
   return loadSnapshot(JSON.parse(text));
 }
 
-function printReport({ counts, warnings }: BuildReport): void {
+function printReport({ counts, warnings, added, removed, renameCandidates }: BuildReport): void {
   const { pages, traits } = counts;
   console.log(`Built the snapshot: ${counts.dragons} Dragons, ${counts.limited} limited.`);
   console.log(`  pages: ${pages.elemental} Elemental, ${pages.epic} Epic, ${pages.special} Special`);
@@ -71,6 +89,44 @@ function printReport({ counts, warnings }: BuildReport): void {
   console.log(`  never parents: ${counts.cannotBeParent} (Gemstone + Crystalline: ${counts.gemstoneAndCrystalline})`);
   if (warnings.length === 0) console.log('No warnings.');
   for (const warning of warnings) console.log(`warning: ${warning}`);
+  console.log(`Added since the previous snapshot (${added.length}): ${added.join(', ') || 'none'}`);
+  console.log(`Removed since the previous snapshot (${removed.length}): ${removed.join(', ') || 'none'}`);
+  if (renameCandidates.length > 0) console.log(`Rename candidates to confirm: ${renameCandidates.length}`);
+}
+
+const REASONS: Record<RenameCandidate['reason'], string> = {
+  'same-order': 'same Order',
+  'only-change': 'the only Dragon removed and the only one added',
+};
+
+/**
+ * Runs `use` with an AskRename that asks on the terminal. It takes only y or
+ * n and asks again otherwise; if input ends before an answer, the run fails
+ * rather than guessing.
+ */
+async function withTerminalPrompt<T>(use: (ask: AskRename) => Promise<T>): Promise<T> {
+  // Reading lines through the iterator buffers them, so piped answers aren't lost.
+  const rl = createInterface({ input: process.stdin });
+  const lines = rl[Symbol.asyncIterator]();
+  const question = async (text: string): Promise<string> => {
+    process.stdout.write(text);
+    const line = await lines.next();
+    if (line.done) throw new Error('Input ended before every rename candidate was answered.');
+    return line.value;
+  };
+  const ask: AskRename = async ({ from, to, reason }) => {
+    for (;;) {
+      const answer = (await question(`Rename ${from} -> ${to} (${REASONS[reason]})? [y/n] `)).trim().toLowerCase();
+      if (answer === 'y' || answer === 'yes') return true;
+      if (answer === 'n' || answer === 'no') return false;
+      console.log('Please answer y or n.');
+    }
+  };
+  try {
+    return await use(ask);
+  } finally {
+    rl.close();
+  }
 }
 
 main(process.argv.slice(2)).catch((error: unknown) => {
