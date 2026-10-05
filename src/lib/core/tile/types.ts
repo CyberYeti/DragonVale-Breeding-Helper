@@ -1,14 +1,11 @@
 // What a Dragon tile shows (spec §8 Dragon tile, Filters and Display).
 
 import type { Dragon } from '../../snapshot';
-import type { Cave } from '../breeding';
+import type { Cave, OwnedForms } from '../breeding';
 import type { Form } from '../collection';
 
-/**
- * The Owned forms display setting: which owned forms count. Either counts
- * either form, except in the Rift cave, where it counts the Rift form.
- */
-export type OwnedForms = 'either' | 'normal' | 'rift';
+/** Owned forms lives in core/breeding so core/menu shares it; re-exported here. */
+export type { OwnedForms } from '../breeding';
 
 /** The Display popover's settings. */
 export type Display = {
