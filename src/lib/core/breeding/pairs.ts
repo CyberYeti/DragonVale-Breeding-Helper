@@ -244,3 +244,35 @@ export function* pairs(index: ParentIndex, req: Requirement): Generator<Pair, vo
     }
   }
 }
+
+const poolCache = new WeakMap<Dragon, ReadonlySet<string>>();
+const poolOf = (dragon: Dragon): ReadonlySet<string> => {
+  let pool = poolCache.get(dragon);
+  if (!pool) poolCache.set(dragon, (pool = new Set(dragon.breedingElements)));
+  return pool;
+};
+
+/** Whether `dragon` is the basic primary of `element`: a Primary Dragon carrying only it. */
+const isPrimaryOf = (dragon: Dragon, element: string) =>
+  dragon.rarity === 'Primary' && poolOf(dragon).size === 1 && poolOf(dragon).has(element);
+
+/**
+ * Whether `a` and `b` would make a Valid pair for `req` if both counted as
+ * parents, whoever owns them: both can be parents, they aren't opposite
+ * primaries, any named parents are them, and their pools meet the Elements.
+ */
+export function wouldBeValidPair(world: World, req: Requirement, a: Dragon, b: Dragon): boolean {
+  if (!a.canBeParent || !b.canBeParent) return false;
+  for (const [x, y] of world.snapshot.opposites) {
+    if ((isPrimaryOf(a, x) && isPrimaryOf(b, y)) || (isPrimaryOf(a, y) && isPrimaryOf(b, x))) return false;
+  }
+  const names = req.parents ?? [];
+  if (names.length > 2) return false;
+  if (names.length === 2) {
+    const [n0, n1] = names as [string, string];
+    if (!((a.name === n0 && b.name === n1) || (a.name === n1 && b.name === n0))) return false;
+  } else if (names.length === 1 && a.name !== names[0] && b.name !== names[0]) {
+    return false;
+  }
+  return poolsMeet(req, poolOf(a), poolOf(b));
+}

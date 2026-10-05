@@ -18,7 +18,16 @@ import {
 } from '../testing/fixtures';
 import type { Form } from '../collection';
 import type { World } from '../world';
-import { basicDragon, breedableNow, caveCanMake, caveForm, routeStatus, validPairs, type Pair } from './index';
+import {
+  basicDragon,
+  breedableNow,
+  caveCanMake,
+  caveForm,
+  routeStatus,
+  validPairs,
+  wouldBeValidPair,
+  type Pair,
+} from './index';
 
 const flower = () => dragon({ name: 'Flower', elements: ['Plant', 'Fire'] });
 const moss = () => dragon({ name: 'Moss', elements: ['Plant', 'Earth'] });
@@ -383,5 +392,21 @@ describe('basicDragon', () => {
     const shiny = dragon({ name: 'Shiny', order: 2, elements: ['Gem', 'Fire'] });
     expect(basicDragon(world({ dragons: [ruby, shiny] }), 'Gem')?.name).toBe('Shiny');
     expect(basicDragon(world({ dragons: [ruby] }), 'Gem')?.name).toBe('Ruby');
+  });
+});
+
+describe('wouldBeValidPair', () => {
+  it('checks two Dragons against a Requirement whoever owns them', () => {
+    const w = world({ dragons: [...primaries(), ironwood(), chrome(), moss()] });
+    const d = (name: string) => w.dragons.get(name)!;
+    const plantMetal: Requirement = { elements: ['Plant', 'Metal'] };
+
+    expect(wouldBeValidPair(w, plantMetal, d('Plant'), d('Chrome'))).toBe(true);
+    expect(wouldBeValidPair(w, plantMetal, d('Plant'), d('Metal'))).toBe(false); // opposites
+    expect(wouldBeValidPair(w, plantMetal, d('Plant'), d('Moss'))).toBe(false); // no Metal
+    expect(wouldBeValidPair(w, { parents: ['Moss'], elements: ['Metal'] }, d('Chrome'), d('Moss'))).toBe(true);
+    expect(wouldBeValidPair(w, { parents: ['Moss'], elements: ['Metal'] }, d('Chrome'), d('Metal'))).toBe(false);
+    expect(wouldBeValidPair(w, { parents: ['Moss', 'Chrome'] }, d('Chrome'), d('Moss'))).toBe(true);
+    expect(wouldBeValidPair(w, { parents: ['Moss', 'Chrome'] }, d('Moss'), d('Moss'))).toBe(false);
   });
 });
