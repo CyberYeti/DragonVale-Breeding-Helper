@@ -2,3 +2,4 @@
 export type * from './types';
 export { basicDragon, breedableNow, caveCanMake, caveForm, routeStatus, validPairs } from './rules';
 export { ownedPerSetting } from './owned';
+export { wouldBeValidPair } from './pairs';
