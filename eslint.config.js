@@ -94,7 +94,7 @@ const coreModuleConfigs = Object.entries(coreBelow).map(([name, below]) => {
 });
 
 export default defineConfig(
-  { ignores: ['dist/', 'node_modules/', 'public/', 'fixtures/'] },
+  { ignores: ['dist/', 'node_modules/', 'public/', 'fixtures/', '.claude/', 'prototypes/'] },
   js.configs.recommended,
   ...ts.configs.recommended,
   ...svelte.configs.recommended,
