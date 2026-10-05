@@ -18,14 +18,14 @@ The rift variant of a **Dragon** that also has a normal form. Every Dragon with 
 One of ten markers (one per primary element) that a **Rift form** or **Rift dragon** specimen carries. A **Rift form** gets its trait from the park's rift alignment when it is bred; a **Rift dragon** always has the same one. The **Collection** does not record traits.
 
 **Rift dragon**:
-A **Dragon** whose Elements include Rift, such as Kampos or Fire Rift. It exists only in the Rift Dimension, has no normal form and always has the same **Trait**. Fire Rift is a separate Dragon, not the **Rift form** of Fire.
+A **Dragon** whose Elements include Rift, such as Kampos or Fire Rift. It can only be bred in the Rift Dimension, has no normal form and always has the same **Trait**. Fire Rift is a separate Dragon, not the **Rift form** of Fire.
 _Avoid_: Rift form (for these)
 
 **Rift breeding**:
 Breeding that produces **Rift form** dragons and **Rift dragons**. Both parents must be in **Rift form** or be **Rift dragons**. Some routes also require a parent with a given **Trait**, or a given rift alignment for the park.
 
 **Normal breeding**:
-Breeding that produces normal-form dragons. Parents may be in either form; a **Rift form** dragon just has to be moved out of the Rift Dimension first.
+Breeding that produces normal-form dragons. Parents may be in either form, and **Rift dragons** can be parents too; a Rift-form dragon or Rift dragon just has to be moved out of the Rift Dimension first.
 
 **Route**:
 One way to obtain a **Dragon**, with a kind (Bred, Evolved, Summoned, Purchased, Co-op bred) and what it requires. A Dragon has one or more Routes; Air has a Bred route (Water + Fire) and a Purchased one.
