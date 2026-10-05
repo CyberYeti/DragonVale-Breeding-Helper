@@ -1,0 +1,35 @@
+{
+  "name": "dragonvale-breeding-helper",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json",
+    "snapshot": "tsx scraper/cli.ts"
+  },
+  "dependencies": {
+    "@dagrejs/dagre": "^3.1.1",
+    "@xyflow/svelte": "^1.7.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@tsconfig/svelte": "^5.0.8",
+    "@types/node": "^26.6.4",
+    "eslint": "^10.12.0",
+    "eslint-plugin-svelte": "^3.23.0",
+    "globals": "^17.13.0",
+    "svelte": "^5.57.1",
+    "svelte-check": "^4.7.6",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.1",
+    "vite": "^8.3.2",
+    "vitest": "^5.0.3"
+  }
+}

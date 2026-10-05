@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.vite/
+
+# Untracked local folders in the main checkout
+.claude/
+prototypes/
