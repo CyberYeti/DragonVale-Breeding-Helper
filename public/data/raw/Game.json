@@ -1,0 +1,199 @@
+{
+	"elements": {
+		"primary": [
+			"Plant",
+			"Fire",
+			"Earth",
+			"Cold",
+			"Lightning",
+			"Water",
+			"Air",
+			"Metal",
+			"Light",
+			"Dark"
+		],
+		"epic": [
+			"Rainbow",
+			"Sun",
+			"Moon",
+			"Treasure",
+			"Olympus",
+			"Seasonal",
+			"Apocalypse",
+			"Dream",
+			"Snowflake",
+			"Monolith",
+			"Galaxy",
+			"Ornamental",
+			"Aura",
+			"Chrysalis",
+			"Hidden",
+			"Surface",
+			"Melody",
+			"Zodiac"
+		],
+		"gem": [
+			"Gemstone",
+			"Crystalline"
+		],
+		"legendary": [
+			"Time",
+			"Nest",
+			"Vault"
+		],
+		"mythic": [
+			"Mythic"
+		],
+		"rift": [
+			"Rift"
+		],
+		"other": [
+			"Celebration",
+			"Omni"
+		],
+		"boostable": {
+			"Plant": 0.3,
+			"Fire": 0.3,
+			"Earth": 0.3,
+			"Cold": 0.3,
+			"Lightning": 0.3,
+			"Water": 0.3,
+			"Air": 0.3,
+			"Metal": 0.3,
+			"Light": 0.3,
+			"Dark": 0.3,
+			"Monolith": 0.3,
+			"Zodiac": 0.2,
+			"Chrysalis": 0.3
+		},
+		"multiboostable": {
+			"Plant": 0.02,
+			"Fire": 0.02,
+			"Cold": 0.02,
+			"Lightning": 0.02,
+			"Water": 0.02,
+			"Air": 0.02,
+			"Metal": 0.02,
+			"Light": 0.02,
+			"Dark": 0.02
+		}
+	},
+	"currencies": {
+		"treasure": [
+			"DragonCash",
+			"Gems",
+			"Etherium"
+		],
+		"food": [
+			"Treats"
+		],
+		"xp": [
+			"Experience",
+			"XP Boost"
+		],
+		"event": [
+			"Magic",
+			"Magic Egg",
+			"Firefly",
+			"Candy",
+			"Iceberry",
+			"Rose",
+			"Epic Egg",
+			"Star Dust",
+			"Ticket",
+			"Legendary Egg",
+			"Ring",
+			"Mythic Egg",
+			"Spice",
+			"Flower",
+			"Pine Cone",
+			"Doubloon"
+		],
+		"essense": [
+			"Eternal",
+			"Vital",
+			"Abundant"
+		],
+		"other": [
+			"Wish",
+			"Soul Shard"
+		],
+		"limited": [
+			"Time Skip Token"
+		]
+	},
+	"rarities": [
+		"Primary",
+		"Hybrid",
+		"Rare",
+		"Epic",
+		"Gemstone",
+		"Legendary",
+		"Mythic"
+	],
+	"houses": [
+		"Blazing Gale",
+		"Hidden Bolt",
+		"Icy Torrent",
+		"Iron Blossom",
+		"Mountain Sun"
+	],
+	"stages": [
+		"Egg",
+		"Baby",
+		"Juvenile",
+		"Adult",
+		"Elder"
+	],
+	"themes": [
+		"Astral",
+		"Circus",
+		"Dawn",
+		"Day",
+		"Daybreak",
+		"Dusk",
+		"Foreboding",
+		"Grim",
+		"Harvest",
+		"Hearts",
+		"Inkstone",
+		"Nightfall",
+		"Ominous",
+		"Paradise",
+		"Riftroar",
+		"Rose",
+		"Sombre",
+		"Spectral",
+		"Spooky",
+		"Spring",
+		"Star Fall",
+		"Submerged",
+		"Summer",
+		"Winter",
+		"Wintercast"
+	],
+	"weather": [
+		"None",
+		"Rain",
+		"Starfall",
+		"Fireflies",
+		"Snow",
+		"Blossoms",
+		"Rainbows",
+		"Storm",
+		"Bats",
+		"Autumn",
+		"Dandelions",
+		"Confetti",
+		"Butterflies",
+		"Ghosts",
+		"Glare",
+		"Sandstorm",
+		"Bubbles"
+	],
+	"park": {
+		"maxLevel": 190
+	},
+	"maxDragonLevel": 21,
+	"reset": "14:00:00 UTC"
+}

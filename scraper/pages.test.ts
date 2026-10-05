@@ -1,0 +1,114 @@
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { fetchPages, liveRequestUrl, PAGE_TITLES, RAW_DIR, USER_AGENT, writeRawPages, type RawPages } from './pages';
+
+const rawDir = join(import.meta.dirname, '..', RAW_DIR);
+
+function apiBody(titles: readonly string[] = PAGE_TITLES) {
+  return {
+    batchcomplete: true,
+    query: {
+      pages: titles.map((title, i) => ({
+        pageid: i + 1,
+        ns: 112,
+        title,
+        revisions: [{ revid: 1000 + i, parentid: 999, slots: { main: { contentmodel: 'json', content: `{"page":${i}}` } } }],
+      })),
+    },
+  };
+}
+
+function stubFetch(body: unknown, status = 200) {
+  return vi.fn(async () => new Response(JSON.stringify(body), { status }));
+}
+
+describe('fetchPages, live', () => {
+  it('makes one request for all five pages, with a descriptive User-Agent', async () => {
+    const fetchFn = stubFetch(apiBody());
+    await fetchPages({ kind: 'live', fetch: fetchFn });
+
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+    const [url, init] = fetchFn.mock.calls[0] as unknown as [string, RequestInit];
+    const params = new URL(url).searchParams;
+    expect(url.startsWith('https://dragonvale.fandom.com/api.php?')).toBe(true);
+    expect(params.get('action')).toBe('query');
+    expect(params.get('prop')).toBe('revisions');
+    expect(params.get('rvprop')).toBe('content|ids');
+    expect(params.get('rvslots')).toBe('main');
+    expect(params.get('titles')?.split('|')).toEqual([
+      'Data:Dragons.json',
+      'Data:BreedingHints.json',
+      'Data:Game.json',
+      'Data:Dragonarium.json',
+      'Data:Limited.json',
+    ]);
+    expect((init.headers as Record<string, string>)['User-Agent']).toBe(USER_AGENT);
+    expect(url).toBe(liveRequestUrl());
+  });
+
+  it('returns each page text and revision ID, with the fetch time', async () => {
+    const raw = await fetchPages({
+      kind: 'live',
+      fetch: stubFetch(apiBody()),
+      now: () => new Date('2026-10-05T12:00:00Z'),
+    });
+    expect(raw.source).toBe('https://dragonvale.fandom.com');
+    expect(raw.fetchedAt).toBe('2026-10-05T12:00:00.000Z');
+    expect(raw.pages['Data:Game.json']).toEqual({ revision: 1002, content: '{"page":2}' });
+    expect(raw.pages['Data:Limited.json'].revision).toBe(1004);
+  });
+
+  it('fails when a page is missing', async () => {
+    const body = apiBody(PAGE_TITLES.slice(0, 4));
+    body.query.pages.push({ title: 'Data:Limited.json', missing: true } as never);
+    await expect(fetchPages({ kind: 'live', fetch: stubFetch(body) })).rejects.toThrow(/Data:Limited.json is missing/);
+  });
+
+  it('fails when a page is absent from the response', async () => {
+    const body = apiBody(PAGE_TITLES.slice(0, 4));
+    await expect(fetchPages({ kind: 'live', fetch: stubFetch(body) })).rejects.toThrow(/lacks Data:Limited.json/);
+  });
+
+  it('fails on an HTTP error or an API error', async () => {
+    await expect(fetchPages({ kind: 'live', fetch: stubFetch({}, 503) })).rejects.toThrow(/503/);
+    await expect(
+      fetchPages({ kind: 'live', fetch: stubFetch({ error: { code: 'x', info: 'bad titles' } }) }),
+    ).rejects.toThrow(/bad titles/);
+  });
+});
+
+describe('fetchPages, offline', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('reads back what writeRawPages wrote', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'raw-pages-'));
+    try {
+      const raw = await fetchPages({ kind: 'live', fetch: stubFetch(apiBody()), now: () => new Date(0) });
+      await writeRawPages(dir, raw);
+      expect(await fetchPages({ kind: 'offline', dir })).toEqual(raw);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('reads the committed raw pages without network access', async () => {
+    const noNetwork = vi.fn(() => {
+      throw new Error('network used');
+    });
+    vi.stubGlobal('fetch', noNetwork);
+
+    const raw: RawPages = await fetchPages({ kind: 'offline', dir: rawDir });
+
+    expect(noNetwork).not.toHaveBeenCalled();
+    expect(Object.keys(raw.pages)).toEqual(PAGE_TITLES);
+    for (const title of PAGE_TITLES) {
+      expect(raw.pages[title].revision).toBeGreaterThan(0);
+      expect(() => JSON.parse(raw.pages[title].content)).not.toThrow();
+    }
+    expect(JSON.parse(raw.pages['Data:Dragons.json'].content).dragons.length).toBeGreaterThan(900);
+  });
+});

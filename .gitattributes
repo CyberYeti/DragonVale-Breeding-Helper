@@ -1,0 +1,2 @@
+# Keep the raw wiki pages byte-for-byte as fetched.
+public/data/raw/** -text

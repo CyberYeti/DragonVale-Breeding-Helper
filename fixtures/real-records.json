@@ -1,0 +1,773 @@
+{
+  "about": "Real records cut from the committed raw pages (public/data/raw) by scraper/fixture.ts. Raw wiki field names. Data from the DragonVale Wiki, CC BY-SA 3.0.",
+  "source": "https://dragonvale.fandom.com",
+  "license": "CC BY-SA 3.0",
+  "fetchedAt": "2026-10-05T19:08:25.533Z",
+  "pageRevisions": {
+    "Data:Dragons.json": 1758623,
+    "Data:BreedingHints.json": 1758584,
+    "Data:Game.json": 1754925,
+    "Data:Dragonarium.json": 1758621,
+    "Data:Limited.json": 1758624
+  },
+  "dragons": [
+    {
+      "Name": "Lava",
+      "Rarity": "Hybrid",
+      "BreedingTime": "10 H",
+      "Description": "The lava dragon was the first to undeniably establish that some dragons use magic to fly. While its wings are more than enough to bring it aloft as a juvenile, they remain the same size throughout its life. This creates a somewhat awkward looking adult appearance that it probably wouldn't enjoy you pointing out.",
+      "ReleaseDate": "September 14, 2011 #8",
+      "Order": 8,
+      "BuyPrice": 25,
+      "BuyCurrency": "Gems",
+      "SellPrice": 5000,
+      "SellCurrency": "DragonCash",
+      "HatchExperience": 4500,
+      "LevelRequirement": 4,
+      "Elements": [
+        "Fire",
+        "Earth"
+      ],
+      "Pedestal": {
+        "BuyPrice": 25,
+        "BuyCurrency": "Gems"
+      },
+      "Traits": {
+        "Available": "All"
+      },
+      "Goal": "Good job. Be careful when placing it, you don't want to drop it, because it's hot.",
+      "Tags": [
+        "Common"
+      ]
+    },
+    {
+      "Name": "Rainbow",
+      "Rarity": "Epic",
+      "BreedingTime": "48 H",
+      "Description": "Normal words cannot begin to describe the resplendence of this, rarest type of all dragons. The first person to ever witness one stared for hours before running home to send a poet to describe the beast. When the poet arrived, the dragon had left without a trace, leading many to believe that the explorer made up the whole story. Only years later do we now realize that he wasn't crazy at all!",
+      "ReleaseDate": "September 14, 2011 #26",
+      "Order": 26,
+      "BuyPrice": 2500,
+      "BuyCurrency": "Gems",
+      "SellPrice": 2500000,
+      "SellCurrency": "DragonCash",
+      "HatchExperience": 100000,
+      "LevelRequirement": 11,
+      "Elements": [
+        "Rainbow"
+      ],
+      "BreedingElements": [
+        "Earth",
+        "Lightning",
+        "Plant",
+        "Air",
+        "Water",
+        "Cold",
+        "Fire",
+        "Metal",
+        "Light",
+        "Dark"
+      ],
+      "Pedestal": {
+        "BuyPrice": 180,
+        "BuyCurrency": "Gems"
+      },
+      "Traits": {
+        "Available": "All"
+      },
+      "Goal": "Cor blimey! This dragon is legendary!"
+    },
+    {
+      "Name": "Zaffer",
+      "Rarity": "Rare",
+      "BreedingTime": "Instant",
+      "Description": "What gives Rift-touched dragons like the zaffer such unusual pulsating patterns? Excellent question! Gwyddion is doing his best to figure it out, with the help of the Vale's brightest magical minds. The short answer is \"chaos magic,\" but Gwyddion isn't quite sure why or how. Perhaps the Etherium powering the Rift Breeding Cave has something to do with it. Additional alchemical analysis is advised.",
+      "ReleaseDate": "September 13, 2017 #382",
+      "Order": 382,
+      "SellPrice": 1500000,
+      "SellCurrency": "DragonCash",
+      "HatchExperience": 1875000,
+      "LevelRequirement": 28,
+      "Elements": [
+        "Cold",
+        "Lightning",
+        "Rift"
+      ],
+      "Pedestal": {
+        "BuyPrice": 250,
+        "BuyCurrency": "Gems"
+      },
+      "Traits": {
+        "Default": "Metal"
+      },
+      "Goal": "Nothing like a new dragon to chase away the blues!"
+    },
+    {
+      "Name": "Sun",
+      "Rarity": "Epic",
+      "BreedingTime": "48 H",
+      "Description": "Ancient tradition tells us that the first sun dragon existed before the world was formed, flying across the empty night sky until it met the first moon dragon. Together they created a world that they could share. Descendants of these original dragons are so rare they even require special conditions to be bred at all!",
+      "ReleaseDate": "November 5, 2011 #32",
+      "Order": 32,
+      "BuyPrice": 2000,
+      "BuyCurrency": "Gems",
+      "SellPrice": 2000000,
+      "SellCurrency": "DragonCash",
+      "HatchExperience": 100000,
+      "LevelRequirement": 12,
+      "Elements": [
+        "Sun"
+      ],
+      "BreedingElements": [
+        "Cold",
+        "Lightning"
+      ],
+      "Pedestal": {
+        "BuyPrice": 150,
+        "BuyCurrency": "Gems"
+      },
+      "Traits": {
+        "Available": "All"
+      },
+      "Goal": "It's so bright! Just promise me you won't look at it too long. It's probably fine, but you can never be too safe."
+    },
+    {
+      "Name": "Gold Olympus",
+      "Rarity": "Epic",
+      "BreedingTime": "35 H",
+      "Description": "The majestic olympus dragon. Forged in the fires of Mount D...wait...that's the wrong scroll, sorry about that. The ancient breed of Olympus dragons are fierce competitors in the wild, although when teamwork is called for, no dragon is more focused than an Olympus dragon. The Gold variety is the largest and rarest form of this type of dragon. Most of the time they live alone atop high, majestic mountain peaks, but our Olympus habitat makes them feel right at home.",
+      "ReleaseDate": "July 27, 2012 #72",
+      "Order": 72,
+      "BuyPrice": 2250,
+      "BuyCurrency": "Gems",
+      "SellPrice": 2000000,
+      "SellCurrency": "DragonCash",
+      "HatchExperience": 250000,
+      "LevelRequirement": 17,
+      "Elements": [
+        "Olympus"
+      ],
+      "BreedingElements": [
+        "Earth",
+        "Lightning"
+      ],
+      "Pedestal": {
+        "BuyPrice": 165,
+        "BuyCurrency": "Gems"
+      },
+      "Traits": {
+        "Available": "All"
+      },
+      "Goal": "I can't believe it! You actually bred a gold olympus dragon?!? That takes skill and a lot of practice."
+    },
+    {
+      "Name": "Seasonal",
+      "Rarity": "Epic",
+      "BreedingTime": "48 H",
+      "Description": "It took the wizards a long time to understand and categorize the seasonal dragon because of its amazing ability to change with the seasons. Although this particular variety seems to follow the patterns of the Northern hemisphere, there are rumours of a cousin on the opposite schedule.",
+      "ReleaseDate": "August 9, 2012 #74",
+      "Order": 74,
+      "BuyPrice": 2000,
+      "BuyCurrency": "Gems",
+      "SellPrice": 2000000,
+      "SellCurrency": "DragonCash",
+      "HatchExperience": 100000,
+      "LevelRequirement": 16,
+      "Elements": [
+        "Seasonal"
+      ],
+      "BreedingElements": [
+        "Air",
+        "Fire",
+        "Plant"
+      ],
+      "Pedestal": {
+        "BuyPrice": 150,
+        "BuyCurrency": "Gems"
+      },
+      "Traits": {
+        "Available": "All"
+      },
+      "Goal": "This dragon may change, but your awesomeness for having bred it is forever."
+    },
+    {
+      "Name": "Ironwood",
+      "Rarity": "Rare",
+      "BreedingTime": "12 H",
+      "Description": "Famed Oracle Tessa Lonya was lost in the vast dunes of the Sandara Desert. Tired and without water, she collapsed only to wake up at the edge of an oasis with an ironwood dragon! It's a good thing they're friendly.",
+      "ReleaseDate": "August 23, 2012 #76",
+      "Order": 76,
+      "BuyPrice": 50,
+      "BuyCurrency": "Gems",
+      "SellPrice": 1500000,
+      "SellCurrency": "DragonCash",
+      "HatchExperience": 250000,
+      "LevelRequirement": 18,
+      "Elements": [
+        "Plant",
+        "Metal"
+      ],
+      "Pedestal": {
+        "BuyPrice": 25,
+        "BuyCurrency": "Gems"
+      },
+      "Traits": {
+        "Available": "All"
+      },
+      "Goal": "I heard that they used to use sloughed ironwood scales to make armor during the Great War.",
+      "Tags": [
+        "Common"
+      ]
+    },
+    {
+      "Name": "Nebula",
+      "Rarity": "Galaxy",
+      "BreedingTime": "18 H",
+      "Description": "From the homework scrolls of Mrs. Murphy's School for Spellwork and Sorcery, Grade Five:<br /><br />“My assignment is to write a poem about the nebula dragon,<br />But the only word that rhymes with ‘dragon' is ‘wagon.'<br />Besides, I'm not sure dragons can read.<br />A different assignment is just what I need.<br /><br />Mrs. Murphy, please don't fail me when you're inking—<br />I should get an A because this poem shows magical thinking.”",
+      "ReleaseDate": "May 4, 2016 #282",
+      "Order": 282,
+      "BuyPrice": 3100,
+      "BuyCurrency": "Gems",
+      "SellPrice": 200000,
+      "SellCurrency": "DragonCash",
+      "HatchExperience": 250000,
+      "LevelRequirement": 1,
+      "Elements": [
+        "Galaxy"
+      ],
+      "BreedingElements": [
+        "Air",
+        "Cold",
+        "Plant",
+        "Water",
+        "Galaxy"
+      ],
+      "Pedestal": {
+        "BuyPrice": 215,
+        "BuyCurrency": "Gems"
+      },
+      "Traits": {
+        "Available": "All"
+      },
+      "Goal": "Astronomical!"
+    }
+  ],
+  "breedingHints": {
+    "Lava": {
+      "BuyPrice": 2,
+      "BuyPriceType": "Gems",
+      "RequiredElements": [
+        "Earth",
+        "Fire"
+      ]
+    },
+    "Rainbow": {
+      "BuyPrice": 15,
+      "BuyPriceType": "Gems",
+      "MinimumRequiredElements": 4
+    },
+    "Zaffer": {
+      "BuyPrice": 10,
+      "BuyPriceType": "Gems",
+      "RequiredDragonTraits": [
+        "Air",
+        "Metal"
+      ],
+      "RequiredDragons": [
+        "Blue Fire",
+        "Plasma"
+      ],
+      "RequiredElements": [
+        "Rift"
+      ]
+    },
+    "Sun": {
+      "BuyPrice": 15,
+      "BuyPriceType": "Gems",
+      "RequiredTime": "Day",
+      "RequiredElements": [
+        "Cold",
+        "Lightning"
+      ]
+    },
+    "Gold Olympus": {
+      "BuyPrice": 15,
+      "BuyPriceType": "Gems",
+      "RequiredElements": [
+        "Earth",
+        "Lightning",
+        "Air"
+      ]
+    },
+    "Seasonal": {
+      "BuyPrice": 15,
+      "BuyPriceType": "Gems",
+      "RequiredElements": [
+        "Air",
+        "Fire",
+        "Plant"
+      ]
+    },
+    "Ironwood": {
+      "BuyPrice": 5,
+      "BuyPriceType": "Gems",
+      "RequiredElements": [
+        "Plant",
+        "Metal"
+      ]
+    },
+    "Nebula": {
+      "BuyPrice": 20,
+      "BuyPriceType": "Gems",
+      "RequiredDragons": [
+        "Nebula"
+      ],
+      "Any": true
+    }
+  },
+  "supporting": {
+    "dragons": [
+      {
+        "Name": "Plant",
+        "Rarity": "Primary",
+        "BreedingTime": "5 S",
+        "Description": "People will love to come see your plant dragons play in their beautiful green habitat. They are the friendliest of all the dragon breeds and make great pets! <br />Opposite: Metal",
+        "ReleaseDate": "September 14, 2011 #1",
+        "Order": 1,
+        "BuyPrice": 100,
+        "BuyCurrency": "DragonCash",
+        "SellPrice": 50,
+        "SellCurrency": "DragonCash",
+        "HatchExperience": 100,
+        "LevelRequirement": 1,
+        "Elements": [
+          "Plant"
+        ],
+        "Evolutions": [
+          {
+            "Name": "Ghostly Plant",
+            "Cost": 100,
+            "CostType": "Gems"
+          }
+        ],
+        "Pedestal": {
+          "BuyPrice": 5,
+          "BuyCurrency": "Gems"
+        },
+        "Elder": true
+      },
+      {
+        "Name": "Fire",
+        "Rarity": "Primary",
+        "BreedingTime": "5 M",
+        "Description": "When you think of dragons, the fierce fire dragon is probably at the forefront of your thoughts. It is true that these beasts get cranky when they get cold. All you have to do is keep them in a warm place and they become as harmless as the ground beneath their feet! Never mind that their feet are typically found above active volcanoes.<br />Opposite: Cold",
+        "ReleaseDate": "September 14, 2011 #2",
+        "Order": 2,
+        "BuyPrice": 75,
+        "BuyCurrency": "DragonCash",
+        "SellPrice": 50,
+        "SellCurrency": "DragonCash",
+        "HatchExperience": 100,
+        "LevelRequirement": 1,
+        "Elements": [
+          "Fire"
+        ],
+        "Evolutions": [
+          {
+            "Name": "Ghostly Fire",
+            "Cost": 100,
+            "CostType": "Gems"
+          }
+        ],
+        "Pedestal": {
+          "BuyPrice": 5,
+          "BuyCurrency": "Gems"
+        },
+        "Elder": true
+      },
+      {
+        "Name": "Earth",
+        "Rarity": "Primary",
+        "BreedingTime": "2 H",
+        "Description": "Despite the harshness of their habitat, the earth dragon is the least restless of all known breeds. They are supremely well adapted for their desert homes with thick skin and large bodies to store water. The spikes on their back offer protection from predators, but honestly, what animal in its right mind would think to take on one of these massive beasts? <br />Opposite: Air",
+        "ReleaseDate": "September 14, 2011 #5",
+        "Order": 5,
+        "BuyPrice": 500,
+        "BuyCurrency": "DragonCash",
+        "SellPrice": 250,
+        "SellCurrency": "DragonCash",
+        "HatchExperience": 500,
+        "LevelRequirement": 4,
+        "Elements": [
+          "Earth"
+        ],
+        "Evolutions": [
+          {
+            "Name": "Ghostly Earth",
+            "Cost": 100,
+            "CostType": "Gems"
+          }
+        ],
+        "Pedestal": {
+          "BuyPrice": 5,
+          "BuyCurrency": "Gems"
+        },
+        "Goal": "Seems like you're getting the hang of this. Your park is coming along nicely. Why not tap the Social button and see how your friends are doing?",
+        "Elder": true
+      },
+      {
+        "Name": "Cold",
+        "Rarity": "Primary",
+        "BreedingTime": "12 H",
+        "Description": "The cold dragon is revered in the northern countries where people will often worship them and offer them food in exchange for protection. Some tribes refer to them as the grandfathers of the north because of the signature fur that grows near the front of their mouths. This is the most intelligent of all the common dragon breeds known. <br />Opposite: Fire",
+        "ReleaseDate": "September 14, 2011 #9",
+        "Order": 9,
+        "BuyPrice": 30000,
+        "BuyCurrency": "DragonCash",
+        "SellPrice": 15000,
+        "SellCurrency": "DragonCash",
+        "HatchExperience": 5000,
+        "LevelRequirement": 9,
+        "Elements": [
+          "Cold"
+        ],
+        "Evolutions": [
+          {
+            "Name": "Ghostly Cold",
+            "Cost": 100,
+            "CostType": "Gems"
+          }
+        ],
+        "Pedestal": {
+          "BuyPrice": 5,
+          "BuyCurrency": "Gems"
+        },
+        "Goal": "Cool! Cold dragons are quite the charmers if you get to know them.",
+        "Elder": true
+      },
+      {
+        "Name": "Lightning",
+        "Rarity": "Primary",
+        "BreedingTime": "30 M",
+        "Description": "The lightning dragon lives amongst magic in the highest storm-ridden mountains of the world. Naturally a solitary creature, the lightning dragon does not fight for territory so much as stare down approachers until they back off and wander away, embarrassed. <br /> Opposite: Water",
+        "ReleaseDate": "September 14, 2011 #11",
+        "Order": 11,
+        "BuyPrice": 75000,
+        "BuyCurrency": "DragonCash",
+        "SellPrice": 37500,
+        "SellCurrency": "DragonCash",
+        "HatchExperience": 5000,
+        "LevelRequirement": 12,
+        "Elements": [
+          "Lightning"
+        ],
+        "Pedestal": {
+          "BuyPrice": 5,
+          "BuyCurrency": "Gems"
+        },
+        "Goal": "Shockingly good job! Be careful, lightning dragons can be a little feisty.",
+        "Elder": true
+      },
+      {
+        "Name": "Water",
+        "Rarity": "Primary",
+        "BreedingTime": "4 H",
+        "Description": "The water dragon is native to places where magic-imbued waters collect. It needs to have a very specific combination of magic and minerals. They are the most playful dragon ever seen, sure to cause a splash with your incoming visitors.<br />Opposite: Lightning",
+        "ReleaseDate": "September 14, 2011 #16",
+        "Order": 16,
+        "BuyPrice": 500000,
+        "BuyCurrency": "DragonCash",
+        "SellPrice": 250000,
+        "SellCurrency": "DragonCash",
+        "HatchExperience": 3000,
+        "LevelRequirement": 14,
+        "Elements": [
+          "Water"
+        ],
+        "Pedestal": {
+          "BuyPrice": 5,
+          "BuyCurrency": "Gems"
+        },
+        "Goal": "I'm sure you and your new water dragon will get along swimmingly.",
+        "Elder": true
+      },
+      {
+        "Name": "Air",
+        "Rarity": "Primary",
+        "BreedingTime": "2 H",
+        "Description": "Air dragons spend almost their entire lives in the air -- eating, playing and even sleeping without ever touching the ground. It is rare indeed that anyone ever gets to view this dragon up close.<br />Opposite: Earth",
+        "ReleaseDate": "September 14, 2011 #21",
+        "Order": 21,
+        "BuyPrice": 750000,
+        "BuyCurrency": "DragonCash",
+        "SellPrice": 375000,
+        "SellCurrency": "DragonCash",
+        "HatchExperience": 12500,
+        "LevelRequirement": 16,
+        "Elements": [
+          "Air"
+        ],
+        "Pedestal": {
+          "BuyPrice": 5,
+          "BuyCurrency": "Gems"
+        },
+        "Goal": "I'm not just putting on airs when I say that hatching this dragon is truly something to be proud of.",
+        "Elder": true
+      },
+      {
+        "Name": "Metal",
+        "Rarity": "Primary",
+        "BreedingTime": "8 H",
+        "Description": "For years explorers were afraid to enter the Tull Caverns because of the loud noises that could be heard coming from deep below. It's only thanks to the brave Dickinson Osborne that we now know that these sounds come from the metal dragon's unique behavior of drumming precious metals with their heavy tails.<br />Opposite: Plant",
+        "ReleaseDate": "March 21, 2012 #43",
+        "Order": 43,
+        "BuyPrice": 1000000,
+        "BuyCurrency": "DragonCash",
+        "SellPrice": 500000,
+        "SellCurrency": "DragonCash",
+        "HatchExperience": 1000000,
+        "LevelRequirement": 18,
+        "Elements": [
+          "Metal"
+        ],
+        "Pedestal": {
+          "BuyPrice": 5,
+          "BuyCurrency": "Gems"
+        },
+        "Goal": "Wow a metal dragon! I heard that these existed, but I haven't seen one until now. You can probably create a bunch of new hybrids using this dragon!",
+        "Elder": true
+      },
+      {
+        "Name": "Light",
+        "Rarity": "Primary",
+        "BreedingTime": "10 H",
+        "Description": "Having not been seen in Ages, the ethereal Light Dragon makes a glorious return to the world of DragonVale. Enthusiastic and bright, these otherworldly dragons are sure to brighten up your park!<br />Opposite: Dark",
+        "ReleaseDate": "November 5, 2013 #129",
+        "Order": 129,
+        "BuyPrice": 2000000,
+        "BuyCurrency": "DragonCash",
+        "SellPrice": 1000000,
+        "SellCurrency": "DragonCash",
+        "HatchExperience": 350000,
+        "LevelRequirement": 21,
+        "Elements": [
+          "Light"
+        ],
+        "Pedestal": {
+          "BuyPrice": 5,
+          "BuyCurrency": "Gems"
+        },
+        "Goal": "This dragon illuminates new possibilities for you and your dragons.",
+        "Elder": true
+      },
+      {
+        "Name": "Dark",
+        "Rarity": "Primary",
+        "BreedingTime": "13 H",
+        "Description": "Torn from our world long ago, Dark Dragons have returned to herald true balance to magic. Due to their lack of excellent eyesight they often get very close to... everything. Their fierce loyalty and companionship have made them quick favorites of many members of the wizarding community.<br />Opposite: Light",
+        "ReleaseDate": "November 15, 2013 #138",
+        "Order": 138,
+        "BuyPrice": 3000000,
+        "BuyCurrency": "DragonCash",
+        "SellPrice": 1500000,
+        "SellCurrency": "DragonCash",
+        "HatchExperience": 600000,
+        "LevelRequirement": 25,
+        "Elements": [
+          "Dark"
+        ],
+        "Pedestal": {
+          "BuyPrice": 5,
+          "BuyCurrency": "Gems"
+        },
+        "Goal": "Balance and Dark Magic have been restored to the world with these toothy grinned dragons!",
+        "Elder": true
+      },
+      {
+        "Name": "Blue Fire",
+        "Rarity": "Rare",
+        "BreedingTime": "12 H",
+        "Description": "We're not exactly sure where the blue fire dragon comes from. We didn't think it was possible. We're also not sure if their fire is cold or hot since nobody has been brave enough to test it.",
+        "ReleaseDate": "September 30, 2011 #27",
+        "Order": 27,
+        "BuyPrice": 100,
+        "BuyCurrency": "Gems",
+        "SellPrice": 500000,
+        "SellCurrency": "DragonCash",
+        "HatchExperience": 20000,
+        "LevelRequirement": 9,
+        "Elements": [
+          "Fire",
+          "Cold"
+        ],
+        "Pedestal": {
+          "BuyPrice": 30,
+          "BuyCurrency": "Gems"
+        },
+        "Traits": {
+          "Available": "All"
+        },
+        "Goal": "Amazing! I was almost afraid that cold and fire dragons weren't compatible.",
+        "Tags": [
+          "Common"
+        ]
+      },
+      {
+        "Name": "Plasma",
+        "Rarity": "Rare",
+        "BreedingTime": "16 H",
+        "Description": "The story of the plasma dragon is a strange one. Years ago the brilliant wizard Franklin Dogood was caught in a terrible storm when a bolt of lightning struck the surface of a nearby pond, instantly evaporating it. Ever the scholar, Franklin went to investigate and discovered something incredible -- a baby dragon where the pond once stood!",
+        "ReleaseDate": "May 9, 2012 #54",
+        "Order": 54,
+        "BuyPrice": 40,
+        "BuyCurrency": "Gems",
+        "SellPrice": 100000,
+        "SellCurrency": "DragonCash",
+        "HatchExperience": 75000,
+        "LevelRequirement": 14,
+        "Elements": [
+          "Lightning",
+          "Water"
+        ],
+        "Pedestal": {
+          "BuyPrice": 25,
+          "BuyCurrency": "Gems"
+        },
+        "Traits": {
+          "Available": "All"
+        },
+        "Goal": "This uncommon hybrid will surely send shivers through anyone who visits your park!",
+        "Tags": [
+          "Common"
+        ]
+      }
+    ],
+    "breedingHints": {
+      "Air": {
+        "BuyPrice": 5,
+        "BuyPriceType": "Gems",
+        "RequiredDragons": [
+          "Water",
+          "Fire"
+        ]
+      },
+      "Blue Fire": {
+        "BuyPrice": 5,
+        "BuyPriceType": "Gems",
+        "RequiredElements": [
+          "Fire",
+          "Cold"
+        ]
+      },
+      "Plasma": {
+        "BuyPrice": 5,
+        "BuyPriceType": "Gems",
+        "RequiredElements": [
+          "Lightning",
+          "Water"
+        ]
+      }
+    }
+  },
+  "elements": {
+    "primary": [
+      "Plant",
+      "Fire",
+      "Earth",
+      "Cold",
+      "Lightning",
+      "Water",
+      "Air",
+      "Metal",
+      "Light",
+      "Dark"
+    ],
+    "epic": [
+      "Rainbow",
+      "Sun",
+      "Moon",
+      "Treasure",
+      "Olympus",
+      "Seasonal",
+      "Apocalypse",
+      "Dream",
+      "Snowflake",
+      "Monolith",
+      "Galaxy",
+      "Ornamental",
+      "Aura",
+      "Chrysalis",
+      "Hidden",
+      "Surface",
+      "Melody",
+      "Zodiac"
+    ],
+    "gem": [
+      "Gemstone",
+      "Crystalline"
+    ],
+    "legendary": [
+      "Time",
+      "Nest",
+      "Vault"
+    ],
+    "mythic": [
+      "Mythic"
+    ],
+    "rift": [
+      "Rift"
+    ],
+    "other": [
+      "Celebration",
+      "Omni"
+    ],
+    "boostable": {
+      "Plant": 0.3,
+      "Fire": 0.3,
+      "Earth": 0.3,
+      "Cold": 0.3,
+      "Lightning": 0.3,
+      "Water": 0.3,
+      "Air": 0.3,
+      "Metal": 0.3,
+      "Light": 0.3,
+      "Dark": 0.3,
+      "Monolith": 0.3,
+      "Zodiac": 0.2,
+      "Chrysalis": 0.3
+    },
+    "multiboostable": {
+      "Plant": 0.02,
+      "Fire": 0.02,
+      "Cold": 0.02,
+      "Lightning": 0.02,
+      "Water": 0.02,
+      "Air": 0.02,
+      "Metal": 0.02,
+      "Light": 0.02,
+      "Dark": 0.02
+    }
+  },
+  "opposites": [
+    [
+      "Plant",
+      "Metal"
+    ],
+    [
+      "Fire",
+      "Cold"
+    ],
+    [
+      "Earth",
+      "Air"
+    ],
+    [
+      "Lightning",
+      "Water"
+    ],
+    [
+      "Light",
+      "Dark"
+    ]
+  ]
+}
