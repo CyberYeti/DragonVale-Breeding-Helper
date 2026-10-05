@@ -4,6 +4,7 @@ import type { BredRoute, CoopRoute, Dragon, EvolvedRoute, Route, RouteKind } fro
 import { breedingFor, caveCanMake, caveForm, formFor, routeStatus, type Cave } from '../breeding';
 import { isOwned, type Form } from '../collection';
 import type { Breeding, World } from '../world';
+import { generations } from './generation';
 import { badge, conditionBadges, reason } from './labels';
 import type {
   Badge,
@@ -33,13 +34,21 @@ type MutableDragonNode = Mutable<DragonNode> & { badges: Badge[] };
  * panel works them out. Throws when the snapshot has no such Dragon.
  */
 export function focusTree(world: World, target: Target, cave: Cave): GraphModel {
+  return focusIn(world, target, cave, null);
+}
+
+/**
+ * `focusTree`, with `members` the tab's Dragon nodes when the tree is pulled
+ * out of a tab graph (so the rest are marked `outside`). Throws as `focusTree`.
+ */
+export function focusIn(world: World, target: Target, cave: Cave, members: ReadonlySet<NodeId> | null): GraphModel {
   const dragon = world.dragons.get(target.dragon);
   if (!dragon) throw new Error(`focusTree: no Dragon named ${target.dragon}`);
   const form = formFor(dragon, target.form);
 
-  const build = new Builder(world, cave);
-  const node = build.dragon(dragon, form, isOwned(world.collection, dragon, form), true);
-  build.expand(node, dragon, true);
+  const build = new Builder(world, cave, new Set([dragonId(dragon.name, form)]), members);
+  const node = build.dragon(dragon, form, isOwned(world.collection, dragon, form));
+  build.expand(node, dragon);
 
   const reasons = targetReasons(world, dragon, form, cave, node.owned);
   return {
@@ -49,16 +58,27 @@ export function focusTree(world: World, target: Target, cave: Cave): GraphModel 
   };
 }
 
-const dragonId = (name: string, form: Form): NodeId => `dragon:${name}:${form}`;
+export const dragonId = (name: string, form: Form): NodeId => `dragon:${name}:${form}`;
 
-class Builder {
+/**
+ * Builds a model by the Focus view rules. `roots` are drawn as Targets: always
+ * expanded, dimmed when not Available, badged when owned. The Focus view has
+ * one; a tab graph has every Dragon of the tab. With `members` set, every
+ * other Dragon node is `outside`.
+ */
+export class Builder {
   private readonly nodeMap = new Map<NodeId, GraphNode | MutableDragonNode>();
   private readonly edgeMap = new Map<string, GraphEdge>();
+  private readonly generation: ReadonlyMap<string, number>;
 
   constructor(
     private readonly world: World,
     private readonly cave: Cave,
-  ) {}
+    private readonly roots: ReadonlySet<NodeId>,
+    private readonly members: ReadonlySet<NodeId> | null = null,
+  ) {
+    this.generation = generations(world);
+  }
 
   nodes(): GraphNode[] {
     return [...this.nodeMap.values()];
@@ -69,10 +89,11 @@ class Builder {
   }
 
   /** The Dragon's node, added if it isn't in the view yet. */
-  dragon(dragon: Dragon, form: Form, owned: boolean, isTarget = false): MutableDragonNode {
+  dragon(dragon: Dragon, form: Form, owned: boolean): MutableDragonNode {
     const id = dragonId(dragon.name, form);
     const existing = this.nodeMap.get(id);
     if (existing) return existing as MutableDragonNode;
+    const isTarget = this.roots.has(id);
 
     const unavailable = !this.world.available.has(dragon.name);
     let state: GraphState = 'normal';
@@ -86,6 +107,8 @@ class Builder {
       form,
       owned,
       expanded: false,
+      generation: this.generation.get(dragon.name) ?? 1,
+      outside: this.members !== null && !this.members.has(id),
       state,
       badges: isTarget && owned ? [badge({ kind: 'owned' })] : [],
     };
@@ -95,10 +118,11 @@ class Builder {
 
   /**
    * Draws the Dragon's Routes below its node, once. A node that's owned (and
-   * isn't the Target) or that can't be a parent stays a leaf.
+   * isn't a root) or that can't be a parent stays a leaf.
    */
-  expand(node: MutableDragonNode, dragon: Dragon, isTarget = false): void {
+  expand(node: MutableDragonNode, dragon: Dragon): void {
     if (node.expanded) return;
+    const isTarget = this.roots.has(node.id);
     if (!isTarget && node.owned) return;
     if (!isTarget && !dragon.canBeParent) {
       if (!node.badges.some((b) => b.kind === 'cannot-be-parent')) node.badges.push(badge({ kind: 'cannot-be-parent' }));

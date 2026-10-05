@@ -4,7 +4,7 @@
 
 import type { RouteKind } from '../../snapshot';
 import type { Cave } from '../breeding';
-import type { Breeding } from '../world';
+import type { Breeding, World } from '../world';
 import type { Form } from '../collection';
 
 /** A Dragon in a given form: what the player wants to obtain. */
@@ -24,12 +24,20 @@ export type GraphState = 'normal' | 'met' | 'dimmed' | 'locked';
 /** Stable ids, unique within one model. */
 export type NodeId = string;
 
+/**
+ * Set only by `pullTree`: `lit` for the pulled tree (the Target's Focus path),
+ * `faded` for the rest of the tab graph behind it. Unset in a Focus view or a
+ * plain tab graph.
+ */
+export type Pull = 'lit' | 'faded';
+
 // ---- Nodes ------------------------------------------------------------------
 
 type NodeBase = {
   readonly id: NodeId;
   readonly state: GraphState;
   readonly badges: readonly Badge[];
+  readonly pull?: Pull;
 };
 
 /** A Dragon tile. The UI asks core/tile how it looks; this says why it's here. */
@@ -47,6 +55,21 @@ export type DragonNode = NodeBase & {
   readonly owned: boolean;
   /** Whether this Dragon's Routes are drawn below it. */
   readonly expanded: boolean;
+  /**
+   * For layering, bottom-up: 1 for a Dragon none of whose Routes names
+   * another Dragon, else 1 + the highest generation among the named parents
+   * and Evolved bases of all its Routes (Elements are 0). Worked out from the
+   * snapshot, so it's the same in every view, cave and Collection. Cycles
+   * (the Chrysalis family) are cut where a walk in snapshot order first
+   * closes them, so only an edge that closes a cycle can point from a higher
+   * or equal generation.
+   */
+  readonly generation: number;
+  /**
+   * A tab graph's named parent (or Evolved base) from outside the tab, drawn
+   * smaller. Always false in a Focus view.
+   */
+  readonly outside: boolean;
 };
 
 /** An Element hub, a leaf. Shared by every Route in the model that needs it for the same kind of breeding. */
@@ -110,6 +133,7 @@ export type GraphEdge = {
   readonly route: NodeId;
   readonly state: GraphState;
   readonly badges: readonly Badge[];
+  readonly pull?: Pull;
 };
 
 // ---- Badges -----------------------------------------------------------------
@@ -188,6 +212,20 @@ export type GraphModel = {
   /** Insertion order: the Target first, then each branch as it's expanded. */
   readonly nodes: readonly GraphNode[];
   readonly edges: readonly GraphEdge[];
-  /** The Focus view's Target. */
+  /** The Focus view's Target, or a pulled tree's. null in a plain tab graph. */
   readonly target: TargetInfo | null;
+};
+
+/**
+ * A tab graph (spec §9, Kinds of graph): the tab's Dragons, each with all its
+ * Routes, plus everything they need. Feed it to `pullTree` to focus a Dragon
+ * inside it.
+ */
+export type TabGraph = GraphModel & {
+  readonly target: null;
+  readonly cave: Cave;
+  /** The tab's Dragon nodes, in the order given, each once. */
+  readonly members: readonly NodeId[];
+  /** The World it was built from, so `pullTree` can work out the Focus path. */
+  readonly world: World;
 };
