@@ -1,8 +1,8 @@
 // The Focus view tree (spec §9, Focus view rules 1–9).
 
 import type { BredRoute, CoopRoute, Dragon, EvolvedRoute, Route, RouteKind } from '../../snapshot';
-import { caveCanMake, caveForm, routeStatus, type Cave } from '../breeding';
-import { formsOf, isOwned, type Form } from '../collection';
+import { breedingFor, caveCanMake, caveForm, formFor, routeStatus, type Cave } from '../breeding';
+import { isOwned, type Form } from '../collection';
 import type { Breeding, World } from '../world';
 import { badge, conditionBadges, reason } from './labels';
 import type {
@@ -49,17 +49,7 @@ export function focusTree(world: World, target: Target, cave: Cave): GraphModel 
   };
 }
 
-/** `form` if the Dragon has it, else its one form (a Rift dragon is always itself). */
-function formFor(dragon: Dragon, form: Form): Form {
-  const forms = formsOf(dragon);
-  return forms.includes(form) ? form : forms[0]!;
-}
-
 const dragonId = (name: string, form: Form): NodeId => `dragon:${name}:${form}`;
-
-/** Spec §9: a Rift form, or a `rift: "only"` Route, uses Rift breeding parents. */
-const breedingFor = (route: BredRoute, form: Form): Breeding =>
-  form === 'rift' || route.rift === 'only' ? 'rift' : 'normal';
 
 class Builder {
   private readonly nodeMap = new Map<NodeId, GraphNode | MutableDragonNode>();
