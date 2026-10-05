@@ -6,8 +6,8 @@
 //   - Routes (#26): `routes` is [] here. The hint mapping fills it per Dragon,
 //     reports its own problems through the same Problems collector, and then
 //     narrows `elements` to the ones some Route uses.
-//   - Renames (#27): `renames` is carried over from `previous`; the rename
-//     candidates belong in `report` next to the counts.
+//   - Renames (#27): `renames` is carried over from `previous`; the report
+//     lists added/removed names and rename candidates (see ./renames).
 //   - Images (#28): `image` and `icon` are null here; downloadImages fills them.
 
 import { createHash } from 'node:crypto';
@@ -22,6 +22,7 @@ import {
   type Traits,
 } from '../src/lib/snapshot';
 import { PAGE_TITLES, type RawPages } from './pages';
+import { compareWithPrevious, type SnapshotChanges } from './renames';
 
 /** Spec §6: the five opposite primary pairs. Not in the wiki data; hard-coded. */
 export const OPPOSITES: [string, string][] = [
@@ -52,7 +53,7 @@ const NON_PARENT_RARITIES: ReadonlySet<Rarity> = new Set<Rarity>(['Gemstone', 'L
 const BARE_PAGE_RARITIES: ReadonlySet<Rarity> = new Set<Rarity>(['Legendary', 'Mythic']);
 const RIFT = 'Rift';
 
-export type BuildReport = {
+export type BuildReport = SnapshotChanges & {
   /** Problems that don't stop the run. */
   warnings: string[];
   counts: {
@@ -146,7 +147,8 @@ export function buildSnapshot(raw: RawPages, previous: Snapshot | null): BuildRe
     renames: { ...previous?.renames },
   };
 
-  return { snapshot, report: reportOn(snapshot, elementKind, problems.warnings) };
+  const report = { ...reportOn(snapshot, elementKind, problems.warnings), ...compareWithPrevious(previous, dragons) };
+  return { snapshot, report };
 }
 
 // ---- Elements ----------------------------------------------------------------
@@ -322,7 +324,11 @@ function revisionOf(pageRevisions: Record<string, number>): string {
   return createHash('sha256').update(input).digest('hex').slice(0, 12);
 }
 
-function reportOn(snapshot: Snapshot, elementKind: ReadonlyMap<string, ElementKind>, warnings: string[]): BuildReport {
+function reportOn(
+  snapshot: Snapshot,
+  elementKind: ReadonlyMap<string, ElementKind>,
+  warnings: string[],
+): Omit<BuildReport, keyof SnapshotChanges> {
   const count = <T>(items: T[], test: (item: T) => boolean) => items.filter(test).length;
   const { dragons, pages } = snapshot;
   return {

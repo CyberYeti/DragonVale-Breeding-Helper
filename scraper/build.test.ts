@@ -193,6 +193,22 @@ describe('buildSnapshot rules on small records', () => {
     expect(buildSnapshot(rawPages({ dragons: [fire] }), previous).snapshot.renames).toEqual({ Flame: 'Fire' });
   });
 
+  it('reports added and removed names and rename candidates against the previous snapshot', () => {
+    expect(buildSnapshot(rawPages({ dragons: [fire] }), null).report).toMatchObject({
+      added: [],
+      removed: [],
+      renameCandidates: [],
+    });
+    const previous = buildSnapshot(rawPages({ dragons: [{ ...fire, Name: 'Flame' }] }), null).snapshot;
+    const { snapshot, report } = buildSnapshot(rawPages({ dragons: [fire] }), previous);
+    expect(report).toMatchObject({
+      added: ['Fire'],
+      removed: ['Flame'],
+      renameCandidates: [{ from: 'Flame', to: 'Fire', reason: 'same-order' }],
+    });
+    expect(snapshot.renames).toEqual({});
+  });
+
   it('warns about a Dragon on no Dragonarium page', () => {
     const { snapshot, report } = buildSnapshot(
       rawPages({
