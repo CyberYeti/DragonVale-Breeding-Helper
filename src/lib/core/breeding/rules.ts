@@ -47,13 +47,13 @@ function caveRoutes(dragon: Dragon, cave: Cave): Route[] {
 }
 
 /** `form` if the Dragon has it, else its one form (a Rift dragon is always itself). */
-const formFor = (dragon: Dragon, form: Form): Form => {
+export const formFor = (dragon: Dragon, form: Form): Form => {
   const forms = formsOf(dragon);
   return forms.includes(form) ? form : forms[0]!;
 };
 
 /** Spec §9: a Rift form, or a `rift: "only"` Route, uses Rift breeding parents. */
-const breedingFor = (route: Route, form: Form): Breeding =>
+export const breedingFor = (route: Route, form: Form): Breeding =>
   form === 'rift' || (route.kind === 'bred' && route.rift === 'only') ? 'rift' : 'normal';
 
 const status = (pairCount: number, reason: RouteReason): RouteStatus => ({

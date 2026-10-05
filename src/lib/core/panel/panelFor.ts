@@ -4,7 +4,9 @@ import type { Dragon, Route } from '../../snapshot';
 import {
   basicDragon,
   breedableNow,
+  breedingFor,
   caveCanMake,
+  formFor,
   routeStatus,
   validPairs,
   wouldBeValidPair,
@@ -249,16 +251,6 @@ function dragonNamed(world: World, name: string): Dragon {
   if (!dragon) throw new Error(`panelFor: no Dragon named ${name}`);
   return dragon;
 }
-
-/** `form` if the Dragon has it, else its one form (a Rift dragon is always itself). */
-function formFor(dragon: Dragon, form: Form): Form {
-  const forms = formsOf(dragon);
-  return forms.includes(form) ? form : forms[0]!;
-}
-
-/** Spec §9: a Rift form, or a `rift: "only"` Route, uses Rift breeding parents. */
-const breedingFor = (route: Route, form: Form): Breeding =>
-  form === 'rift' || (route.kind === 'bred' && route.rift === 'only') ? 'rift' : 'normal';
 
 /** The cave that makes a Dragon in `form`: the Rift cave for Rift forms, else the chosen cave (Normal if it's Rift). */
 const cavesFor = (form: Form, cave: Cave): Cave => (form === 'rift' ? 'rift' : cave === 'rift' ? 'normal' : cave);
