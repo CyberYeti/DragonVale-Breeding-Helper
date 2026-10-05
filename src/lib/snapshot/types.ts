@@ -121,7 +121,8 @@ export type Conditions = {
   weather?: string;
   alignment?: string;
   parentTrait?: string;
-  namedParentTrait?: { dragon: string; trait: string };
+  /** Each named parent with the trait it must carry (Zaffer: Blue Fire with Air, Plasma with Metal). */
+  namedParentTraits?: { dragon: string; trait: string }[];
   /** Solis, Lunis. */
   cloneCave?: string;
   /** Rigel: own all 22 other Galaxy Dragons. */

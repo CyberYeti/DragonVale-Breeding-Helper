@@ -44,7 +44,7 @@ const everyRoute: Route[] = [
   {
     kind: 'bred',
     requirement: { minDistinctElements: 4, elementOnBothParents: 'Water' },
-    conditions: { time: 'Night', namedParentTrait: { dragon: 'Lava', trait: 'Fire' } },
+    conditions: { time: 'Night', namedParentTraits: [{ dragon: 'Lava', trait: 'Fire' }] },
   },
   { kind: 'bred', requirement: { anyPair: true } },
   { kind: 'coop', friendsDragon: 'Nebula', conditions: { prerequisite: 'All Galaxy' } },
