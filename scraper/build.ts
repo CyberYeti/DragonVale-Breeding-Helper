@@ -2,10 +2,10 @@
 // snapshot (spec §4). Pure: no I/O, no clock, no prompts. It throws on
 // fail-level problems and returns everything else in `report`.
 //
+// Routes come from Data:BreedingHints.json through routesFor (routes.ts), and
+// `elements` keeps only the Elements some Route uses.
+//
 // Seams for later tickets:
-//   - Routes (#26): `routes` is [] here. The hint mapping fills it per Dragon,
-//     reports its own problems through the same Problems collector, and then
-//     narrows `elements` to the ones some Route uses.
 //   - Renames (#27): `renames` is carried over from `previous`; the report
 //     lists added/removed names and rename candidates (see ./renames).
 //   - Images (#28): `image` and `icon` are null here; downloadImages fills them.
@@ -18,11 +18,13 @@ import {
   type Element,
   type ElementKind,
   type Rarity,
+  type RouteKind,
   type Snapshot,
   type Traits,
 } from '../src/lib/snapshot';
 import { PAGE_TITLES, type RawPages } from './pages';
 import { compareWithPrevious, type SnapshotChanges } from './renames';
+import { elementsUsedBy, routesFor } from './routes';
 
 /** Spec §6: the five opposite primary pairs. Not in the wiki data; hard-coded. */
 export const OPPOSITES: [string, string][] = [
@@ -52,6 +54,7 @@ const NON_PARENT_RARITIES: ReadonlySet<Rarity> = new Set<Rarity>(['Gemstone', 'L
 /** Rarities whose wiki page is the bare name (Dragons with powers). */
 const BARE_PAGE_RARITIES: ReadonlySet<Rarity> = new Set<Rarity>(['Legendary', 'Mythic']);
 const RIFT = 'Rift';
+const ROUTE_KINDS: readonly RouteKind[] = ['bred', 'coop', 'evolved', 'summoned', 'purchased'];
 
 export type BuildReport = SnapshotChanges & {
   /** Problems that don't stop the run. */
@@ -64,6 +67,8 @@ export type BuildReport = SnapshotChanges & {
     gemstoneAndCrystalline: number;
     cannotBeParent: number;
     limited: number;
+    /** Dragons with at least one Route of each kind. */
+    routes: Record<RouteKind, number>;
   };
 };
 
@@ -116,6 +121,9 @@ export function buildSnapshot(raw: RawPages, previous: Snapshot | null): BuildRe
     seen.add(name);
   }
 
+  const hints = readHints(parsePage(raw, 'Data:BreedingHints.json'));
+  addRoutes(dragons, wikiDragons, hints, elementKind, problems);
+
   const wikiPages = readArray(parsePage(raw, 'Data:Dragonarium.json'), 'dragonarium', 'Data:Dragonarium.json');
   const pages = wikiPages.flatMap((record, i) => {
     const page = readPage(record, i, seen, problems);
@@ -139,8 +147,7 @@ export function buildSnapshot(raw: RawPages, previous: Snapshot | null): BuildRe
       pageRevisions,
       fetchedAt: raw.fetchedAt,
     },
-    // TODO(#26): only Elements used by at least one Route, once Routes exist.
-    elements,
+    elements: usedElements(elements, dragons),
     opposites: OPPOSITES.map(([a, b]) => [a, b]),
     dragons,
     pages,
@@ -184,6 +191,7 @@ type WikiDragon = {
   BreedingElements?: string[];
   IsLimited?: boolean;
   Traits?: unknown;
+  Devolution?: unknown;
 };
 
 function readDragon(
@@ -230,7 +238,7 @@ function readDragon(
     traits,
     canBeParent: !isGemstoneOrCrystalline(rarity, record.Elements, elementKind) && !NON_PARENT_RARITIES.has(rarity),
     image: null,
-    routes: [], // TODO(#26): from Data:BreedingHints.json
+    routes: [], // filled by addRoutes once every Dragon is known
   };
 }
 
@@ -275,6 +283,46 @@ function isWikiDragon(value: unknown): value is WikiDragon {
     (value.BreedingElements === undefined || isStringArray(value.BreedingElements)) &&
     (value.Alias === undefined || typeof value.Alias === 'string')
   );
+}
+
+// ---- Routes ------------------------------------------------------------------
+
+/** Data:BreedingHints.json `breedingHints`: Name -> hint. */
+function readHints(page: unknown): Record<string, unknown> {
+  const hints = isRecord(page) ? page.breedingHints : undefined;
+  if (!isRecord(hints)) throw new SnapshotBuildError(['Data:BreedingHints.json has no breedingHints object']);
+  return hints;
+}
+
+/** Gives each Dragon its Routes. Needs every Dragon read, since hints name other Dragons. */
+function addRoutes(
+  dragons: Dragon[],
+  wikiDragons: unknown[],
+  hints: Record<string, unknown>,
+  elementKind: ReadonlyMap<string, ElementKind>,
+  problems: Problems,
+): void {
+  const named = wikiDragons.filter(isWikiDragon);
+  const context = { elementKind, dragonElements: new Map(named.map((d) => [d.Name, d.Elements])) };
+  const devolution = new Map(named.map((d) => [d.Name, d.Devolution]));
+  for (const dragon of dragons) {
+    const from = devolution.get(dragon.name);
+    if (from !== undefined && typeof from !== 'string') {
+      problems.fail(`${dragon.name} has a Devolution that isn't a name`);
+      continue;
+    }
+    const routes = routesFor({ ...dragon, devolution: from }, hints[dragon.name], context, problems);
+    if (routes) dragon.routes = routes;
+  }
+  for (const name of Object.keys(hints)) {
+    if (!context.dragonElements.has(name)) problems.warn(`Data:BreedingHints.json has a hint for unknown Dragon "${name}"`);
+  }
+}
+
+/** Spec §4: the snapshot keeps only Elements used by at least one Route, in Data:Game.json order. */
+function usedElements(elements: Element[], dragons: Dragon[]): Element[] {
+  const used = elementsUsedBy(dragons.flatMap((d) => d.routes));
+  return elements.filter((e) => used.has(e.name));
 }
 
 // ---- Dragonarium pages ---------------------------------------------------------
@@ -348,6 +396,9 @@ function reportOn(
       gemstoneAndCrystalline: count(dragons, (d) => isGemstoneOrCrystalline(d.rarity, d.elements, elementKind)),
       cannotBeParent: count(dragons, (d) => !d.canBeParent),
       limited: count(dragons, (d) => d.isLimited),
+      routes: Object.fromEntries(
+        ROUTE_KINDS.map((kind) => [kind, count(dragons, (d) => d.routes.some((r) => r.kind === kind))]),
+      ) as Record<RouteKind, number>,
     },
   };
 }

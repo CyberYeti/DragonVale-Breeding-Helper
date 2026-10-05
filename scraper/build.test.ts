@@ -13,16 +13,37 @@ type WikiPage = { Collection: string; Dragons: string[]; Tags: string[] };
 
 const records: RealRecords = JSON.parse(await readFile(join(root, REAL_RECORDS_FILE), 'utf8'));
 const realDragons = [...records.dragons, ...records.supporting.dragons];
+const realHints: Record<string, unknown> = { ...records.breedingHints, ...records.supporting.breedingHints };
+
+/**
+ * The hints for `dragons`: the real hint where there is one, else `{Any: true}`
+ * for a Dragon that isn't a primary, so every Dragon has a Route.
+ */
+function hintsFor(dragons: WikiDragon[]): Record<string, unknown> {
+  return Object.fromEntries(
+    dragons.flatMap((d) => {
+      const name = d.Name as string;
+      const hint = realHints[name] ?? (d.Rarity === 'Primary' ? undefined : { Any: true });
+      return hint === undefined ? [] : [[name, hint]];
+    }),
+  );
+}
 
 /** RawPages built from wiki-shaped records. Every Dragon sits on one Special page unless `pages` is given. */
 function rawPages({
   dragons = realDragons,
   pages,
   elements = records.elements,
-}: { dragons?: WikiDragon[]; pages?: WikiPage[]; elements?: Record<string, unknown> } = {}): RawPages {
+  hints = hintsFor(dragons),
+}: {
+  dragons?: WikiDragon[];
+  pages?: WikiPage[];
+  elements?: Record<string, unknown>;
+  hints?: Record<string, unknown>;
+} = {}): RawPages {
   const content: Record<string, unknown> = {
     'Data:Dragons.json': { dragons },
-    'Data:BreedingHints.json': { breedingHints: {} },
+    'Data:BreedingHints.json': { breedingHints: hints },
     'Data:Game.json': { elements },
     'Data:Dragonarium.json': {
       dragonarium: pages ?? [{ Collection: 'All', Dragons: dragons.map((d) => d.Name), Tags: ['all', 'special'] }],
@@ -80,8 +101,8 @@ describe('buildSnapshot on the real records', () => {
     expect(dragon(snapshot, 'Plant').traits).toEqual({ kind: 'none' });
   });
 
-  it('leaves Routes, images and icons for later', () => {
-    expect(snapshot.dragons.every((d) => d.routes.length === 0 && d.image === null)).toBe(true);
+  it('leaves images and icons for later', () => {
+    expect(snapshot.dragons.every((d) => d.image === null)).toBe(true);
     expect(snapshot.elements.every((e) => e.icon === null)).toBe(true);
   });
 
@@ -109,7 +130,6 @@ describe('buildSnapshot on the real records', () => {
 
   it('gives every Element its kind from Data:Game.json', () => {
     expect(snapshot.elements).toContainEqual({ name: 'Fire', kind: 'primary', icon: null });
-    expect(snapshot.elements).toContainEqual({ name: 'Sun', kind: 'epic', icon: null });
     expect(snapshot.elements).toContainEqual({ name: 'Rift', kind: 'rift', icon: null });
   });
 
@@ -117,7 +137,53 @@ describe('buildSnapshot on the real records', () => {
     expect(report.warnings).toEqual([]);
   });
 
-  it.todo('elements holds only Elements used by at least one Route (#26, once Routes exist)');
+  it('keeps only the Elements some Route uses, in Data:Game.json order', () => {
+    // Sun and Olympus are displayed (Sun, Gold Olympus) but no Route here needs them.
+    expect(snapshot.elements.map((e) => e.name)).toEqual([
+      'Plant', 'Fire', 'Earth', 'Cold', 'Lightning', 'Water', 'Air', 'Metal', 'Light', 'Dark', 'Rift',
+    ]);
+  });
+
+  it('maps an Element hint to a Bred Route', () => {
+    expect(dragon(snapshot, 'Lava').routes).toEqual([{ kind: 'bred', requirement: { elements: ['Earth', 'Fire'] } }]);
+    expect(dragon(snapshot, 'Ironwood').routes).toEqual([
+      { kind: 'bred', requirement: { elements: ['Plant', 'Metal'] } },
+    ]);
+    expect(dragon(snapshot, 'Seasonal').routes).toEqual([
+      { kind: 'bred', requirement: { elements: ['Air', 'Fire', 'Plant'] } },
+    ]);
+  });
+
+  it("marks a Rift dragon's Route rift-only, with each named parent's trait as a badge", () => {
+    expect(dragon(snapshot, 'Zaffer').routes).toEqual([
+      {
+        kind: 'bred',
+        requirement: { parents: ['Blue Fire', 'Plasma'], elements: ['Rift'] },
+        rift: 'only',
+        conditions: {
+          namedParentTraits: [
+            { dragon: 'Blue Fire', trait: 'Air' },
+            { dragon: 'Plasma', trait: 'Metal' },
+          ],
+        },
+      },
+    ]);
+  });
+
+  it("gives Nebula a Co-op bred Route: a friend's Nebula plus any Dragon", () => {
+    expect(dragon(snapshot, 'Nebula').routes).toEqual([{ kind: 'coop', friendsDragon: 'Nebula' }]);
+  });
+
+  it('gives the basic primaries a Bred and a Purchased Route; Air keeps its hint', () => {
+    expect(dragon(snapshot, 'Plant').routes).toEqual([
+      { kind: 'bred', requirement: { elements: ['Plant'] } },
+      { kind: 'purchased' },
+    ]);
+    expect(dragon(snapshot, 'Air').routes).toEqual([
+      { kind: 'bred', requirement: { parents: ['Water', 'Fire'] } },
+      { kind: 'purchased' },
+    ]);
+  });
 });
 
 describe('buildSnapshot rules on small records', () => {
@@ -222,7 +288,136 @@ describe('buildSnapshot rules on small records', () => {
   });
 });
 
+describe('Routes from hand-built hints', () => {
+  const water: WikiDragon = { Name: 'Water', Rarity: 'Primary', Order: 3, Elements: ['Water'] };
+  const odd = (fields: WikiDragon = {}): WikiDragon => ({ Name: 'Odd', Rarity: 'Rare', Order: 9, Elements: ['Fire'], ...fields });
+  /** The Routes of `target`, built with Fire, Water and `more` next to it. */
+  const routesOf = (target: WikiDragon, hint: unknown, more: WikiDragon[] = []) => {
+    const name = target.Name as string;
+    const raw = rawPages({ dragons: [fire, water, ...more, target], hints: { ...hintsFor(more), [name]: hint } });
+    return dragon(buildSnapshot(raw, null).snapshot, name).routes;
+  };
+
+  it('maps an evolution to an Evolved Route from the Devolution Dragon', () => {
+    const hint = { BuyPrice: 5, BuyPriceType: 'Gems', IsEvolution: true, RequiredDecorations: ['Effigy of the Flame'] };
+    expect(routesOf(odd({ Name: 'Ghostly Fire', Devolution: 'Fire' }), hint)).toEqual([
+      { kind: 'evolved', from: 'Fire', decorations: ['Effigy of the Flame'] },
+    ]);
+  });
+
+  it('maps artifacts to a Summoned Route', () => {
+    const hint = { RequiredArtifacts: ['Chronolith', 'Time Claw', 'Statue of Kairos'] };
+    expect(routesOf(odd({ Name: 'Kairos', Rarity: 'Legendary', Elements: ['Time'] }), hint)).toEqual([
+      { kind: 'summoned', artifacts: ['Chronolith', 'Time Claw', 'Statue of Kairos'] },
+    ]);
+  });
+
+  it('maps MinimumRequiredElements to minDistinctElements', () => {
+    const hint = { MinimumRequiredElements: 4, RequiredElements: ['Light', 'Dark'] };
+    expect(routesOf(odd({ Name: 'Dream' }), hint)).toEqual([
+      { kind: 'bred', requirement: { elements: ['Light', 'Dark'], minDistinctElements: 4 } },
+    ]);
+  });
+
+  it('maps RequiredElementsForBothParents to elementOnBothParents, without repeating elements', () => {
+    const hint = { RequiredElements: ['Snowflake', 'Snowflake'], RequiredElementsForBothParents: ['Snowflake'] };
+    const snowflake = odd({ Name: 'Snowflake 1', Elements: ['Snowflake'] });
+    const { snapshot } = buildSnapshot(rawPages({ dragons: [fire, snowflake], hints: { 'Snowflake 1': hint } }), null);
+    expect(dragon(snapshot, 'Snowflake 1').routes).toEqual([
+      { kind: 'bred', requirement: { elements: ['Snowflake'], elementOnBothParents: 'Snowflake' } },
+    ]);
+    expect(snapshot.elements).toEqual([
+      { name: 'Fire', kind: 'primary', icon: null },
+      { name: 'Snowflake', kind: 'epic', icon: null },
+    ]);
+  });
+
+  it('maps a bare Any to any pair (Motley, Dargon)', () => {
+    expect(routesOf(odd({ Name: 'Motley' }), { BuyPrice: 10, BuyPriceType: 'Gems', Any: true })).toEqual([
+      { kind: 'bred', requirement: { anyPair: true } },
+    ]);
+  });
+
+  it('turns time, weather, alignment and parent trait into badges', () => {
+    expect(routesOf(odd({ Name: 'Sun' }), { RequiredTime: 'Day', RequiredElements: ['Cold', 'Lightning'] })).toEqual([
+      { kind: 'bred', requirement: { elements: ['Cold', 'Lightning'] }, conditions: { time: 'Day' } },
+    ]);
+    const tranquil = { RequiredDragons: ['Water'], RequiredElements: ['Fire'], RequiredWeather: 'Blossoms' };
+    expect(routesOf(odd(), tranquil)).toEqual([
+      { kind: 'bred', requirement: { parents: ['Water'], elements: ['Fire'] }, conditions: { weather: 'Blossoms' } },
+    ]);
+    const rift = odd({ Elements: ['Light', 'Rift'], Traits: { Default: 'Dark' } });
+    const antumbra = { RiftAlignment: 'Earth', RequiredTraits: ['Fire'], RequiredElements: ['Light', 'Rift'] };
+    expect(routesOf(rift, antumbra)).toEqual([
+      {
+        kind: 'bred',
+        requirement: { elements: ['Light', 'Rift'] },
+        rift: 'only',
+        conditions: { alignment: 'Earth', parentTrait: 'Fire' },
+      },
+    ]);
+  });
+
+  it('maps Rigel and Solis: Rift on both parents, the prerequisite and the clone cave', () => {
+    const galaxy = (name: string, elements: string[], fields: WikiDragon = {}) =>
+      odd({ Name: name, Rarity: 'Galaxy', Elements: elements, ...fields });
+    const rigel = galaxy('Rigel', ['Galaxy', 'Rift'], { Traits: { Default: 'Cold' } });
+    const rigelHint = {
+      RequiredElementsForBothParents: ['Galaxy', 'Rift'],
+      RequiredCave: 'Rift',
+      Prerequisites: { Owned: { Elements: ['Galaxy'] } },
+    };
+    expect(routesOf(rigel, rigelHint, [galaxy('Nebula', ['Galaxy']), galaxy('Comet', ['Galaxy'])])).toEqual([
+      {
+        kind: 'bred',
+        requirement: { elementOnBothParents: 'Galaxy' },
+        rift: 'only',
+        conditions: { prerequisite: 'Own all 2 other Galaxy Dragons' },
+      },
+    ]);
+    const solisHint = {
+      RequiredDragons: ['Water'],
+      RequiredElements: ['Galaxy'],
+      RequiredCave: 'Any',
+      RequiredCloneCave: 'Cooperative',
+    };
+    expect(routesOf(galaxy('Solis', ['Galaxy']), solisHint)).toEqual([
+      { kind: 'bred', requirement: { parents: ['Water'], elements: ['Galaxy'] }, conditions: { cloneCave: 'Cooperative' } },
+    ]);
+  });
+
+  it('gives a rift primary only a Purchased Route', () => {
+    const fireRift = { Name: 'Fire Rift', Rarity: 'Rare', Order: 9, Elements: ['Fire', 'Rift'], Traits: { Default: 'Fire' } };
+    const { snapshot } = buildSnapshot(rawPages({ dragons: [fire, fireRift], hints: {} }), null);
+    expect(dragon(snapshot, 'Fire Rift').routes).toEqual([{ kind: 'purchased' }]);
+  });
+});
+
 describe('buildSnapshot fails the run', () => {
+  const odd = { Name: 'Odd', Rarity: 'Rare', Order: 3, Elements: ['Fire'] };
+  const failuresWith = (hints: Record<string, unknown>) => failures(rawPages({ dragons: [fire, odd], hints }));
+
+  it('on an unknown hint key, naming the key and the Dragon', () => {
+    expect(failuresWith({ Odd: { RequiredElements: ['Fire'], RequiredMoon: 'Full' } })).toEqual([
+      `Odd's breeding hint has unknown key "RequiredMoon"`,
+    ]);
+  });
+
+  it('on a hint naming an unknown Element or Dragon, an evolution without a Devolution, or no hint at all', () => {
+    expect(failuresWith({ Odd: { RequiredElements: ['Glitter'] } })).toEqual([
+      `Odd has unknown Element "Glitter" in its breeding hint's RequiredElements`,
+    ]);
+    expect(failuresWith({ Odd: { RequiredDragons: ['Nobody'] } })).toEqual([
+      'Odd names unknown Dragon "Nobody" in RequiredDragons',
+    ]);
+    expect(failuresWith({ Odd: { IsEvolution: true, RequiredDecorations: ['Set'] } })).toEqual([
+      'Odd evolves (IsEvolution) but has no Devolution to evolve from',
+    ]);
+    expect(failuresWith({})).toEqual([
+      "Odd has no breeding hint and isn't a primary or rift primary, so it has no Route",
+    ]);
+  });
+
   it('on an unknown Element name in Elements', () => {
     const raw = rawPages({ dragons: [fire, { Name: 'Odd', Rarity: 'Rare', Order: 3, Elements: ['Fire', 'Glitter'] }] });
     expect(failures(raw)).toEqual(['Odd has unknown Element "Glitter" in Elements']);
@@ -302,5 +497,11 @@ describe('buildSnapshot on the full raw pages', () => {
     );
     expect(report.counts.gemstoneAndCrystalline).toBe(29);
     expect(report.warnings).toEqual([]);
+
+    // Spec §4: 35 Evolved, 5 Summoned; Purchased are the 10 basic and 10 rift primaries.
+    expect(snapshot.dragons.filter((d) => d.routes.length === 0)).toEqual([]);
+    expect(report.counts.routes).toEqual({ bred: 914, coop: 19, evolved: 35, summoned: 5, purchased: 20 });
+    // Rainbow, Surface and the gem, legendary, mythic and other Elements are displayed but no Route uses them.
+    expect(snapshot.elements).toHaveLength(27);
   });
 });

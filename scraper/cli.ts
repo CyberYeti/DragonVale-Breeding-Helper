@@ -87,6 +87,9 @@ function printReport({ counts, warnings, added, removed, renameCandidates }: Bui
   console.log(`  pages: ${pages.elemental} Elemental, ${pages.epic} Epic, ${pages.special} Special`);
   console.log(`  traits: ${traits.all} all, ${traits.fixed} fixed, ${traits.none} none`);
   console.log(`  never parents: ${counts.cannotBeParent} (Gemstone + Crystalline: ${counts.gemstoneAndCrystalline})`);
+  const r = counts.routes;
+  console.log(`  Dragons with a Route that is: ${r.bred} Bred, ${r.coop} Co-op bred, ${r.evolved} Evolved, ` +
+    `${r.summoned} Summoned, ${r.purchased} Purchased`);
   if (warnings.length === 0) console.log('No warnings.');
   for (const warning of warnings) console.log(`warning: ${warning}`);
   console.log(`Added since the previous snapshot (${added.length}): ${added.join(', ') || 'none'}`);
