@@ -3,11 +3,13 @@
 //   npm run snapshot -- --fetch-only   fetch the raw pages (one request) and write them
 //   npm run snapshot -- --offline      read the committed raw pages, no network
 //   add --fixture to (re)cut fixtures/real-records.json from the pages read
+//   add --no-download to use only the images already under public/images/
 //
 // The snapshot is built against the committed public/data/snapshot.json (if
-// any), the person running it confirms or rejects each rename candidate, and
-// the snapshot is written to public/data/snapshot.json with its report printed.
-// Images come later (#28).
+// any), the person running it confirms or rejects each rename candidate, the
+// images not yet under public/images/ are downloaded (--offline applies to the
+// pages only), and the snapshot is written to public/data/snapshot.json with
+// its report printed.
 
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -18,6 +20,7 @@ import { buildSnapshot, type BuildReport } from './build';
 import { applyRenames, confirmRenames, type AskRename, type RenameCandidate } from './renames';
 import { fetchPages, writeRawPages, PAGE_TITLES, RAW_DIR, type RawPages } from './pages';
 import { cutRealRecords, REAL_RECORDS_FILE } from './fixture';
+import { currentEventNames, downloadImages, type ImageReport } from './images';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const rawDir = join(root, RAW_DIR);
@@ -27,6 +30,7 @@ async function main(args: string[]): Promise<void> {
   const offline = args.includes('--offline');
   const fetchOnly = args.includes('--fetch-only');
   const fixture = args.includes('--fixture');
+  const download = !args.includes('--no-download');
   if (offline && fetchOnly) throw new Error('--offline and --fetch-only exclude each other');
 
   let raw: RawPages;
@@ -63,6 +67,15 @@ async function main(args: string[]): Promise<void> {
     if (confirmed.length === 0) console.log('No renames confirmed.');
   }
 
+  const images = await downloadImages(snapshot, {
+    root,
+    eventNames: currentEventNames(raw),
+    download,
+    log: (line) => console.log(line),
+  });
+  snapshot = images.snapshot;
+  printImageReport(images.report);
+
   const json = JSON.stringify(snapshot, null, 2) + '\n';
   loadSnapshot(JSON.parse(json));
   await mkdir(dirname(join(root, SNAPSHOT_FILE)), { recursive: true });
@@ -95,6 +108,15 @@ function printReport({ counts, warnings, added, removed, renameCandidates }: Bui
   console.log(`Added since the previous snapshot (${added.length}): ${added.join(', ') || 'none'}`);
   console.log(`Removed since the previous snapshot (${removed.length}): ${removed.join(', ') || 'none'}`);
   if (renameCandidates.length > 0) console.log(`Rename candidates to confirm: ${renameCandidates.length}`);
+}
+
+function printImageReport({ requests, existing, downloaded, missing, warnings }: ImageReport): void {
+  console.log(`Images: ${existing} already on disk, ${downloaded.length} downloaded, ${missing.length} missing, ` +
+    `${requests} requests.`);
+  for (const t of missing.filter((m) => m.kind === 'event')) {
+    console.log(`  no icon for Event ${t.key} (File:${t.file}); the app shows the generic one`);
+  }
+  for (const warning of warnings) console.log(`warning: ${warning}`);
 }
 
 const REASONS: Record<RenameCandidate['reason'], string> = {
