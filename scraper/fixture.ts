@@ -2,6 +2,7 @@
 // records and their hints, kept raw (wiki field names), shared by the scraper
 // and core tests. `npm run snapshot -- --offline --fixture` rewrites it.
 
+import { OPPOSITES } from './build';
 import { PAGE_TITLES, type RawPages } from './pages';
 
 export const REAL_RECORDS_FILE = 'fixtures/real-records.json';
@@ -17,15 +18,6 @@ export const REAL_RECORD_NAMES = [
   'Ironwood',
   'Nebula',
 ] as const;
-
-/** Spec §6: the five opposite primary pairs. Not in the wiki data; hard-coded. */
-export const OPPOSITES: [string, string][] = [
-  ['Plant', 'Metal'],
-  ['Fire', 'Cold'],
-  ['Earth', 'Air'],
-  ['Lightning', 'Water'],
-  ['Light', 'Dark'],
-];
 
 type WikiDragon = { Name: string } & Record<string, unknown>;
 type WikiHint = Record<string, unknown>;
