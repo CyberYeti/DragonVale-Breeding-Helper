@@ -1,0 +1,544 @@
+{
+	"dragons": {
+		"Love": {
+			"countdown": "October 7, 2026"
+		},
+		"Trick": {
+			"countdown": "October 7, 2026"
+		},
+		"Pharaoh": {
+			"countdown": "October 7, 2026"
+		},
+		"Opal": {
+			"countdown": "November 1, 2026"
+		},
+		"Autumn": {
+			"countdown": "December 21, 2026"
+		},
+		"Bismuth": {
+			"countdown": "October 15, 2026"
+		},
+		"Amber": {
+			"countdown": "November 15, 2026"
+		},
+		"Stygian": {
+			"countdown": "October 23, 2026"
+		},
+		"Librian": {
+			"countdown": "October 23, 2026"
+		}
+	},
+	"islandThemes": {},
+	"decorations": {
+		"Miroid Monument": {
+			"countdown": "November 1, 2026"
+		},
+		"Tear of the Cataclysm": {
+			"countdown": "November 15, 2026"
+		}
+	},
+	"events": {
+		"Om of Noms: Country Roads II": {
+			"countdown": "October 7, 2026",
+			"dragons": {
+				"Haystack": {
+					"Currency": "Spice",
+					"Cost": 12250,
+					"Breedable": false
+				},
+				"Sungazer": {
+					"Currency": "Spice",
+					"Cost": 12250,
+					"Breedable": false
+				},
+				"Dotty": {
+					"countdown": "October 7, 2026",
+					"Currency": "Spice",
+					"Cost": 12500
+				},
+				"Jasmine": {
+					"Currency": "Spice",
+					"Cost": 12000
+				},
+				"Nectavira": {
+					"Currency": "Spice",
+					"Cost": 12500
+				},
+				"Rose": {
+					"Currency": "Spice",
+					"Cost": 2000
+				},
+				"Luciflora": {
+					"Currency": "Spice",
+					"Cost": 12000
+				},
+				"Snapsnap": {
+					"Currency": "Spice",
+					"Cost": 12000
+				},
+				"Busby": {
+					"Currency": "Spice",
+					"Cost": 9800
+				},
+				"Honeybrew": {
+					"Currency": "Spice",
+					"Cost": 9800
+				},
+				"Magnolia": {
+					"Currency": "Spice",
+					"Cost": 1900
+				},
+				"Pollenizer": {
+					"Currency": "Spice",
+					"Cost": 12000
+				},
+				"Vidalia": {
+					"Currency": "Spice",
+					"Cost": 10000
+				},
+				"Rooty": {
+					"Currency": "Spice",
+					"Cost": 12000
+				},
+				"Firevine": {
+					"Currency": "Spice",
+					"Cost": 12500
+				},
+				"Rootwyrm": {
+					"Currency": "Spice",
+					"Cost": 12500
+				},
+				"Nightbloom": {
+					"Currency": "Spice",
+					"Cost": 6500
+				},
+				"Wyrmwood": {
+					"Currency": "Spice",
+					"Cost": 7000
+				},
+				"Karroot": {
+					"Currency": "Spice",
+					"Cost": 1050
+				},
+				"Mushry": {
+					"Currency": "Spice",
+					"Cost": 9750
+				},
+				"Garden": {
+					"Currency": "Spice",
+					"Cost": 8000
+				},
+				"Squish": {
+					"Currency": "Spice",
+					"Cost": 8000
+				},
+				"Plumpkin": {
+					"Currency": "Spice",
+					"Cost": 3900
+				},
+				"Sprout": {
+					"Currency": "Spice",
+					"Cost": 5100
+				},
+				"Bushwhack": {
+					"Currency": "Spice",
+					"Cost": 5100
+				},
+				"Teozinite": {
+					"Currency": "Spice",
+					"Cost": 6000
+				},
+				"Bloatato": {
+					"Currency": "Spice",
+					"Cost": 3300
+				},
+				"Kroki": {
+					"Currency": "Spice",
+					"Cost": 6600
+				},
+				"Gourd": {
+					"Currency": "Spice",
+					"Cost": 7000
+				},
+				"Bogberry": {
+					"Currency": "Spice",
+					"Cost": 7000
+				},
+				"Maze": {
+					"Currency": "Spice",
+					"Cost": 7250
+				},
+				"Leaf": {
+					"Currency": "Spice",
+					"Cost": 7700
+				},
+				"Seed": {
+					"Currency": "Spice",
+					"Cost": 7700
+				},
+				"Keyper": {
+					"Currency": "Spice",
+					"Cost": 6600
+				},
+				"Cumberpatch": {
+					"Currency": "Spice",
+					"Cost": 7500
+				},
+				"Aubergine": {
+					"Currency": "Spice",
+					"Cost": 7500
+				},
+				"Curlyleaf": {
+					"Currency": "Spice",
+					"Cost": 8000
+				},
+				"Fomhar": {
+					"Currency": "Spice",
+					"Cost": 8000
+				},
+				"Pikeleaf": {
+					"Currency": "Spice",
+					"Cost": 9000
+				},
+				"Waterwalker": {
+					"Currency": "Spice",
+					"Cost": 10000
+				},
+				"Starwing": {
+					"Currency": "Spice",
+					"Cost": 1000
+				},
+				"Neoteric": {
+					"Currency": "Spice",
+					"Cost": 2000
+				},
+				"Fates": {
+					"Currency": "Spice",
+					"Cost": 1900
+				},
+				"Muse": {
+					"Currency": "Spice",
+					"Cost": 1900
+				},
+				"Fluffles": {
+					"Currency": "Spice",
+					"Cost": 7750
+				},
+				"Trimera": {
+					"Currency": "Spice",
+					"Cost": 9800
+				},
+				"Arcane": {
+					"Currency": "Spice",
+					"Cost": 10400
+				},
+				"Riptide": {
+					"Currency": "Spice",
+					"Cost": 4550
+				},
+				"Nimue": {
+					"Currency": "Spice",
+					"Cost": 12500
+				},
+				"Outride": {
+					"Currency": "Spice",
+					"Cost": 4700
+				},
+				"Vanguard": {
+					"Currency": "Spice",
+					"Cost": 5550
+				},
+				"Quantum": {
+					"Currency": "Spice",
+					"Cost": 5550
+				},
+				"Psyche": {
+					"Currency": "Spice",
+					"Cost": 5900
+				},
+				"Dash": {
+					"Currency": "Spice",
+					"Cost": 5950
+				},
+				"Serenity": {
+					"Currency": "Spice",
+					"Cost": 4450
+				},
+				"Moriante": {
+					"Currency": "Spice",
+					"Cost": 7600
+				},
+				"Lageto": {
+					"Currency": "Spice",
+					"Cost": 7600
+				},
+				"Tranquil": {
+					"Currency": "Spice",
+					"Cost": 7600
+				},
+				"Lunk": {
+					"Currency": "Spice",
+					"Cost": 7800
+				},
+				"Puffles": {
+					"Currency": "Spice",
+					"Cost": 9500
+				},
+				"Professo": {
+					"Currency": "Spice",
+					"Cost": 12400
+				},
+				"Margento": {
+					"Currency": "Spice",
+					"Cost": 12400
+				},
+				"Dartwing": {
+					"Currency": "Spice",
+					"Cost": 3900
+				},
+				"Feast": {
+					"Currency": "Spice",
+					"Cost": 4700
+				},
+				"Harvest Moon": {
+					"Currency": "Spice",
+					"Cost": 4800
+				},
+				"Bounteous": {
+					"Currency": "Spice",
+					"Cost": 5000
+				},
+				"Huddle": {
+					"Currency": "Spice",
+					"Cost": 5000
+				},
+				"Diggy": {
+					"Currency": "Spice",
+					"Cost": 2500
+				},
+				"Fireflight": {
+					"Currency": "Spice",
+					"Cost": 2500
+				},
+				"Gryphus": {
+					"Currency": "Spice",
+					"Cost": 7760
+				},
+				"Khamsin": {
+					"Currency": "Spice",
+					"Cost": 7670
+				},
+				"Country": {
+					"Currency": "Spice",
+					"Cost": 7840
+				},
+				"Sow": {
+					"Currency": "Spice",
+					"Cost": 7500
+				},
+				"Osteryx": {
+					"Currency": "Spice",
+					"Cost": 7500
+				},
+				"Autumn": {
+					"Currency": "Spice",
+					"Cost": 9500
+				},
+				"Liveloch": {
+					"Currency": "Spice",
+					"Cost": 8000
+				},
+				"Pouke": {
+					"Currency": "Spice",
+					"Cost": 10500
+				},
+				"Greenhouse": {
+					"Currency": "Spice",
+					"Cost": 12500
+				},
+				"Davinese": {
+					"Currency": "Spice",
+					"Cost": 10000
+				},
+				"Invento": {
+					"Currency": "Spice",
+					"Cost": 9750
+				},
+				"Kingstone": {
+					"Currency": "Spice",
+					"Cost": 12000
+				},
+				"Armor": {
+					"Currency": "Spice",
+					"Cost": 12500
+				},
+				"Armament": {
+					"Currency": "Spice",
+					"Cost": 4700
+				},
+				"Shield": {
+					"Currency": "Spice",
+					"Cost": 1200
+				},
+				"Paper": {
+					"Currency": "Spice",
+					"Cost": 3000
+				},
+				"Brizoni": {
+					"Currency": "Spice",
+					"Cost": 8300
+				},
+				"Scribe": {
+					"Currency": "Spice",
+					"Cost": 11800
+				},
+				"Construct": {
+					"Currency": "Spice",
+					"Cost": 12000
+				},
+				"Plate": {
+					"Currency": "Spice",
+					"Cost": 10000
+				},
+				"Gargoyle": {
+					"Currency": "Spice",
+					"Cost": 5100
+				},
+				"Standstone": {
+					"Currency": "Spice",
+					"Cost": 8000
+				},
+				"Carnival": {
+					"Currency": "Spice",
+					"Cost": 2000
+				},
+				"Stage": {
+					"Currency": "Spice",
+					"Cost": 5500
+				},
+				"Smigi": {
+					"Currency": "Spice",
+					"Cost": 5900
+				},
+				"Scryer": {
+					"Currency": "Spice",
+					"Cost": 6300
+				},
+				"Undau": {
+					"Currency": "Spice",
+					"Cost": 7500
+				},
+				"Faire": {
+					"Currency": "Spice",
+					"Cost": 2500
+				},
+				"PonkiPong": {
+					"Currency": "Spice",
+					"Cost": 8000
+				},
+				"Morphimagus": {
+					"Currency": "Spice",
+					"Cost": 8500
+				},
+				"Binky": {
+					"Currency": "Spice",
+					"Cost": 8500
+				},
+				"Fuefuego": {
+					"Currency": "Spice",
+					"Cost": 9250
+				},
+				"Prestige": {
+					"Currency": "Spice",
+					"Cost": 9450
+				},
+				"Prestina": {
+					"Currency": "Spice",
+					"Cost": 9900
+				},
+				"Jester": {
+					"Currency": "Spice",
+					"Cost": 9800
+				},
+				"Lightmare": {
+					"Currency": "Spice",
+					"Cost": 2200
+				},
+				"Nightmare": {
+					"Currency": "Spice",
+					"Cost": 2200
+				},
+				"Blue Moon": {
+					"Currency": "Spice",
+					"Cost": 1300
+				},
+				"Moonstruck": {
+					"Currency": "Spice",
+					"Cost": 1850
+				},
+				"Aurora": {
+					"Currency": "Spice",
+					"Cost": 6300
+				},
+				"Elysium": {
+					"Currency": "Spice",
+					"Cost": 9900
+				},
+				"Darkarm": {
+					"Currency": "Spice",
+					"Cost": 11250
+				},
+				"Darcowl": {
+					"Currency": "Spice",
+					"Cost": 4800
+				},
+				"Sparkles": {
+					"Currency": "Spice",
+					"Cost": 5750
+				},
+				"Bastion": {
+					"Currency": "Spice",
+					"Cost": 6300
+				},
+				"Dawnbringer": {
+					"Currency": "Spice",
+					"Cost": 3900
+				},
+				"Dawn": {
+					"Currency": "Spice",
+					"Cost": 1900
+				},
+				"Prism": {
+					"Currency": "Spice",
+					"Cost": 1900
+				},
+				"Stella": {
+					"Currency": "Spice",
+					"Cost": 8250
+				},
+				"Lightmatter": {
+					"Currency": "Spice",
+					"Cost": 9250
+				},
+				"Darkmatter": {
+					"Currency": "Spice",
+					"Cost": 8900
+				},
+				"Harvest": {
+					"Currency": "Spice",
+					"Cost": 4000
+				},
+				"Berry": {
+					"Currency": "Spice",
+					"Cost": 7500
+				},
+				"Bog": {
+					"Currency": "Spice",
+					"Cost": 7500
+				},
+				"islands": {},
+				"islandThemes": {}
+			}
+		}
+	}
+}
