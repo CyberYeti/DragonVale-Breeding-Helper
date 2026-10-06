@@ -89,4 +89,22 @@
   .spacer {
     flex: 1;
   }
+
+  /* Phone (spec §8 Phone layout): a smaller title, and the buttons on a row of their own. */
+  @media (max-width: 700px) {
+    .page-header {
+      gap: 6px 8px;
+      padding: 10px 8px 4px;
+    }
+    h1 {
+      --icon-size: 24px;
+      font-size: 17px;
+    }
+    .bar {
+      width: 80px;
+    }
+    .spacer {
+      flex-basis: 100%;
+    }
+  }
 </style>

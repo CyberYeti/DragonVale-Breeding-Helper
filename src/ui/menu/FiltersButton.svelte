@@ -1,4 +1,4 @@
-﻿<!--
+<!--
   The page header's ▸ Filters button and popover (spec §8 Filters and
   Display). The badge counts the filters that are on. The filters live in nav
   (`nav.filters`, a core/menu Filters) and reset on reload.
@@ -8,20 +8,21 @@
   import { filterCount } from './filterLabels';
   import FiltersPanel from './FiltersPanel.svelte';
   import Popover from './Popover.svelte';
-  import { popovers } from './popovers.svelte';
   import ToolButton from './ToolButton.svelte';
 
   const nav = useNav();
   const count = $derived(filterCount(nav.filters));
 </script>
 
-<Popover id="filters" label="Filters">
-  {#snippet trigger(props, open)}
-    <ToolButton {...props} active={count > 0}>
+<Popover label="Filters" align="right">
+  {#snippet trigger({ open, toggle })}
+    <ToolButton aria-expanded={open} active={count > 0} onclick={toggle}>
       {open ? '▾' : '▸'} Filters{#if count > 0}&nbsp;<b class="badge" aria-label="{count} on">{count}</b>{/if}
     </ToolButton>
   {/snippet}
-  <FiltersPanel ondone={() => popovers.close('filters')} />
+  {#snippet children({ close })}
+    <FiltersPanel ondone={close} />
+  {/snippet}
 </Popover>
 
 <style>

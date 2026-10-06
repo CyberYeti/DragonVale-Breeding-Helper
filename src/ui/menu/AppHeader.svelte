@@ -60,4 +60,18 @@
   .spacer {
     flex: 1;
   }
+
+  /* Phone: the search box takes the room between ☰ and ⋯. */
+  @media (max-width: 700px) {
+    .header {
+      gap: 8px;
+      padding: 8px;
+    }
+    .search {
+      max-width: none;
+    }
+    .spacer {
+      display: none;
+    }
+  }
 </style>

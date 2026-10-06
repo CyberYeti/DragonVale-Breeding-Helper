@@ -17,11 +17,24 @@
   </p>
 {/if}
 {#if store.notice}
-  <p class="note">
-    Dragon data updated ({new Date(store.notice.dataDate).toLocaleDateString()}): {store.notice.renamed.length} renamed,
-    {store.notice.orphans.length} entries not recognised.
+  {@const { renamed, orphans, dataDate } = store.notice}
+  <div class="note" role="status">
+    Dragon data updated ({new Date(dataDate).toLocaleDateString()}):
+    {[
+      renamed.length > 0 && `${renamed.length} renamed (${renamed.map((r) => `${r.from} → ${r.to}`).join(', ')})`,
+      orphans.length > 0 && `${orphans.length} ${orphans.length === 1 ? 'entry' : 'entries'} not recognised`,
+    ]
+      .filter(Boolean)
+      .join(', ')}
     <button type="button" onclick={() => store.dismissNotice()}>Dismiss</button>
-  </p>
+    {#if orphans.length > 0}
+      <details>
+        <summary>Details</summary>
+        These Collection entries aren't in the current Dragon data. They're kept and exported, but don't count as owned:
+        {orphans.join(', ')}. To drop them, use ⋯ → Remove them.
+      </details>
+    {/if}
+  </div>
 {/if}
 {#if store.storageFailed}
   <p class="note warn">This browser isn't saving data, so changes will be lost on reload.</p>
@@ -45,6 +58,12 @@
   .warn {
     color: inherit;
     border-left: 3px solid var(--accent);
+  }
+  details {
+    margin-top: 4px;
+  }
+  summary {
+    cursor: pointer;
   }
   button {
     margin-left: 6px;
