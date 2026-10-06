@@ -60,4 +60,16 @@
     margin: 8px 12px;
     color: var(--muted);
   }
+
+  /* Phone (spec §8 Phone layout): smaller tiles, tighter gaps. Keep 700px in step with MenuShell. */
+  @media (max-width: 700px) {
+    .grid {
+      grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+      gap: 6px;
+      padding: 4px 8px 12px;
+    }
+    h2 {
+      padding: 10px 8px 4px;
+    }
+  }
 </style>
