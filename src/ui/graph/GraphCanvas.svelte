@@ -35,6 +35,7 @@
     backgroundPaths,
     moved,
     moveStart,
+    nodeSize,
     place,
     placeTree,
     toFlowEdges,
@@ -48,6 +49,7 @@
   import FriendNode from './nodes/FriendNode.svelte';
   import RouteNode from './nodes/RouteNode.svelte';
   import RuleNode from './nodes/RuleNode.svelte';
+  import { useClickPanel } from './panel/clickPanel.svelte';
 
   type Props = {
     model: GraphModel;
@@ -85,6 +87,25 @@
   const flow = useSvelteFlow();
   const canvas = new CanvasView(() => large);
   provideCanvasView(canvas);
+  /** The view's click panel, if it has one. */
+  const panel = useClickPanel();
+
+  // A Dragon or Route picked in a panel: pan to its node at the current zoom.
+  // Done here, not in the node, because a large graph doesn't draw off-screen nodes.
+  $effect(() => {
+    const reveal = panel?.reveal;
+    if (!reveal) return;
+    untrack(() => {
+      const node = model.nodes.find((n) => n.id === reveal.id);
+      const at = shown.get(reveal.id);
+      if (!node || !at) return;
+      const size = nodeSize(node, node.id === model.target?.node);
+      void flow.setCenter(at.x + size.width / 2, at.y + size.height / 2, {
+        zoom: flow.getZoom(),
+        duration: large ? 0 : 300,
+      });
+    });
+  });
 
   /** Where nodes sit outside a pulled tree. */
   const base = $derived(positions ?? place(model));
