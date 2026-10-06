@@ -12,6 +12,7 @@
   import PageHeader from './PageHeader.svelte';
   import Sidebar from './Sidebar.svelte';
   import TileGrid from './TileGrid.svelte';
+  import UndoToast from './UndoToast.svelte';
 
   const nav = useNav();
 
@@ -38,6 +39,7 @@
       <Footer />
     </main>
     <!-- Floating bars (select mode's action bar, the Undo toast) go here, after the page. -->
+    <UndoToast />
   </div>
 </div>
 
@@ -54,6 +56,7 @@
     min-height: 0;
   }
   .main {
+    position: relative;
     flex: 1;
     min-width: 0;
     display: flex;
