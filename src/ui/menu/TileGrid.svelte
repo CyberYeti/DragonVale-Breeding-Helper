@@ -110,5 +110,15 @@
     h2 {
       padding: 10px 8px 4px;
     }
+    .event-head {
+      padding: 10px 8px 4px;
+    }
+    .sub {
+      font-size: 12px;
+    }
+    .empty,
+    .not-recognised {
+      margin: 8px;
+    }
   }
 </style>
