@@ -10,8 +10,10 @@
   import Footer from './Footer.svelte';
   import Notices from './Notices.svelte';
   import PageHeader from './PageHeader.svelte';
+  import SelectBar from './SelectBar.svelte';
   import Sidebar from './Sidebar.svelte';
   import TileGrid from './TileGrid.svelte';
+  import UndoToast from './UndoToast.svelte';
 
   const nav = useNav();
 
@@ -38,6 +40,8 @@
       <Footer />
     </main>
     <!-- Floating bars (select mode's action bar, the Undo toast) go here, after the page. -->
+    <SelectBar />
+    <UndoToast />
   </div>
 </div>
 
