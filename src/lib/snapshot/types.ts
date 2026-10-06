@@ -113,6 +113,15 @@ export type Requirement = {
   elementOnBothParents?: string;
   /** Motley, Dargon. */
   anyPair?: true;
+  /**
+   * Narrows the other parent of a one-name Requirement (`parents: [X]`).
+   * `self-or-opposite-hybrid`: the other parent is X again, or an opposite
+   * hybrid carrying every Element of X: a Dragon whose Elements, ignoring
+   * Rift, are exactly two opposite Elements (Blue Fire, Frostfire for Fire).
+   * The 9 hint-less basic primaries breed only this way, so only from one
+   * already owned (Module:BreedingSandbox's primary_dragons_rule).
+   */
+  partner?: 'self-or-opposite-hybrid';
 };
 
 /** Badges only; never block anything. */

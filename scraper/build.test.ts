@@ -174,9 +174,10 @@ describe('buildSnapshot on the real records', () => {
     expect(dragon(snapshot, 'Nebula').routes).toEqual([{ kind: 'coop', friendsDragon: 'Nebula' }]);
   });
 
-  it('gives the basic primaries a Bred and a Purchased Route; Air keeps its hint', () => {
+  it('gives the basic primaries a Bred Route from one already owned and a Purchased Route; Air keeps its hint', () => {
+    // Module:BreedingSandbox primary_dragons_rule: Plant + Plant, or Plant + an opposite hybrid such as Ironwood.
     expect(dragon(snapshot, 'Plant').routes).toEqual([
-      { kind: 'bred', requirement: { elements: ['Plant'] } },
+      { kind: 'bred', requirement: { parents: ['Plant'], partner: 'self-or-opposite-hybrid' } },
       { kind: 'purchased' },
     ]);
     expect(dragon(snapshot, 'Air').routes).toEqual([

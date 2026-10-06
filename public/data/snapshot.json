@@ -1,7 +1,7 @@
 {
   "meta": {
-    "schemaVersion": 1,
-    "revision": "dfca908dcb5a",
+    "schemaVersion": 2,
+    "revision": "5b42df431f21",
     "source": "https://dragonvale.fandom.com",
     "license": "CC BY-SA 3.0",
     "pageRevisions": {
@@ -194,9 +194,10 @@
         {
           "kind": "bred",
           "requirement": {
-            "elements": [
+            "parents": [
               "Plant"
-            ]
+            ],
+            "partner": "self-or-opposite-hybrid"
           }
         },
         {
@@ -225,9 +226,10 @@
         {
           "kind": "bred",
           "requirement": {
-            "elements": [
+            "parents": [
               "Fire"
-            ]
+            ],
+            "partner": "self-or-opposite-hybrid"
           }
         },
         {
@@ -318,9 +320,10 @@
         {
           "kind": "bred",
           "requirement": {
-            "elements": [
+            "parents": [
               "Earth"
-            ]
+            ],
+            "partner": "self-or-opposite-hybrid"
           }
         },
         {
@@ -442,9 +445,10 @@
         {
           "kind": "bred",
           "requirement": {
-            "elements": [
+            "parents": [
               "Cold"
-            ]
+            ],
+            "partner": "self-or-opposite-hybrid"
           }
         },
         {
@@ -504,9 +508,10 @@
         {
           "kind": "bred",
           "requirement": {
-            "elements": [
+            "parents": [
               "Lightning"
-            ]
+            ],
+            "partner": "self-or-opposite-hybrid"
           }
         },
         {
@@ -659,9 +664,10 @@
         {
           "kind": "bred",
           "requirement": {
-            "elements": [
+            "parents": [
               "Water"
-            ]
+            ],
+            "partner": "self-or-opposite-hybrid"
           }
         },
         {
@@ -1525,9 +1531,10 @@
         {
           "kind": "bred",
           "requirement": {
-            "elements": [
+            "parents": [
               "Metal"
-            ]
+            ],
+            "partner": "self-or-opposite-hybrid"
           }
         },
         {
@@ -4285,9 +4292,10 @@
         {
           "kind": "bred",
           "requirement": {
-            "elements": [
+            "parents": [
               "Light"
-            ]
+            ],
+            "partner": "self-or-opposite-hybrid"
           }
         },
         {
@@ -4560,9 +4568,10 @@
         {
           "kind": "bred",
           "requirement": {
-            "elements": [
+            "parents": [
               "Dark"
-            ]
+            ],
+            "partner": "self-or-opposite-hybrid"
           }
         },
         {

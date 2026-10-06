@@ -149,6 +149,30 @@ describe('Route panel: not met', () => {
   });
 });
 
+describe("Route panel: a basic primary's Bred Route", () => {
+  const blueFire = () => dragon({ name: 'Blue Fire', rarity: 'Rare', order: 104, elements: ['Fire', 'Cold'] });
+
+  it('needs the primary already owned, and suggests nothing', () => {
+    const w = world({ dragons: [...primaries(), lava(), blueFire()], owned: ['Lava', 'Plant'] });
+    const panel = routePanel(w, 'Fire');
+
+    expect([panel.headline, panel.tone]).toEqual(['Not met', 'bad']);
+    expect(panel.reason).toBe(
+      'Needs a Fire Dragon you already own: breeds only from Fire Dragon + Fire Dragon or a Fire/Cold hybrid',
+    );
+    expect(panel.suggestions).toEqual([]);
+  });
+
+  it('lists Fire + Fire and Fire + an opposite hybrid when met, and says the rule', () => {
+    const w = world({ dragons: [...primaries(), lava(), blueFire()], owned: ['Fire', 'Blue Fire', 'Lava'] });
+    const panel = routePanel(w, 'Fire');
+
+    expect(panel.headline).toBe('✔ Met · 2 Valid pairs');
+    expect(groupNames(panel.pairs)).toEqual([['Fire', ['Fire', 'Blue Fire']]]);
+    expect(panel.reason).toBe('Breeds only from Fire Dragon + Fire Dragon or a Fire/Cold hybrid');
+  });
+});
+
 describe('Element panel', () => {
   const thorn = () => dragon({ name: 'Thorn', order: 300, elements: ['Plant', 'Fire', 'Earth'] });
   const bloom = () => limited({ name: 'Bloom', order: 5, elements: ['Plant', 'Earth'] });

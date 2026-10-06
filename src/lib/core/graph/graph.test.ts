@@ -106,6 +106,45 @@ const seasonal = () =>
 
 // ---- Rule 1: every Route of the Target is shown ---------------------------------
 
+describe('a basic primary breeds only from itself', () => {
+  const blueFire = () => dragon({ name: 'Blue Fire', rarity: 'Rare', elements: ['Fire', 'Cold'] });
+
+  it('draws its Bred Route with no self-edge, saying the rule in a badge', () => {
+    const m = focus({ dragons: [...primaries(), lava(), blueFire()], owned: ['Lava', 'Plant'] }, 'Fire');
+    expectWellFormed(m);
+    const fire = dragonNode(m, 'Fire');
+    const route = onlyRoute(m, fire);
+    expect(inputs(m, route)).toEqual([]);
+    expect(m.edges.filter((e) => e.source === fire.id)).toEqual([]);
+    expect(route.met).toBe(false);
+    const out = outEdge(m, route);
+    expect(kinds(out.badges)).toEqual(['self-parent']);
+    expect(out.badges[0]!.label).toBe('Breeds only from Fire + Fire or a Fire/Cold hybrid');
+    expect(kinds(fire.badges)).toEqual(['purchased']);
+    expect(m.target!.reasons.map((r) => r.kind)).toEqual(['not-met']);
+  });
+
+  it('is met once Fire is owned, and Fire is still not Breedable now', () => {
+    const m = focus({ dragons: [...primaries(), lava(), blueFire()], owned: ['Fire', 'Blue Fire'] }, 'Fire');
+    const route = onlyRoute(m, dragonNode(m, 'Fire'));
+    expect(route).toMatchObject({ met: true, state: 'met' });
+    expect(inputs(m, route)).toEqual([]);
+    expect(m.target).toMatchObject({ owned: true, breedableNow: false });
+  });
+
+  it('a primary reached as a named parent shows the same pill and no self-edge (Air = Water + Fire)', () => {
+    const m = focus({ dragons: realCast() }, 'Air');
+    expectWellFormed(m);
+    for (const name of ['Water', 'Fire']) {
+      const parent = dragonNode(m, name);
+      expect(parent.expanded).toBe(true);
+      const route = onlyRoute(m, parent);
+      expect(inputs(m, route)).toEqual([]);
+      expect(kinds(outEdge(m, route).badges)).toEqual(['self-parent']);
+    }
+  });
+});
+
 describe('rule 1: every Route of the Target', () => {
   const twoRoutes = () =>
     dragon({

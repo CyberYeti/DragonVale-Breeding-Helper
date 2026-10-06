@@ -142,8 +142,8 @@ export type GraphEdge = {
  * Something drawn on an edge label or a node. `label` is the text to show;
  * `kind` (and the data with it) is for styling and tests.
  *
- * On a Route's out-edge (pill → Dragon): purchase-only, cannot-be-parent,
- * not-available, no-valid-pair, condition, other-cave. On an in-edge:
+ * On a Route's out-edge (pill → Dragon): purchase-only, self-parent,
+ * cannot-be-parent, not-available, no-valid-pair, condition, other-cave. On an in-edge:
  * both-parents, decoration (evolves-from), any-dragon (coop-only). On a
  * Dragon node: owned, purchased, summoned, dead-end.
  */
@@ -158,6 +158,11 @@ export type Badge = { readonly label: string } & (
    * aren't drawn as its parents, and the Route is never met.
    */
   | { readonly kind: 'cannot-be-parent'; readonly dragons: readonly string[] }
+  /**
+   * The Route names its own Dragon as a parent (a basic primary breeds only
+   * from one already owned). No self-edge is drawn; `text` says the rule.
+   */
+  | { readonly kind: 'self-parent'; readonly text: string }
   | { readonly kind: 'decoration'; readonly decorations: readonly string[] }
   | { readonly kind: 'any-dragon' }
   | { readonly kind: 'both-parents' }

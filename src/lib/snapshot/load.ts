@@ -1,7 +1,7 @@
 import type { Snapshot } from './types';
 
 /** The snapshot schema this app reads. Bump it when the shape changes. */
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 /**
  * Checks that `json` is a snapshot this app can read and returns it typed.

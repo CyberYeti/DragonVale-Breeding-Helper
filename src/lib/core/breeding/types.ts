@@ -41,6 +41,12 @@ export type RouteReason =
    * Route, its base Dragon not owned in the right form.
    */
   | { readonly kind: 'missing-parents'; readonly dragons: readonly string[] }
+  /**
+   * A `partner` Route (the basic primaries): it breeds only from `dragon`
+   * itself, which isn't among the parents that count, so it has to be got
+   * another way (bought) first.
+   */
+  | { readonly kind: 'needs-owned'; readonly dragon: string }
   /** Required Elements (including `elementOnBothParents`) no parent that counts carries. */
   | { readonly kind: 'missing-elements'; readonly elements: readonly string[] }
   /** Every parent that counts, pooled together, has fewer than `minDistinctElements`. */

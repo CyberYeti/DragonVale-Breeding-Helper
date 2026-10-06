@@ -24,6 +24,8 @@ function badgeLabel(b: Unlabelled<Badge>): string {
       return b.artifacts.length > 0 ? `Summoned with ${b.artifacts.join(', ')}` : 'Summoned';
     case 'dead-end':
       return 'Dead end';
+    case 'self-parent':
+      return b.text;
     case 'cannot-be-parent':
       return b.dragons.length === 1
         ? `Needs ${b.dragons[0]}, which can't be a parent`
