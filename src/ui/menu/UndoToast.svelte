@@ -50,6 +50,7 @@
     display: flex;
     gap: 10px;
     align-items: center;
+    width: max-content;
     max-width: calc(100% - 24px);
     padding: 8px 14px;
     border-radius: 10px;

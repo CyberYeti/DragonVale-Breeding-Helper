@@ -91,8 +91,13 @@
       <TileGrid />
       <Footer />
     </main>
-    <!-- Floating bars (select mode's action bar, the Undo toast) go here, after the page. -->
-    <UndoToast />
+    <!-- Floating bars (select mode's action bar, the Undo toast) go here, after the page.
+         The layer has no height and sits on top of the bottom nav, so a bar placed
+         at bottom: 24px floats above the nav on a phone and above the page's foot
+         on desktop. -->
+    <div class="floating">
+      <UndoToast />
+    </div>
     {#if !nav.selecting}
       <div class="bottom-nav">
         <BottomNav onDragonarium={openDrawer} />
@@ -127,6 +132,10 @@
     min-height: 0;
     overflow: auto;
     overflow-x: hidden;
+  }
+  .floating {
+    position: relative;
+    flex: none;
   }
   .burger,
   .drawer-close,
