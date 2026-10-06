@@ -32,8 +32,14 @@ export function bannerBlocks(banner: Banner): boolean {
   return banner.kind !== 'purchase-only';
 }
 
+/** The tick's name, the same whether it is on or off (its accessible label). */
+export function tickName(tick: Tick): string {
+  return tick.label === 'owned' ? 'Owned' : tick.label === 'rift' ? 'Rift' : 'Normal';
+}
+
+/** The tick's visible text: the Owned tick shows ✔ only while it is on. */
 export function tickText(tick: Tick): string {
-  return tick.label === 'owned' ? '✔ Owned' : tick.label === 'rift' ? 'Rift' : 'Normal';
+  return tick.label === 'owned' && tick.owned ? '✔ Owned' : tickName(tick);
 }
 
 /** The CSS custom property holding a rarity's border colour (src/ui/theme.css). */
