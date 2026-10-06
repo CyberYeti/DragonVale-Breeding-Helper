@@ -1,8 +1,8 @@
 <!--
   The graph levels above the tiles (nav.levels): a tile's Focus view, the
-  Graph button's tab graph, and a tree pulled out of it. A placeholder for
-  now; the graph tickets (#47 on) draw the real graphs here. ← Back and
-  Escape go back one level.
+  Graph button's tab graph, and a tree pulled out of it. Draws the level on
+  top by its kind; the graphs themselves live in ui/graph. ← Back and Escape
+  go back one level.
 -->
 <script lang="ts">
   import type { GraphLevel } from './nav.svelte';
@@ -11,6 +11,7 @@
   import { tabHeading } from './menu/tabInfo';
   import { useMenuView } from './menu/menuView.svelte';
   import { caveName } from './tile/labels';
+  import FocusView from './graph/FocusView.svelte';
 
   const store = useStore();
   const nav = useNav();
@@ -41,7 +42,12 @@
       <b>{title(level)}</b>
       <span class="muted">{level.kind === 'focus' ? 'Focus view' : 'Tab graph'} · {caveName(store.cave)} cave</span>
     </div>
-    <p class="body muted">The graph will be drawn here.</p>
+    {#if level.kind === 'focus'}
+      <FocusView target={level.target} form={level.form} />
+    {:else}
+      <!-- The tab graph and the pulled tree (#48) draw here through ui/graph's GraphView. -->
+      <p class="body muted">The graph will be drawn here.</p>
+    {/if}
   </div>
 {/if}
 

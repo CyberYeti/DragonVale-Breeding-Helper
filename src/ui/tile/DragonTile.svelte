@@ -22,13 +22,28 @@
     showTicks?: boolean;
     /** A short line under the name, e.g. "ends in 3 days" or a shop cost. */
     note?: string;
+    /**
+     * Graphs only: an owned Target gets the "Owned" banner (spec §9 rule 8),
+     * drawn instead of any other banner. The menu leaves it off.
+     */
+    ownedBanner?: boolean;
     /** A click anywhere but a tick. */
     onopen?: (view: TileView) => void;
     /** A tick was clicked; write `tick.form` to the Collection. Never also opens. */
     ontoggle?: (tick: Tick, view: TileView) => void;
   };
 
-  let { view, lite = false, faded = false, far = false, showTicks = true, note, onopen, ontoggle }: Props = $props();
+  let {
+    view,
+    lite = false,
+    faded = false,
+    far = false,
+    showTicks = true,
+    note,
+    ownedBanner = false,
+    onopen,
+    ontoggle,
+  }: Props = $props();
 
   const dragon = $derived(view.dragon);
   const square = $derived(lite && faded && far);
@@ -74,7 +89,9 @@
   {/if}
 
   {#if !lite}
-    {#if view.banner}
+    {#if ownedBanner}
+      <div class="banner owned">Owned</div>
+    {:else if view.banner}
       <div class="banner" class:blocked={bannerBlocks(view.banner)}>{bannerText(view.banner)}</div>
     {/if}
     <div class="name">{dragon.name}</div>
@@ -181,6 +198,9 @@
   }
   .banner.blocked {
     background: var(--banner-blocked-bg);
+  }
+  .banner.owned {
+    background: var(--own);
   }
 
   .name,
