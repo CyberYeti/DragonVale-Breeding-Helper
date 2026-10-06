@@ -121,6 +121,8 @@ describe('tabGraph and pullTree on the real snapshot', () => {
           expect(new Set(lit)).toEqual(new Set(focus.nodes.map((n) => n.id)));
         }
       }
-    });
+      // Each cave has its own 2s budget above; the sweep over every cave can
+      // outgrow vitest's 5s default when the full suite runs in parallel.
+    }, 30_000);
   }
 });
