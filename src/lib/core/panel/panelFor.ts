@@ -221,7 +221,7 @@ function dragonPanel(world: World, cave: Cave, target: Target, dragon: Dragon, a
     if (reasons.length === 0) reasons.push('No Route is met yet');
   }
 
-  const riftForm = form === 'rift' && dragon.traits.kind === 'all';
+  const riftForm = form === 'rift' && formsOf(dragon).length > 1;
   return {
     kind: 'dragon',
     dragon,
