@@ -10,8 +10,8 @@
 import { getContext, setContext } from 'svelte';
 import type { Form } from '../lib/core/collection';
 import { NO_FILTERS, type Filters, type Tab } from '../lib/core/menu';
-import type { Snapshot } from '../lib/snapshot';
-import { isRecord, readStoredJson, writeStored } from './storage';
+import { isRecord, type Snapshot } from '../lib/snapshot';
+import { readStoredJson, writeStored } from './storage';
 
 const TAB_KEY = 'nav:v1';
 

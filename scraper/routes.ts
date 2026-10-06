@@ -5,7 +5,7 @@
 // Every hint key is either mapped or deliberately ignored; any other key fails
 // the run, since the wiki can add or rename keys without notice.
 
-import type { BredRoute, Conditions, ElementKind, Rarity, Requirement, Route } from '../src/lib/snapshot';
+import { isRecord, type BredRoute, type Conditions, type ElementKind, type Rarity, type Requirement, type Route } from '../src/lib/snapshot';
 
 /** Keys of a hint that are price data, not breeding data. */
 const IGNORED_KEYS = new Set(['BuyPrice', 'BuyPriceType']);
@@ -318,10 +318,6 @@ export function elementsUsedBy(routes: readonly Route[]): Set<string> {
 
 function unique(items: string[]): string[] {
   return [...new Set(items)];
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 function isStringArray(value: unknown): value is string[] {

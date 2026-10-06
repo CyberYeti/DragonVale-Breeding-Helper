@@ -4,7 +4,8 @@
 // caller parses the raw text (core/limited) on every load, so a parser fix
 // also applies to a cached copy.
 
-import { isRecord, readStoredJson, writeStored } from './storage';
+import { isRecord } from '../lib/snapshot';
+import { readStoredJson, writeStored } from './storage';
 
 export const LIMITED_URL =
   'https://dragonvale.fandom.com/api.php?action=query&prop=revisions&titles=Data:Limited.json&rvprop=content|ids&rvslots=main&format=json&origin=*';

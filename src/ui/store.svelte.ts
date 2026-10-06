@@ -35,9 +35,9 @@ import { emptyOverlay, parseLimited, type Overlay } from '../lib/core/limited';
 import { buildWorld, type World } from '../lib/core/world';
 import type { Cave } from '../lib/core/breeding';
 import type { Display } from '../lib/core/tile';
-import { loadSnapshot, type Dragon, type Snapshot } from '../lib/snapshot';
+import { isRecord, loadSnapshot, type Dragon, type Snapshot } from '../lib/snapshot';
 import { fetchLimited, readCachedLimited, type LimitedRaw } from './limitedSource';
-import { isRecord, readStored, readStoredJson, writeStored } from './storage';
+import { readStored, readStoredJson, writeStored } from './storage';
 
 // Versioned keys: bump a suffix when that stored shape changes.
 const COLLECTION_KEY = 'collection:v1';
