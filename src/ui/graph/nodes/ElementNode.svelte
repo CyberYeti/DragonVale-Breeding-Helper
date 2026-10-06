@@ -9,9 +9,10 @@
   import { useStore } from '../../store.svelte';
   import { assetUrl } from '../../tile/labels';
   import type { FlowNode } from '../flow';
+  import NodePopover from '../panel/NodePopover.svelte';
   import Ends from './Ends.svelte';
 
-  let { data }: NodeProps<FlowNode> = $props();
+  let { id, data }: NodeProps<FlowNode> = $props();
 
   const store = useStore();
   const node = $derived(data.node as ElementNode);
@@ -22,6 +23,7 @@
 </script>
 
 <Ends />
+<NodePopover {id} />
 <div class="element" class:grey={!node.covered} {title}>
   {#if icon}
     <img src={assetUrl(icon)} alt="" draggable="false" />

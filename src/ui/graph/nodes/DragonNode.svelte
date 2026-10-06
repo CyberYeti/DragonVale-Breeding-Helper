@@ -13,9 +13,10 @@
   import { useStore } from '../../store.svelte';
   import DragonTile from '../../tile/DragonTile.svelte';
   import { TARGET_TILE_WIDTH, TILE_WIDTH, type FlowNode } from '../flow';
+  import NodePopover from '../panel/NodePopover.svelte';
   import Ends from './Ends.svelte';
 
-  let { data }: NodeProps<FlowNode> = $props();
+  let { id, data }: NodeProps<FlowNode> = $props();
 
   const store = useStore();
   const node = $derived(data.node as DragonNode);
@@ -27,6 +28,7 @@
 </script>
 
 <Ends />
+<NodePopover {id} />
 <div class="dragon" style:--tile-width="{data.target ? TARGET_TILE_WIDTH : TILE_WIDTH}px">
   {#if view}
     <DragonTile
