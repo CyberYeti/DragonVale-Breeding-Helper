@@ -7,14 +7,16 @@
   import type { NodeProps } from '@xyflow/svelte';
   import type { FriendNode } from '../../../lib/core/graph';
   import type { FlowNode } from '../flow';
+  import NodePopover from '../panel/NodePopover.svelte';
   import Ends from './Ends.svelte';
 
-  let { data }: NodeProps<FlowNode> = $props();
+  let { id, data }: NodeProps<FlowNode> = $props();
 
   const node = $derived(data.node as FriendNode);
 </script>
 
 <Ends />
+<NodePopover {id} />
 <div class="friend" title="A friend's {node.dragon}, in the Co-op cave">{node.label}</div>
 
 <style>

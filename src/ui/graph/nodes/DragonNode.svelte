@@ -14,9 +14,10 @@
   import DragonTile from '../../tile/DragonTile.svelte';
   import { useCanvasView } from '../canvasView.svelte';
   import { tileWidth, type FlowNode } from '../flow';
+  import NodePopover from '../panel/NodePopover.svelte';
   import Ends from './Ends.svelte';
 
-  let { data }: NodeProps<FlowNode> = $props();
+  let { id, data }: NodeProps<FlowNode> = $props();
 
   const store = useStore();
   const canvas = useCanvasView();
@@ -32,6 +33,7 @@
 </script>
 
 <Ends />
+<NodePopover {id} />
 <div class="dragon" style:--tile-width="{tileWidth(node, data.target)}px">
   {#if view}
     <DragonTile

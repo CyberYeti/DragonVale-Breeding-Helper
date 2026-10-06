@@ -3,14 +3,16 @@
   import type { NodeProps } from '@xyflow/svelte';
   import type { RuleNode } from '../../../lib/core/graph';
   import type { FlowNode } from '../flow';
+  import NodePopover from '../panel/NodePopover.svelte';
   import Ends from './Ends.svelte';
 
-  let { data }: NodeProps<FlowNode> = $props();
+  let { id, data }: NodeProps<FlowNode> = $props();
 
   const node = $derived(data.node as RuleNode);
 </script>
 
 <Ends />
+<NodePopover {id} />
 <div class="rule">{node.label}</div>
 
 <style>

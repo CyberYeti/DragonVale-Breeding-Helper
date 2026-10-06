@@ -8,9 +8,10 @@
   import type { NodeProps } from '@xyflow/svelte';
   import type { RouteNode } from '../../../lib/core/graph';
   import type { FlowNode } from '../flow';
+  import NodePopover from '../panel/NodePopover.svelte';
   import Ends from './Ends.svelte';
 
-  let { data }: NodeProps<FlowNode> = $props();
+  let { id, data }: NodeProps<FlowNode> = $props();
 
   const node = $derived(data.node as RouteNode);
   const KIND_TEXT = { bred: 'Bred', coop: 'Co-op bred', evolved: 'Evolved' } as const;
@@ -20,6 +21,7 @@
 </script>
 
 <Ends />
+<NodePopover {id} />
 <div class="pill" class:met={node.met} {title}>
   {node.state === 'locked' ? '🔒' : '◆'}
 </div>
