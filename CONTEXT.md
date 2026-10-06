@@ -68,7 +68,7 @@ _Avoid_: inventory, park; the wiki's "Collection" means a **Dragonarium page**
 The **Dragon**, in a given form (normal or **Rift form**), that the player has selected because they want to obtain it. A **Rift dragon** is always targeted as itself.
 
 **Valid pair**:
-Two parents that together satisfy a Bred **Route**: their combined breeding elements hold everything required, and any named parents, element counts or both-parent elements are met. Opposite primaries (Plant Dragon + Metal Dragon) and **Dragons** that cannot be parents never form one. Two of the same Dragon can.
+Two parents that together satisfy a Bred **Route**: their combined breeding elements hold everything required, and any named parents, element counts or both-parent elements are met. Opposite primaries (Plant Dragon + Metal Dragon) and **Dragons** that cannot be parents never form one. Two of the same Dragon can. A basic primary other than Air has Valid pairs only with itself as a parent, next to itself or an opposite hybrid (Fire Dragon + Blue Fire Dragon), so it is never bred before one is owned.
 
 **Breedable now**:
 A **Dragon**, in the form the chosen **Breeding cave** makes, not yet in the **Collection** in that form, that the cave can make from the Collection: a Bred **Route** met by a **Valid pair** (or, in the Co-op cave only, a Co-op bred Route, since a friend lends the other parent). It must not be **Purchase only**, must be **Available** if it is limited, and must need no limited parent that is not **Available**. Evolved Routes never count.
