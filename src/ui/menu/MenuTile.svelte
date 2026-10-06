@@ -14,6 +14,7 @@
   import { useNav } from '../nav.svelte';
   import { useStore } from '../store.svelte';
   import DragonTile from '../tile/DragonTile.svelte';
+  import { riftIcon } from '../tile/labels';
 
   let { item, note }: { item: MenuItem; note?: string } = $props();
 
@@ -91,6 +92,7 @@
   <DragonTile
     {view}
     {note}
+    riftIcon={riftIcon(store.snapshot, item.dragon)}
     showTicks={!nav.selecting}
     onopen={(v) => (nav.selecting ? nav.toggleSelected(name) : nav.openFocus(v.dragon.name, v.opensAs))}
     ontoggle={(tick, v) => store.toggle(v.dragon, tick.form)}

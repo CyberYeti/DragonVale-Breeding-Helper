@@ -6,7 +6,7 @@
 <script lang="ts">
   import type { Listed } from '../../../lib/core/panel';
   import { useStore } from '../../store.svelte';
-  import { assetUrl, rarityColour } from '../../tile/labels';
+  import { assetUrl, rarityBorder } from '../../tile/labels';
   import type { ClickPanel } from './clickPanel.svelte';
   import { formSuffix } from './panelText';
 
@@ -32,7 +32,7 @@
 </script>
 
 <div class="row">
-  <span class="art" style:--rc={rarityColour(dragon.rarity)}>
+  <span class="art" style:--rc={rarityBorder(dragon.rarity)}>
     {#if dragon.image}
       <img src={assetUrl(dragon.image)} alt="" class:grey={!owned} loading="lazy" decoding="async" draggable="false" />
     {/if}

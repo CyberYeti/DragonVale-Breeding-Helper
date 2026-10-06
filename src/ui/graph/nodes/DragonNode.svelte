@@ -12,6 +12,7 @@
   import { describeTile } from '../../../lib/core/tile';
   import { useStore } from '../../store.svelte';
   import DragonTile from '../../tile/DragonTile.svelte';
+  import { riftIcon } from '../../tile/labels';
   import { useCanvasView } from '../canvasView.svelte';
   import { tileWidth, type FlowNode } from '../flow';
   import NodePopover from '../panel/NodePopover.svelte';
@@ -41,6 +42,7 @@
       {lite}
       {faded}
       far={canvas.far}
+      riftIcon={riftIcon(store.snapshot, view.dragon)}
       {ownedBanner}
       note={node.form === 'rift' && view.ticks.length > 1 ? 'Rift form' : undefined}
       ontoggle={(tick, v) => store.toggle(v.dragon, tick.form)}
