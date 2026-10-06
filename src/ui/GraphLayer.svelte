@@ -12,10 +12,16 @@
   import { useMenuView } from './menu/menuView.svelte';
   import { caveName } from './tile/labels';
   import FocusView from './graph/FocusView.svelte';
+  import TabGraphView from './graph/TabGraphView.svelte';
 
   const store = useStore();
   const nav = useNav();
   const menu = useMenuView();
+
+  /** The tab graph a pulled tree sits on (or the tab graph itself). */
+  const tabLevel = $derived(
+    nav.levels.find((l): l is Extract<GraphLevel, { kind: 'tab-graph' }> => l.kind === 'tab-graph') ?? null,
+  );
 
   function title(level: GraphLevel): string {
     switch (level.kind) {
@@ -44,9 +50,12 @@
     </div>
     {#if level.kind === 'focus'}
       <FocusView target={level.target} form={level.form} />
-    {:else}
-      <!-- The tab graph and the pulled tree (#48) draw here through ui/graph's GraphView. -->
-      <p class="body muted">The graph will be drawn here.</p>
+    {:else if tabLevel}
+      <!-- One TabGraphView for the tab graph and the tree pulled out of it, so the tree can animate. -->
+      <TabGraphView
+        tab={tabLevel.tab}
+        tree={level.kind === 'tree' ? { dragon: level.target, form: level.form } : null}
+      />
     {/if}
   </div>
 {/if}
@@ -74,9 +83,6 @@
     border-radius: 8px;
     background: var(--card);
     cursor: pointer;
-  }
-  .body {
-    padding: 16px;
   }
   .muted {
     color: var(--muted);

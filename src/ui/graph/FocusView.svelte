@@ -18,6 +18,7 @@
   import { useNav } from '../nav.svelte';
   import { useStore } from '../store.svelte';
   import GraphView from './GraphView.svelte';
+  import WhyLine from './WhyLine.svelte';
   import ClickPanelFrame from './panel/ClickPanelFrame.svelte';
   import { ClickPanel, provideClickPanel } from './panel/clickPanel.svelte';
 
@@ -63,20 +64,9 @@
 
 <div class="focus">
   {#if 'model' in built}
-    {@const info = built.model.target}
     <ClickPanelFrame {panel}>
       <GraphView model={built.model} selected={panel.selected} {fitKey} {onnodeclick} {onpaneclick} />
-      {#if info}
-        <p class="why" class:ok={info.breedableNow} aria-live="polite">
-          {#if info.breedableNow}
-            ✔ Breedable now
-          {:else}
-            {#each info.reasons as r, i (i)}{#if i > 0}<span class="sep">·</span>{/if}<span class="reason r-{r.kind}"
-                >{r.label}</span
-              >{/each}
-          {/if}
-        </p>
-      {/if}
+      <WhyLine info={built.model.target} />
     </ClickPanelFrame>
   {:else}
     <p class="error">Can't draw this graph: {built.error}</p>
@@ -89,34 +79,6 @@
     flex: 1;
     min-height: 0;
     display: flex;
-  }
-  .why {
-    position: absolute;
-    left: 12px;
-    top: 12px;
-    z-index: 5;
-    max-width: min(520px, calc(100% - 24px));
-    margin: 0;
-    padding: 6px 10px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: var(--card);
-    font-size: 13px;
-    pointer-events: none;
-  }
-  .why.ok {
-    color: var(--own);
-    font-weight: 600;
-  }
-  .reason {
-    font-weight: 600;
-  }
-  .reason.r-owned {
-    color: var(--own);
-  }
-  .sep {
-    margin: 0 0.4em;
-    color: var(--muted);
   }
   .error {
     padding: 16px;
