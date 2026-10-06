@@ -10,7 +10,7 @@
   import { useStore } from './store.svelte';
   import { tabHeading } from './menu/tabInfo';
   import { useMenuView } from './menu/menuView.svelte';
-  import { caveName } from './tile/labels';
+  import { caveName } from '../lib/core/breeding';
   import FocusView from './graph/FocusView.svelte';
   import TabGraphView from './graph/TabGraphView.svelte';
 

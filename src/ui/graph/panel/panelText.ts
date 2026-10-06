@@ -2,19 +2,12 @@
 // and reason come from core/panel as they are; this only names things.
 
 import type { Listed, PairGroup, PanelData } from '../../../lib/core/panel';
+import { routeKindName } from '../../../lib/core/breeding';
 import type { Form } from '../../../lib/core/collection';
 import type { Dragon, Route } from '../../../lib/snapshot';
 
-const ROUTE_KIND: Record<Route['kind'], string> = {
-  bred: 'Bred',
-  coop: 'Co-op bred',
-  evolved: 'Evolved',
-  summoned: 'Summoned',
-  purchased: 'Purchased',
-};
-
 export function routeKindText(route: Route): string {
-  return ROUTE_KIND[route.kind];
+  return routeKindName(route.kind);
 }
 
 /** " (Rift form)" for a Dragon with both forms listed in its Rift form. */

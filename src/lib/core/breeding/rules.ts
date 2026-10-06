@@ -5,7 +5,7 @@ import type { Dragon, Requirement, Route } from '../../snapshot';
 import { formsOf, isOwned, type Form } from '../collection';
 import type { Breeding, World } from '../world';
 import { countPairs, oppositePairMeeting, pairs, parentIndex, type ParentIndex } from './pairs';
-import type { Cave, Pair, RouteReason, RouteStatus } from './types';
+import type { Cave, NoBreeding, Pair, RouteReason, RouteStatus } from './types';
 
 /** The Galaxy Dragons the Normal cave still makes (spec §6). */
 const NORMAL_CAVE_GALAXY: ReadonlySet<string> = new Set(['Solis', 'Lunis', 'Rigel']);
@@ -44,6 +44,18 @@ function caveRoutes(dragon: Dragon, cave: Cave): Route[] {
         return false;
     }
   });
+}
+
+/**
+ * Null when the Dragon has a Bred or Co-op bred Route; otherwise how it's
+ * obtained instead. Summoned beats Evolved beats Purchased on mixed Routes.
+ */
+export function noBreeding(dragon: Dragon): NoBreeding | null {
+  const kinds = new Set(dragon.routes.map((route) => route.kind));
+  if (kinds.has('bred') || kinds.has('coop')) return null;
+  if (kinds.has('summoned')) return 'summoning-only';
+  if (kinds.has('evolved')) return 'evolution-only';
+  return 'shop-only';
 }
 
 /** `form` if the Dragon has it, else its one form (a Rift dragon is always itself). */

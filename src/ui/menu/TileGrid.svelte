@@ -9,7 +9,7 @@
 <script lang="ts">
   import { useNav } from '../nav.svelte';
   import { useStore } from '../store.svelte';
-  import { caveName } from '../tile/labels';
+  import { caveName } from '../../lib/core/breeding';
   import MenuTile from './MenuTile.svelte';
   import { useMenuView } from './menuView.svelte';
   import MenuIcon from './MenuIcon.svelte';

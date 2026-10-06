@@ -1,7 +1,7 @@
 // The Focus view tree (spec §9, Focus view rules 1–9).
 
-import type { BredRoute, CoopRoute, Dragon, EvolvedRoute, Route, RouteKind } from '../../snapshot';
-import { breedingFor, caveCanMake, caveForm, formFor, routeStatus, type Cave } from '../breeding';
+import type { BredRoute, CoopRoute, Dragon, EvolvedRoute, Route } from '../../snapshot';
+import { breedingFor, caveCanMake, caveForm, formFor, noBreeding, routeStatus, type Cave } from '../breeding';
 import { isOwned, type Form } from '../collection';
 import type { Breeding, World } from '../world';
 import { generations } from './generation';
@@ -337,9 +337,9 @@ function targetReasons(world: World, dragon: Dragon, form: Form, cave: Cave, own
   if (owned) reasons.push(reason({ kind: 'owned' }));
 
   const makes = caveForm(dragon, cave) === form && caveCanMake(dragon, cave);
-  if (!CAVES.some((c) => caveCanMake(dragon, c))) {
-    const sources = [...new Set<RouteKind>(dragon.routes.map((r) => r.kind))];
-    reasons.push(reason({ kind: 'no-breeding', sources }));
+  const only = noBreeding(dragon);
+  if (only) {
+    reasons.push(reason({ kind: 'no-breeding', only }));
   } else if (!makes) {
     reasons.push(reason({ kind: 'cave', cave }));
   }

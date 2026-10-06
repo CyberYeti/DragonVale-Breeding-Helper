@@ -1,14 +1,12 @@
 // The text each badge and Target reason shows. Kept in one place so the
 // wording matches across views.
 
-import type { Conditions, RouteKind } from '../../snapshot';
-import type { Cave } from '../breeding';
+import type { Conditions } from '../../snapshot';
+import { caveName, noBreedingText, NOT_AVAILABLE, type Cave } from '../breeding';
 import type { Badge, ConditionKind, TargetReason } from './types';
 
-const CAVE_NAMES: Record<Cave, string> = { normal: 'Normal', rift: 'Rift', coop: 'Co-op' };
-
 /** "Normal cave", "Rift or Co-op cave". */
-const caveText = (caves: readonly Cave[]): string => `${caves.map((c) => CAVE_NAMES[c]).join(' or ')} cave`;
+const caveText = (caves: readonly Cave[]): string => `${caves.map(caveName).join(' or ')} cave`;
 
 type Unlabelled<T> = T extends unknown ? Omit<T, 'label'> : never;
 
@@ -39,7 +37,7 @@ function badgeLabel(b: Unlabelled<Badge>): string {
     case 'purchase-only':
       return '🔒 Purchase only';
     case 'not-available':
-      return 'Not available';
+      return NOT_AVAILABLE;
     case 'no-valid-pair':
       return 'No valid pair yet';
     case 'condition':
@@ -76,12 +74,6 @@ export function conditionBadges(conditions: Conditions | undefined): Badge[] {
   return out;
 }
 
-const SOURCE_WORDS: Partial<Record<RouteKind, string>> = {
-  evolved: 'Evolution',
-  summoned: 'Summoning',
-  purchased: 'Shop',
-};
-
 export function reason(r: Unlabelled<TargetReason>): TargetReason {
   return { ...r, label: reasonLabel(r) } as TargetReason;
 }
@@ -90,14 +82,12 @@ function reasonLabel(r: Unlabelled<TargetReason>): string {
   switch (r.kind) {
     case 'owned':
       return 'Owned';
-    case 'no-breeding': {
-      const words = r.sources.map((s) => SOURCE_WORDS[s] ?? s);
-      return words.length > 0 ? `${words.join(' or ')} only` : 'No way to obtain it';
-    }
+    case 'no-breeding':
+      return noBreedingText(r.only);
     case 'cave':
       return `Not breedable in ${caveText([r.cave])}`;
     case 'not-available':
-      return 'Not available';
+      return NOT_AVAILABLE;
     case 'purchase-only':
       return '🔒 Purchase only';
     case 'not-met':

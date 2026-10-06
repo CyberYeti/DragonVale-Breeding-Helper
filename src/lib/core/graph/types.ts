@@ -3,7 +3,7 @@
 // Flow or how a tile looks. core/layout places it, ui/graph draws it.
 
 import type { RouteKind } from '../../snapshot';
-import type { Cave } from '../breeding';
+import type { Cave, NoBreeding } from '../breeding';
 import type { Breeding, World } from '../world';
 import type { Form } from '../collection';
 
@@ -190,8 +190,8 @@ export type ConditionKind =
  */
 export type TargetReason = { readonly label: string } & (
   | { readonly kind: 'owned' }
-  /** No cave can breed it in any form: its only Routes are Evolved, Summoned or Purchased. */
-  | { readonly kind: 'no-breeding'; readonly sources: readonly RouteKind[] }
+  /** It has no Bred or Co-op bred Route: Summoning, Evolution or Shop only (as the tile's banner). */
+  | { readonly kind: 'no-breeding'; readonly only: NoBreeding }
   /** Some cave can, but not the chosen one in this form. */
   | { readonly kind: 'cave'; readonly cave: Cave }
   | { readonly kind: 'not-available' }

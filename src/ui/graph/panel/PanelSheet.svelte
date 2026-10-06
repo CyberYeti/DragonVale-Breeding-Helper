@@ -7,6 +7,7 @@
 -->
 <script lang="ts">
   import { SvelteSet } from 'svelte/reactivity';
+  import { NOT_AVAILABLE } from '../../../lib/core/breeding';
   import type { Candidate, PanelData } from '../../../lib/core/panel';
   import type { ClickPanel } from './clickPanel.svelte';
   import PanelDragon from './PanelDragon.svelte';
@@ -56,7 +57,7 @@
     return c.breedableNow ? 'Breedable now' : undefined;
   }
   function candidateNote(c: Candidate): string | undefined {
-    return c.available ? undefined : 'Not Available';
+    return c.available ? undefined : NOT_AVAILABLE;
   }
 </script>
 
@@ -123,7 +124,7 @@
                 {panel}
                 item={s}
                 tag={candidateTag(s)}
-                note="+ your {s.with.dragon.name}{s.available ? '' : ' · Not Available'}"
+                note="+ your {s.with.dragon.name}{s.available ? '' : ` · ${NOT_AVAILABLE}`}"
               />
             </li>
           {:else}

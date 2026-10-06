@@ -397,6 +397,12 @@ describe("rule 7: Targets that can't be bred", () => {
     expect(m.target!.reasons.map((r) => r.label)).toEqual(['Summoning only']);
   });
 
+  it('words the reason as the tile banner does on mixed Routes', () => {
+    const odd = dragon({ name: 'Odd', elements: ['Fire'], traits: 'none', routes: [evolved('Fire'), purchased()] });
+    const m = focus({ dragons: [...primaries(), odd] }, 'Odd');
+    expect(m.target!.reasons.map((r) => r.label)).toEqual(['Evolution only']);
+  });
+
   it('dims a Target that is not Available and says so', () => {
     const love = limited({ name: 'Love', elements: ['Plant', 'Light'] });
     const m = focus({ dragons: [...primaries(), love], owned: ['Plant', 'Light'] }, 'Love');

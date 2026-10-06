@@ -227,7 +227,7 @@ describe('Dragon panel', () => {
     const kairos = dragon({ name: 'Kairos', rarity: 'Legendary', traits: 'none', routes: [summoned()] });
     const w = world({ dragons: [...primaries(), haze, kairos], owned: ['Fire', 'Earth'] });
 
-    expect(dragonPanel(w, 'Haze').reasons).toEqual(['Not Available right now']);
-    expect(dragonPanel(w, 'Kairos').reasons).toEqual(['Not bred: Summoned only']);
+    expect(dragonPanel(w, 'Haze').reasons).toEqual(['Not available right now']);
+    expect(dragonPanel(w, 'Kairos').reasons).toEqual(['Summoning only']);
   });
 });
