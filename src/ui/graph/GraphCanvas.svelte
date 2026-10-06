@@ -10,31 +10,41 @@
 
   A pulled tree (a model whose nodes carry `pull`) is laid out on its own
   around the middle of the view, over the faded tab graph. Each tree node
-  starts where it was on screen and moves with a CSS transform transition;
-  the tree's edges appear when the move ends, then the view fits the tree.
-  Leaving or changing the tree moves the nodes the same way.
+  starts where it was on screen and moves with a CSS transform transition,
+  while the view moves to fit where the nodes are going, with the same
+  duration and easing; the tree's edges appear when the move ends. Leaving
+  or changing the tree moves the nodes the same way.
+
+  Nodes can be dragged. A drag of a node of the graph itself goes to
+  `onarrange` (a tab graph saves it); without one, and for a pulled tree's
+  nodes, it lasts while the view (or the tree) is open.
 -->
 <script lang="ts">
+  /* eslint-disable svelte/prefer-svelte-reactivity -- the maps here are render() and drag bookkeeping, never read reactively */
   import '@xyflow/svelte/dist/style.css';
   import { untrack } from 'svelte';
   import {
     Controls,
+    getViewportForBounds,
     SvelteFlow,
     useSvelteFlow,
     ViewportPortal,
     type ColorMode,
     type EdgeTypes,
+    type NodeTargetEventWithPointer,
     type NodeTypes,
     type Viewport,
   } from '@xyflow/svelte';
-  import type { GraphModel, GraphNode, NodeId } from '../../lib/core/graph';
+  import type { GraphEdge, GraphModel, GraphNode, NodeId } from '../../lib/core/graph';
   import type { Layout, Position } from '../../lib/core/layout';
+  import { withMoves, type Moves } from './arrangement';
   import BadgeEdge from './BadgeEdge.svelte';
   import { CanvasView, FAR_ZOOM, provideCanvasView } from './canvasView.svelte';
   import {
     backgroundPaths,
     moved,
     moveStart,
+    nodesBounds,
     nodeSize,
     place,
     placeTree,
@@ -44,6 +54,7 @@
     type FlowEdge,
     type FlowNode,
   } from './flow';
+  import { easeInOut, MOVE_MS, reducedMotion } from './motion';
   import DragonNode from './nodes/DragonNode.svelte';
   import ElementNode from './nodes/ElementNode.svelte';
   import FriendNode from './nodes/FriendNode.svelte';
@@ -61,19 +72,36 @@
     large?: boolean;
     /**
      * Where each node sits when it isn't part of a pulled tree: the tab
-     * graph's layout. Defaults to laying out `model`.
+     * graph's layout with the saved moves. Defaults to laying out `model`.
      */
     positions?: ReadonlyMap<NodeId, Position>;
-    /** A click on a node (not on a tile's tick). */
+    /** Changes when the saved arrangement is reset: the nodes move to their new places instead of jumping. */
+    arrangement?: number;
+    /** Nodes of the graph itself (not of a pulled tree) the player dragged, and where they were left. */
+    onarrange?: (moves: Moves) => void;
+    /** A click on a node (not on a tile's tick, and not the end of a drag). */
     onnodeclick?: (node: GraphNode) => void;
     /** A click on the background. */
     onpaneclick?: () => void;
   };
 
-  let { model, selected = null, fitKey, large = false, positions, onnodeclick, onpaneclick }: Props = $props();
+  let {
+    model,
+    selected = null,
+    fitKey,
+    large = false,
+    positions,
+    arrangement = 0,
+    onarrange,
+    onnodeclick,
+    onpaneclick,
+  }: Props = $props();
 
-  /** How long moving nodes take (the `.moving` transition below). */
-  const MOVE_MS = 600;
+  /** How the view fits: a margin around the nodes, and never closer than 1:1. */
+  const FIT = { padding: 0.12, maxZoom: 1 } as const;
+  const MIN_ZOOM = 0.05;
+  /** Pointer travel (px) that makes a press on a node a drag instead of a click. */
+  const DRAG_PX = 4;
 
   const nodeTypes: NodeTypes = {
     dragon: DragonNode,
@@ -115,6 +143,15 @@
   const treeKey = $derived(tree ? (model.target?.node ?? '') : '');
   const background = $derived(large ? backgroundPaths(model, base) : null);
 
+  type Paths = ReturnType<typeof backgroundPaths>;
+  /**
+   * While a node of a large graph is dragged: the background edges that
+   * don't touch it (drawn once) and the ones that do (redrawn as it moves).
+   */
+  let dragPaths = $state.raw<{ still: Paths; live: Paths } | null>(null);
+  /** The edges dragPaths.live draws; null when no drag is redrawing the background. */
+  let dragTouches: ((edge: GraphEdge) => boolean) | null = null;
+
   let box: HTMLDivElement | undefined = $state();
   let nodes = $state.raw<FlowNode[]>([]);
   let edges = $state.raw<FlowEdge[]>([]);
@@ -126,13 +163,18 @@
   let placedTree: { key: string; corner: Position } | null = null;
   /** The tree key last rendered; undefined before the first render. */
   let renderedTree: string | undefined;
+  /** The arrangement last rendered. */
+  let renderedArrangement = 0;
+  /** Drags that last while this view (and this tree) is open, and what they belong to. */
+  let dragged = new Map<NodeId, Position>();
+  let draggedFor = '';
   /** The fitKey last fitted. */
   let fitted: string | null = null;
   /** Bumped by every render, so a superseded move's later steps do nothing. */
   let token = 0;
 
   $effect(() => {
-    const input = { model, selected, fitKey, base, tree, treeKey, large };
+    const input = { model, selected, fitKey, base, tree, treeKey, large, arrangement };
     // render() reads the viewport; untracked, so panning never re-renders the nodes (spec §9).
     untrack(() => render(input));
   });
@@ -145,26 +187,42 @@
     tree: Layout | null;
     treeKey: string;
     large: boolean;
+    arrangement: number;
   };
 
-  function render({ model: m, selected: sel, fitKey: key, base: b, tree: t, treeKey: tk, large: isLarge }: RenderInput) {
+  function render({
+    model: m,
+    selected: sel,
+    fitKey: key,
+    base: b,
+    tree: t,
+    treeKey: tk,
+    large: isLarge,
+    arrangement: arr,
+  }: RenderInput) {
     const my = ++token;
     if (!t) placedTree = null;
-    const final = t ? withTree(b, t, treeCorner(tk, t.width, t.height)) : b;
+    // Drags that aren't saved are forgotten with the view or tree they were made in.
+    if (`${key}\n${tk}` !== draggedFor) {
+      draggedFor = `${key}\n${tk}`;
+      dragged = new Map();
+    }
+    const final = withMoves(t ? withTree(b, t, treeCorner(tk, t.width, t.height)) : b, dragged);
     const allEdges = toFlowEdges(m, { selected: sel });
     // Large graphs: only the tree's edges are real; the rest are in the background paths.
     const realEdges = isLarge ? allEdges.filter((e) => e.data?.edge.pull === 'lit') : allEdges;
     const flowNodes = (at: ReadonlyMap<NodeId, Position>, moving?: ReadonlySet<NodeId>) =>
       toFlowNodes(m, { positions: at, selected: sel, sized: isLarge, moving });
 
-    const animate = renderedTree !== undefined && tk !== renderedTree && !reducedMotion();
+    const changed = renderedTree !== undefined && (tk !== renderedTree || arr !== renderedArrangement);
     renderedTree = tk;
-    const moving = animate ? moved(shown, final) : new Set<NodeId>();
+    renderedArrangement = arr;
+    const moving = changed && !reducedMotion() ? moved(shown, final) : new Set<NodeId>();
     if (moving.size === 0) {
       shown = final;
       nodes = flowNodes(final);
       edges = realEdges;
-      fit(key, m, isLarge);
+      fit(key, m, final, isLarge ? 0 : 300);
       return;
     }
 
@@ -178,11 +236,12 @@
       requestAnimationFrame(() => {
         if (my !== token) return;
         nodes = flowNodes(final, moving);
+        // The view moves with the nodes: same start, duration and easing.
+        fit(key, m, final, MOVE_MS);
         setTimeout(() => {
           if (my !== token) return;
           nodes = flowNodes(final);
           edges = realEdges;
-          fit(key, m, isLarge);
         }, MOVE_MS + 50);
       }),
     );
@@ -206,24 +265,72 @@
 
   /**
    * Fits the view once per fitKey: to the pulled tree when there is one,
-   * else to the whole graph. Large graphs jump: an animated fit there mounts
-   * nodes on every frame, and Svelte Flow cuts the zoom transition short.
+   * else to the whole graph, at `at` (where the nodes are going).
+   *
+   * The fit is worked out here from the laid-out sizes and set with
+   * setViewport, not with Svelte Flow's fitView: an animated fitView stays
+   * queued until its transition ends, and every node a large graph mounts
+   * on the way (onlyRenderVisibleElements) re-measures and restarts it from
+   * wherever the view has got to, so it crawls and stops short. The first
+   * fit, before anything is measured or the view has a size, is fitView's.
    */
-  function fit(key: string, m: GraphModel, isLarge: boolean) {
+  function fit(key: string, m: GraphModel, at: ReadonlyMap<NodeId, Position>, duration: number) {
     if (key === fitted) return;
     const first = fitted === null;
     fitted = key;
-    const lit = m.nodes.filter((n) => n.pull === 'lit').map((n) => ({ id: n.id }));
-    void flow.fitView({
-      padding: 0.12,
-      maxZoom: 1,
-      duration: first || isLarge ? 0 : 300,
-      ...(lit.length > 0 && { nodes: lit }),
+    const lit = m.nodes.some((n) => n.pull === 'lit');
+    if (first) {
+      const nodes = lit ? m.nodes.filter((n) => n.pull === 'lit').map((n) => ({ id: n.id })) : undefined;
+      void flow.fitView({ ...FIT, duration: 0, nodes });
+      return;
+    }
+    const bounds = nodesBounds(m, at, lit ? (n) => n.pull === 'lit' : undefined);
+    const width = box?.clientWidth ?? 0;
+    const height = box?.clientHeight ?? 0;
+    if (!bounds || width === 0 || height === 0) return;
+    const viewport = getViewportForBounds(bounds, width, height, MIN_ZOOM, FIT.maxZoom, FIT.padding);
+    void flow.setViewport(viewport, {
+      duration: reducedMotion() ? 0 : duration,
+      ease: easeInOut,
+      interpolate: 'linear',
     });
   }
 
-  const reducedMotion = (): boolean =>
-    typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  type DragEvent = Parameters<NodeTargetEventWithPointer<MouseEvent | TouchEvent, FlowNode>>[0];
+
+  /** Large graphs: the background edges of a dragged graph node follow it. */
+  function ondragstart({ nodes: dragging }: DragEvent) {
+    if (!background) return;
+    const ids = new Set(dragging.filter((n) => n.data.node.pull !== 'lit').map((n) => n.id));
+    if (ids.size === 0) return;
+    const touches = (e: GraphEdge) => ids.has(e.source) || ids.has(e.target);
+    dragTouches = touches;
+    dragPaths = { still: backgroundPaths(model, base, (e) => !touches(e)), live: backgroundPaths(model, base, touches) };
+  }
+
+  function ondrag({ nodes: dragging }: DragEvent) {
+    if (!dragTouches || !dragPaths) return;
+    const at = new Map(base);
+    for (const n of dragging) at.set(n.id, n.position);
+    dragPaths = { still: dragPaths.still, live: backgroundPaths(model, at, dragTouches) };
+  }
+
+  /** A drop: graph nodes go to `onarrange` when there is one; the rest last while the view is open. */
+  function ondragstop({ nodes: dropped }: DragEvent) {
+    const next = new Map(shown);
+    const saved = new Map<NodeId, Position>();
+    for (const n of dropped) {
+      const at = { x: Math.round(n.position.x), y: Math.round(n.position.y) };
+      next.set(n.id, at);
+      if (onarrange && n.data.node.pull !== 'lit') saved.set(n.id, at);
+      else dragged.set(n.id, at);
+    }
+    shown = next;
+    dragTouches = null;
+    if (saved.size > 0) onarrange?.(saved);
+    // The saved moves are in `base` now, so the background redraws from it.
+    dragPaths = null;
+  }
 
   /** Large graphs: the far-zoom flag lite tiles follow. Written only when the threshold is crossed. */
   function onmove(_event: unknown, viewport: Viewport) {
@@ -244,11 +351,13 @@
     {edgeTypes}
     {colorMode}
     fitView
-    fitViewOptions={{ padding: 0.12, maxZoom: 1 }}
-    minZoom={0.05}
+    fitViewOptions={FIT}
+    minZoom={MIN_ZOOM}
     maxZoom={2.5}
     onlyRenderVisibleElements={large}
-    nodesDraggable={false}
+    nodesDraggable
+    nodeDragThreshold={DRAG_PX}
+    nodeClickDistance={DRAG_PX}
     nodesConnectable={false}
     elementsSelectable={false}
     deleteKey={null}
@@ -256,12 +365,20 @@
     oninit={() => onmove(null, flow.getViewport())}
     onnodeclick={({ node }) => onnodeclick?.(node.data.node)}
     onpaneclick={() => onpaneclick?.()}
+    onnodedragstart={ondragstart}
+    onnodedrag={ondrag}
+    onnodedragstop={ondragstop}
   >
     {#if background}
+      {@const still = dragPaths?.still ?? background}
       <ViewportPortal target="back">
         <svg class="background" class:faint={tree !== null} aria-hidden="true">
-          <path class="other" d={background.other} />
-          <path class="met" d={background.met} />
+          <path class="other" d={still.other} />
+          <path class="met" d={still.met} />
+          {#if dragPaths}
+            <path class="other" d={dragPaths.live.other} />
+            <path class="met" d={dragPaths.live.met} />
+          {/if}
         </svg>
       </ViewportPortal>
     {/if}
@@ -289,6 +406,9 @@
     border: 0;
     background: none;
     cursor: pointer;
+  }
+  .canvas :global(.svelte-flow__node.dragging) {
+    cursor: grabbing;
   }
   .canvas :global(.svelte-flow__handle) {
     opacity: 0;
@@ -330,6 +450,7 @@
   .canvas :global(.svelte-flow__node.pull-faded:not(.gn-dragon)) {
     opacity: 0.12;
   }
+  /* motion.ts's MOVE_MS and MOVE_EASING: the view moves with the same. */
   .canvas :global(.svelte-flow__node.moving) {
     transition: transform 0.6s ease-in-out;
   }

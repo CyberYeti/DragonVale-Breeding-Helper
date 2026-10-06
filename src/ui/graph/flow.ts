@@ -116,17 +116,20 @@ function placeAll(nodes: readonly GraphNode[], edges: readonly GraphEdge[], top:
  * part of a merged SVG path behind the nodes instead of as a Svelte Flow edge:
  * one path for met edges and one for the rest. Each runs from the top middle
  * of what is needed to the bottom middle of what it makes, as the real edges
- * do. Positions are where the nodes sit in the tab graph.
+ * do. Positions are where the nodes sit in the tab graph. `include` picks
+ * some of the edges, so a drag can redraw just the ones touching the
+ * dragged node.
  */
 export function backgroundPaths(
   model: GraphModel,
   positions: ReadonlyMap<NodeId, Position>,
+  include: (edge: GraphEdge) => boolean = () => true,
 ): { readonly met: string; readonly other: string } {
   const boxes = new Map(model.nodes.map((n) => [n.id, nodeSize(n, false)]));
   let met = '';
   let other = '';
   for (const e of model.edges) {
-    if (e.pull === 'lit') continue;
+    if (e.pull === 'lit' || !include(e)) continue;
     const a = positions.get(e.source);
     const b = positions.get(e.target);
     const sa = boxes.get(e.source);
@@ -142,6 +145,29 @@ export function backgroundPaths(
     else other += d;
   }
   return { met, other };
+}
+
+/** The box around the nodes `include` picks at `positions`, in flow px; null when it picks none. */
+export function nodesBounds(
+  model: GraphModel,
+  positions: ReadonlyMap<NodeId, Position>,
+  include: (node: GraphNode) => boolean = () => true,
+): { x: number; y: number; width: number; height: number } | null {
+  const top = model.target?.node ?? null;
+  let x1 = Infinity;
+  let y1 = Infinity;
+  let x2 = -Infinity;
+  let y2 = -Infinity;
+  for (const n of model.nodes) {
+    const p = positions.get(n.id);
+    if (!p || !include(n)) continue;
+    const size = nodeSize(n, n.id === top);
+    x1 = Math.min(x1, p.x);
+    y1 = Math.min(y1, p.y);
+    x2 = Math.max(x2, p.x + size.width);
+    y2 = Math.max(y2, p.y + size.height);
+  }
+  return x1 === Infinity ? null : { x: x1, y: y1, width: x2 - x1, height: y2 - y1 };
 }
 
 /** Edge colours by state, matching the CSS in GraphCanvas. */
@@ -192,7 +218,6 @@ export function toFlowNodes(model: GraphModel, { positions, selected, sized, mov
       type: node.kind,
       position: positions.get(node.id) ?? { x: 0, y: 0 },
       data: { node, target },
-      draggable: false,
       connectable: false,
       // Dragon tiles carry their own button; Svelte Flow's focus ring would double it.
       focusable: node.kind !== 'dragon',

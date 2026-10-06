@@ -2,7 +2,8 @@
   The graph levels above the tiles (nav.levels): a tile's Focus view, the
   Graph button's tab graph, and a tree pulled out of it. Draws the level on
   top by its kind; the graphs themselves live in ui/graph. ← Back and Escape
-  go back one level, through the browser history like its own back.
+  go back one level, through the browser history like its own back. A tab
+  graph with nodes the player moved offers Reset arrangement.
 -->
 <script lang="ts">
   import type { GraphLevel } from './nav.svelte';
@@ -13,10 +14,13 @@
   import { caveName } from '../lib/core/breeding';
   import FocusView from './graph/FocusView.svelte';
   import TabGraphView from './graph/TabGraphView.svelte';
+  import { provideArrangements, SavedArrangements } from './graph/arrangement.svelte';
 
   const store = useStore();
   const nav = useNav();
   const menu = useMenuView();
+  const arrangements = new SavedArrangements();
+  provideArrangements(arrangements);
 
   /** The tab graph a pulled tree sits on (or the tab graph itself). */
   const tabLevel = $derived(
@@ -47,6 +51,14 @@
       <button type="button" onclick={() => nav.back()}>← Back</button>
       <b>{title(level)}</b>
       <span class="muted">{level.kind === 'focus' ? 'Focus view' : 'Tab graph'} · {caveName(store.cave)} cave</span>
+      {#if level.kind === 'tab-graph' && arrangements.has(level.tab, store.cave)}
+        <button
+          type="button"
+          class="reset"
+          title="Put the nodes you moved back where the automatic layout puts them"
+          onclick={() => arrangements.reset(level.tab, store.cave)}>Reset arrangement</button
+        >
+      {/if}
     </div>
     {#if level.kind === 'focus'}
       <FocusView target={level.target} form={level.form} />
@@ -71,7 +83,8 @@
   }
   .head {
     display: flex;
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: 6px 10px;
     align-items: center;
     padding: 8px 12px;
     border-bottom: 1px solid var(--line);
@@ -83,6 +96,9 @@
     border-radius: 8px;
     background: var(--card);
     cursor: pointer;
+  }
+  .head .reset {
+    margin-left: auto;
   }
   .muted {
     color: var(--muted);
