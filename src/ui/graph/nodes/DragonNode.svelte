@@ -12,13 +12,18 @@
   import { describeTile } from '../../../lib/core/tile';
   import { useStore } from '../../store.svelte';
   import DragonTile from '../../tile/DragonTile.svelte';
-  import { TARGET_TILE_WIDTH, TILE_WIDTH, type FlowNode } from '../flow';
+  import { useCanvasView } from '../canvasView.svelte';
+  import { tileWidth, type FlowNode } from '../flow';
   import Ends from './Ends.svelte';
 
   let { data }: NodeProps<FlowNode> = $props();
 
   const store = useStore();
+  const canvas = useCanvasView();
   const node = $derived(data.node as DragonNode);
+  const faded = $derived(node.pull === 'faded');
+  /** Large graphs: faded and far-zoomed tiles are lite (spec §9 Performance rules). */
+  const lite = $derived(canvas.large && (faded || canvas.far));
   const dragon = $derived(store.world.dragons.get(node.dragon));
   const view = $derived(dragon ? describeTile(store.world, dragon, store.cave, store.display) : null);
   const ownedBanner = $derived(node.badges.some((b) => b.kind === 'owned'));
@@ -27,19 +32,24 @@
 </script>
 
 <Ends />
-<div class="dragon" style:--tile-width="{data.target ? TARGET_TILE_WIDTH : TILE_WIDTH}px">
+<div class="dragon" style:--tile-width="{tileWidth(node, data.target)}px">
   {#if view}
     <DragonTile
       {view}
+      {lite}
+      {faded}
+      far={canvas.far}
       {ownedBanner}
       note={node.form === 'rift' && view.ticks.length > 1 ? 'Rift form' : undefined}
       ontoggle={(tick, v) => store.toggle(v.dragon, tick.form)}
     />
   {/if}
-  {#if locked}<span class="lock" title="Not available: can't be bred or bought right now">🔒</span>{/if}
-  {#each chips as badge, i (i)}
-    <span class="chip b-{badge.kind}">{badge.label}</span>
-  {/each}
+  {#if !lite}
+    {#if locked}<span class="lock" title="Not available: can't be bred or bought right now">🔒</span>{/if}
+    {#each chips as badge, i (i)}
+      <span class="chip b-{badge.kind}">{badge.label}</span>
+    {/each}
+  {/if}
 </div>
 
 <style>
