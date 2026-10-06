@@ -2,7 +2,7 @@
   The graph levels above the tiles (nav.levels): a tile's Focus view, the
   Graph button's tab graph, and a tree pulled out of it. Draws the level on
   top by its kind; the graphs themselves live in ui/graph. ← Back and Escape
-  go back one level.
+  go back one level, through the browser history like its own back.
 -->
 <script lang="ts">
   import type { GraphLevel } from './nav.svelte';

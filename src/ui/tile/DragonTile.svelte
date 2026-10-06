@@ -8,16 +8,18 @@
 -->
 <script lang="ts">
   import type { Tick, TileView } from '../../lib/core/tile';
-  import { assetUrl, bannerBlocks, bannerText, rarityColour, tickName, tickText } from './labels';
+  import { assetUrl, bannerBlocks, bannerText, rarityBorder, rarityFill, tickName, tickText } from './labels';
 
   type Props = {
     view: TileView;
-    /** Graphs only: art and rarity border, no name, banner, ticks or sheen. */
+    /** Graphs only: art and rarity border, no name, banner, ticks, sheen or Rift icon. */
     lite?: boolean;
     /** Drawn faded (a graph's background behind a pulled tree). */
     faded?: boolean;
-    /** Far zoomed out. A faded lite tile then drops its art: a rarity-coloured square. */
+    /** Far zoomed out. A faded lite tile then drops its art: a rarity-coloured square (grey for Hybrids). */
     far?: boolean;
+    /** A Rift Dragon's Rift Element icon URL (labels' `riftIcon`), drawn as a badge top-left. */
+    riftIcon?: string | null;
     /** Show the ownership ticks (select mode hides them). */
     showTicks?: boolean;
     /** A short line under the name, e.g. "ends in 3 days" or a shop cost. */
@@ -38,6 +40,7 @@
     lite = false,
     faded = false,
     far = false,
+    riftIcon = null,
     showTicks = true,
     note,
     ownedBanner = false,
@@ -73,7 +76,8 @@
   class:lite
   class:faded
   class:square
-  style:--rc={rarityColour(dragon.rarity)}
+  style:--rc={rarityBorder(dragon.rarity)}
+  style:--rfill={rarityFill(dragon.rarity)}
   {title}
 >
   {#if !square}
@@ -89,6 +93,7 @@
   {/if}
 
   {#if !lite}
+    {#if riftIcon}<img class="rift-icon" src={riftIcon} alt="" title="Rift Dragon" draggable="false" />{/if}
     {#if ownedBanner}
       <div class="banner owned">Owned</div>
     {:else if view.banner}
@@ -264,7 +269,19 @@
     border-color: var(--rift);
   }
 
-  /* Lite: a square card of art inside the rarity border. */
+  /* A Rift Dragon's Rift icon, top-left: clear of the ✓ / lock (top-right), the banner and the ticks. */
+  img.rift-icon {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    z-index: 4;
+    width: 18px;
+    height: 18px;
+    aspect-ratio: auto;
+    filter: drop-shadow(0 0 1px #000a);
+  }
+
+  /* Lite: a square card of art inside the rarity border (Hybrids have none). */
   .lite {
     aspect-ratio: 1;
     padding: 4px;
@@ -273,6 +290,6 @@
     opacity: 0.1;
   }
   .square {
-    background: var(--rc);
+    background: var(--rfill);
   }
 </style>

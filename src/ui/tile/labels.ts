@@ -2,7 +2,7 @@
 // pick a banner or tick live in core/tile.
 import { caveName, noBreedingText, NOT_AVAILABLE } from '../../lib/core/breeding';
 import type { Banner, Tick } from '../../lib/core/tile';
-import type { Rarity } from '../../lib/snapshot';
+import type { Dragon, Rarity, Snapshot } from '../../lib/snapshot';
 
 export function bannerText(banner: Banner): string {
   switch (banner.kind) {
@@ -34,9 +34,29 @@ export function tickText(tick: Tick): string {
   return tick.label === 'owned' && tick.owned ? '✔ Owned' : tickName(tick);
 }
 
-/** The CSS custom property holding a rarity's border colour (src/ui/theme.css). */
+/** The CSS custom property holding a rarity's colour (src/ui/theme.css), e.g. for the Filters symbols. */
 export function rarityColour(rarity: Rarity): string {
   return `var(--rarity-${rarity.toLowerCase()})`;
+}
+
+/**
+ * A tile's border colour. DragonVale draws no outline round Hybrids, so
+ * theirs is transparent: the border keeps its width and tiles keep one size.
+ */
+export function rarityBorder(rarity: Rarity): string {
+  return rarity === 'Hybrid' ? 'transparent' : rarityColour(rarity);
+}
+
+/** The far-zoom square's fill: the border colour, or a neutral grey for borderless Hybrids. */
+export function rarityFill(rarity: Rarity): string {
+  return rarity === 'Hybrid' ? 'var(--muted)' : rarityColour(rarity);
+}
+
+/** The Rift Element's icon URL for a Rift Dragon (its Elements include Rift), else null. */
+export function riftIcon(snapshot: Pick<Snapshot, 'elements'>, dragon: Pick<Dragon, 'elements'>): string | null {
+  if (!dragon.elements.includes('Rift')) return null;
+  const icon = snapshot.elements.find((e) => e.name === 'Rift')?.icon;
+  return icon ? assetUrl(icon) : null;
 }
 
 /**

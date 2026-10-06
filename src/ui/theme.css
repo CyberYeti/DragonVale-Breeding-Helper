@@ -23,7 +23,8 @@
   --banner-blocked-bg: #5a1a1ae6;
   --banner-fg: #fff;
 
-  /* Rarity border colours, from the wiki's MediaWiki:Dragons.css (spec §8). */
+  /* Rarity colours, from the wiki's MediaWiki:Dragons.css (spec §8). Tiles
+     draw them as the border, except Hybrid: no border (labels' rarityBorder). */
   --rarity-primary: #eeffee;
   --rarity-hybrid: #88ff77;
   --rarity-rare: #0099ff;

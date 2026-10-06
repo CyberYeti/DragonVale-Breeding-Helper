@@ -39,10 +39,7 @@
   const panel = new ClickPanel(
     store,
     () => ('model' in built ? built.model : null),
-    (dragon, as) => {
-      nav.back();
-      nav.openFocus(dragon, as);
-    },
+    (dragon, as) => nav.retarget(dragon, as),
   );
   provideClickPanel(panel);
 
