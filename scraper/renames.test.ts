@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { SCHEMA_VERSION, type Dragon, type Snapshot } from '../src/lib/snapshot';
-import { applyRenames, compareWithPrevious, confirmRenames, type RenameCandidate } from './renames';
+import { applyRenames, confirmRenames, type RenameCandidate } from './renames';
+
+// Rename candidates come from buildSnapshot's report (build.test.ts). Here: the
+// cli's confirm step and applyRenames.
 
 const dragon = (name: string, order: number): Dragon => ({
   name,
@@ -30,46 +33,6 @@ const snapshot = (dragons: Dragon[], renames: Record<string, string> = {}): Snap
   dragons,
   pages: [],
   renames,
-});
-
-describe('compareWithPrevious', () => {
-  it('finds nothing without a previous snapshot', () => {
-    expect(compareWithPrevious(null, [dragon('Fire', 1)])).toEqual({ added: [], removed: [], renameCandidates: [] });
-  });
-
-  it('finds a rename under the same order', () => {
-    const previous = snapshot([dragon('Fire', 1), dragon('Flame', 2)]);
-    const changes = compareWithPrevious(previous, [dragon('Fire', 1), dragon('Blaze', 2), dragon('Ember', 3)]);
-    expect(changes.removed).toEqual(['Flame']);
-    expect(changes.added).toEqual(['Blaze', 'Ember']);
-    expect(changes.renameCandidates).toEqual([{ from: 'Flame', to: 'Blaze', reason: 'same-order' }]);
-  });
-
-  it('offers one removed and one added as a pair, even when the order changed', () => {
-    const previous = snapshot([dragon('Fire', 1), dragon('Flame', 2)]);
-    const changes = compareWithPrevious(previous, [dragon('Fire', 1), dragon('Blaze', 7)]);
-    expect(changes).toEqual({
-      added: ['Blaze'],
-      removed: ['Flame'],
-      renameCandidates: [{ from: 'Flame', to: 'Blaze', reason: 'only-change' }],
-    });
-  });
-
-  it('offers the one-each pair only once when it also shares the order', () => {
-    const changes = compareWithPrevious(snapshot([dragon('Flame', 2)]), [dragon('Blaze', 2)]);
-    expect(changes.renameCandidates).toEqual([{ from: 'Flame', to: 'Blaze', reason: 'same-order' }]);
-  });
-
-  it("doesn't pair two removed and one added, but still lists them", () => {
-    const previous = snapshot([dragon('Fire', 1), dragon('Flame', 2), dragon('Smoke', 3)]);
-    const changes = compareWithPrevious(previous, [dragon('Fire', 1), dragon('Blaze', 9)]);
-    expect(changes).toEqual({ added: ['Blaze'], removed: ['Flame', 'Smoke'], renameCandidates: [] });
-  });
-
-  it('finds nothing when the names are unchanged', () => {
-    const previous = snapshot([dragon('Fire', 1)]);
-    expect(compareWithPrevious(previous, [dragon('Fire', 4)])).toEqual({ added: [], removed: [], renameCandidates: [] });
-  });
 });
 
 describe('confirmRenames', () => {

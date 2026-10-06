@@ -10,14 +10,14 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-export const WIKI = 'https://dragonvale.fandom.com';
+const WIKI = 'https://dragonvale.fandom.com';
 export const API_URL = `${WIKI}/api.php`;
 export const USER_AGENT =
   'DragonValeBreedingHelper/0.1 (https://github.com/CyberYeti/DragonVale-Breeding-Helper; ' +
   'snapshot scraper, run by hand once per game release)';
 
 /** The pages the scraper needs, by wiki title, with the file each is saved to. */
-export const PAGES = {
+const PAGES = {
   'Data:Dragons.json': 'Dragons.json',
   'Data:BreedingHints.json': 'BreedingHints.json',
   'Data:Game.json': 'Game.json',
@@ -58,7 +58,7 @@ export async function fetchPages(source: PageSource): Promise<RawPages> {
 
 // ---- live --------------------------------------------------------------------
 
-export function liveRequestUrl(): string {
+function liveRequestUrl(): string {
   const params = new URLSearchParams({
     action: 'query',
     prop: 'revisions',
@@ -83,7 +83,7 @@ async function fetchLive(fetchFn: typeof fetch, now: () => Date): Promise<RawPag
 }
 
 /** Turns an `action=query&prop=revisions` response (formatversion=2) into RawPages. */
-export function parseApiResponse(body: unknown, fetchedAt: string): RawPages {
+function parseApiResponse(body: unknown, fetchedAt: string): RawPages {
   const query = (body as { query?: { pages?: unknown } } | null)?.query;
   const error = (body as { error?: { info?: string } } | null)?.error;
   if (error) throw new Error(`Wiki API error: ${error.info ?? JSON.stringify(error)}`);
@@ -122,7 +122,7 @@ type ApiPage = {
 
 // ---- offline -----------------------------------------------------------------
 
-export async function readRawPages(dir: string): Promise<RawPages> {
+async function readRawPages(dir: string): Promise<RawPages> {
   const manifest = JSON.parse(await readFile(join(dir, MANIFEST), 'utf8')) as Manifest;
   const pages = {} as Record<PageTitle, RawPage>;
   for (const title of PAGE_TITLES) {

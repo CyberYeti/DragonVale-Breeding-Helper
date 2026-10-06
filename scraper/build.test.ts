@@ -288,6 +288,53 @@ describe('buildSnapshot rules on small records', () => {
   });
 });
 
+describe('rename candidates in the report', () => {
+  /** A primary-shaped record: no hint needed. */
+  const named = (Name: string, Order: number): WikiDragon => ({ ...fire, Name, Order });
+  const build = (dragons: WikiDragon[]) => buildSnapshot(rawPages({ dragons }), null).snapshot;
+  const changes = (previous: WikiDragon[], now: WikiDragon[]) => {
+    const { added, removed, renameCandidates } = buildSnapshot(rawPages({ dragons: now }), build(previous)).report;
+    return { added, removed, renameCandidates };
+  };
+  const none = { added: [], removed: [], renameCandidates: [] };
+
+  it('finds a rename under the same order', () => {
+    expect(changes([named('Fire', 1), named('Flame', 2)], [named('Fire', 1), named('Blaze', 2), named('Ember', 3)])).toEqual({
+      added: ['Blaze', 'Ember'],
+      removed: ['Flame'],
+      renameCandidates: [{ from: 'Flame', to: 'Blaze', reason: 'same-order' }],
+    });
+  });
+
+  it('offers one removed and one added as a pair, even when the order changed', () => {
+    expect(changes([named('Fire', 1), named('Flame', 2)], [named('Fire', 1), named('Blaze', 7)])).toEqual({
+      added: ['Blaze'],
+      removed: ['Flame'],
+      renameCandidates: [{ from: 'Flame', to: 'Blaze', reason: 'only-change' }],
+    });
+  });
+
+  it('offers the one-each pair only once when it also shares the order', () => {
+    expect(changes([named('Flame', 2)], [named('Blaze', 2)]).renameCandidates).toEqual([
+      { from: 'Flame', to: 'Blaze', reason: 'same-order' },
+    ]);
+  });
+
+  it("doesn't pair two removed and one added, but still lists them", () => {
+    expect(changes([named('Fire', 1), named('Flame', 2), named('Smoke', 3)], [named('Fire', 1), named('Blaze', 9)])).toEqual({
+      added: ['Blaze'],
+      removed: ['Flame', 'Smoke'],
+      renameCandidates: [],
+    });
+  });
+
+  it('finds nothing when the names are unchanged, or without a previous snapshot', () => {
+    expect(changes([named('Fire', 1)], [named('Fire', 4)])).toEqual(none);
+    const { added, removed, renameCandidates } = buildSnapshot(rawPages({ dragons: [named('Fire', 1)] }), null).report;
+    expect({ added, removed, renameCandidates }).toEqual(none);
+  });
+});
+
 describe('Routes from hand-built hints', () => {
   const water: WikiDragon = { Name: 'Water', Rarity: 'Primary', Order: 3, Elements: ['Water'] };
   const odd = (fields: WikiDragon = {}): WikiDragon => ({ Name: 'Odd', Rarity: 'Rare', Order: 9, Elements: ['Fire'], ...fields });
