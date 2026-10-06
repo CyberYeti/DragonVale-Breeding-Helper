@@ -83,4 +83,10 @@ describe('ui layer', () => {
     await allowed('src/ui/store.ts', "import x from '../lib/core/world';\nimport y from '../lib/snapshot';\nx; y;");
     await blocked('src/ui/store.ts', "import x from '../../scraper/cli';\nx;");
   });
+
+  it('keeps Svelte Flow inside src/ui/graph', async () => {
+    await blocked('src/ui/nav.svelte.ts', "import { MarkerType } from '@xyflow/svelte';\nMarkerType;");
+    await blocked('src/ui/menu/thing.ts', "import { MarkerType } from '@xyflow/svelte';\nMarkerType;");
+    await allowed('src/ui/graph/flow.ts', "import { MarkerType } from '@xyflow/svelte';\nMarkerType;");
+  });
 });

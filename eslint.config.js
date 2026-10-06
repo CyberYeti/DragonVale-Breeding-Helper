@@ -13,7 +13,7 @@ import svelteConfig from './svelte.config.js';
  *   src/lib/snapshot/  imports nothing app-side
  *   src/lib/core/      imports snapshot, lower core modules and dagre; never
  *                      Svelte, @xyflow, src/ui or scraper; no fetch/localStorage
- *   src/ui/            imports core and snapshot
+ *   src/ui/            imports core and snapshot; only src/ui/graph/ uses @xyflow
  *   scraper/           imports snapshot only
  *
  * A core module is either `src/lib/core/<name>.ts` or a folder
@@ -165,6 +165,12 @@ export default defineConfig(
   {
     name: 'layers/ui',
     files: ['src/ui/**/*.{ts,svelte}', 'src/main.ts'],
+    rules: restrict([banSegments(['scraper'], 'The app must not import the scraper.'), xyflowBan]),
+  },
+  {
+    // ui/graph is the Svelte Flow adapter: the only place that may use it.
+    name: 'layers/ui/graph',
+    files: ['src/ui/graph/**/*.{ts,svelte}'],
     rules: restrict([banSegments(['scraper'], 'The app must not import the scraper.')]),
   },
   {
