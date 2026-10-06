@@ -142,10 +142,10 @@ export type GraphEdge = {
  * Something drawn on an edge label or a node. `label` is the text to show;
  * `kind` (and the data with it) is for styling and tests.
  *
- * On a Route's out-edge (pill → Dragon): purchase-only, not-available,
- * no-valid-pair, condition, other-cave. On an in-edge: both-parents,
- * decoration (evolves-from), any-dragon (coop-only). On a Dragon node:
- * owned, purchased, summoned, dead-end, cannot-be-parent.
+ * On a Route's out-edge (pill → Dragon): purchase-only, cannot-be-parent,
+ * not-available, no-valid-pair, condition, other-cave. On an in-edge:
+ * both-parents, decoration (evolves-from), any-dragon (coop-only). On a
+ * Dragon node: owned, purchased, summoned, dead-end.
  */
 export type Badge = { readonly label: string } & (
   | { readonly kind: 'owned' }
@@ -153,8 +153,11 @@ export type Badge = { readonly label: string } & (
   | { readonly kind: 'summoned'; readonly artifacts: readonly string[] }
   /** A Dragon none of whose Routes can be bred (Summoned, Purchased): its branch ends. */
   | { readonly kind: 'dead-end' }
-  /** A named parent that can't be a parent: drawn, never expanded. */
-  | { readonly kind: 'cannot-be-parent' }
+  /**
+   * The Route names Dragons that can't be parents (spec §9 rule 9). They
+   * aren't drawn as its parents, and the Route is never met.
+   */
+  | { readonly kind: 'cannot-be-parent'; readonly dragons: readonly string[] }
   | { readonly kind: 'decoration'; readonly decorations: readonly string[] }
   | { readonly kind: 'any-dragon' }
   | { readonly kind: 'both-parents' }

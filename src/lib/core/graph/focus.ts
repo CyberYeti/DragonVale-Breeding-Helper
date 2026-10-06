@@ -116,18 +116,10 @@ export class Builder {
     return node;
   }
 
-  /**
-   * Draws the Dragon's Routes below its node, once. A node that's owned (and
-   * isn't a root) or that can't be a parent stays a leaf.
-   */
+  /** Draws the Dragon's Routes below its node, once. A node that's owned (and isn't a root) stays a leaf. */
   expand(node: MutableDragonNode, dragon: Dragon): void {
     if (node.expanded) return;
-    const isTarget = this.roots.has(node.id);
-    if (!isTarget && node.owned) return;
-    if (!isTarget && !dragon.canBeParent) {
-      if (!node.badges.some((b) => b.kind === 'cannot-be-parent')) node.badges.push(badge({ kind: 'cannot-be-parent' }));
-      return;
-    }
+    if (!this.roots.has(node.id) && node.owned) return;
     node.expanded = true;
 
     let breedable = false;
@@ -163,10 +155,15 @@ export class Builder {
     const status = routeStatus(this.world, dragon, route, owner.form);
     const purchaseOnly = this.world.purchaseOnly.has(dragon.name);
 
-    const parents = (req.parents ?? []).flatMap((name) => {
+    const named = (req.parents ?? []).flatMap((name) => {
       const parent = this.world.dragons.get(name);
       return parent ? [parent] : [];
     });
+    // Rule 9: a Dragon that can't be a parent never appears as one. The Route
+    // says it needs one instead, and is never met.
+    const parents = named.filter((p) => p.canBeParent);
+    const nonParents = named.filter((p) => !p.canBeParent).map((p) => p.name);
+    const met = status.met && nonParents.length === 0;
     const unavailable = parents
       .filter((p) => !parentSet.names.has(p.name) && !this.world.available.has(p.name))
       .map((p) => p.name);
@@ -175,18 +172,19 @@ export class Builder {
       ? 'locked'
       : unavailable.length > 0
         ? 'dimmed'
-        : status.met
+        : met
           ? 'met'
           : 'normal';
     const badges: Badge[] = [];
     if (purchaseOnly) badges.push(badge({ kind: 'purchase-only' }));
+    if (nonParents.length > 0) badges.push(badge({ kind: 'cannot-be-parent', dragons: nonParents }));
     if (unavailable.length > 0) badges.push(badge({ kind: 'not-available', dragons: unavailable }));
     if (status.reason.kind === 'opposites' || status.reason.kind === 'no-valid-pair') {
       badges.push(badge({ kind: 'no-valid-pair' }));
     }
     badges.push(...conditionBadges(route.conditions), ...this.caveBadges(dragon, owner.form, route));
 
-    const pill = this.routeNode(owner, dragon, route, index, status.met, state, badges);
+    const pill = this.routeNode(owner, dragon, route, index, met, state, badges);
 
     const both = req.elementOnBothParents;
     const elements = [...new Set([...(req.elements ?? []), ...(both === undefined ? [] : [both])])];

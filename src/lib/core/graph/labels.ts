@@ -27,7 +27,9 @@ function badgeLabel(b: Unlabelled<Badge>): string {
     case 'dead-end':
       return 'Dead end';
     case 'cannot-be-parent':
-      return "Can't be a parent";
+      return b.dragons.length === 1
+        ? `Needs ${b.dragons[0]}, which can't be a parent`
+        : `Needs ${b.dragons.join(' and ')}, which can't be parents`;
     case 'decoration':
       return b.decorations.length > 0 ? `Evolves with ${b.decorations.join(' or ')}` : 'Evolves';
     case 'any-dragon':
