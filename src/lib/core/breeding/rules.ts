@@ -1,7 +1,7 @@
 // The breeding rules every view shares (spec §6): what each Breeding cave
 // makes, when a Route is met, Breedable now and the Basic dragon.
 
-import type { Dragon, Requirement, Route } from '../../snapshot';
+import type { BredRoute, CoopRoute, Dragon, Requirement, Route } from '../../snapshot';
 import { formsOf, isOwned, type Form } from '../collection';
 import type { Breeding, World } from '../world';
 import { countPairs, oppositePairMeeting, pairs, parentIndex, type ParentIndex } from './pairs';
@@ -104,18 +104,24 @@ export function routeStatus(world: World, dragon: Dragon, route: Route, form: Fo
         : status(0, { kind: 'missing-parents', dragons: [route.from] });
     }
 
-    case 'coop': {
-      if (own === 'rift') return status(0, { kind: 'normal-form-only' });
-      const count = world.parents.normal.dragons.length;
-      return count > 0 ? status(count, MET) : status(0, { kind: 'no-parents' });
-    }
-
+    case 'coop':
     case 'bred': {
-      const index = parentIndex(world, breedingFor(route, own));
-      const count = countPairs(index, route.requirement);
-      return count > 0 ? status(count, MET) : status(0, whyNot(index, route.requirement));
+      const count = pairCountFor(world, route, own);
+      if (count > 0) return status(count, MET);
+      if (route.kind === 'coop') return status(0, own === 'rift' ? { kind: 'normal-form-only' } : { kind: 'no-parents' });
+      return status(0, whyNot(parentIndex(world, breedingFor(route, own)), route.requirement));
     }
   }
+}
+
+/**
+ * A Bred or Co-op bred Route's pair count for a Dragon in `form` (its own
+ * form): Valid pairs from the parents that count, or for Co-op bred (normal
+ * forms only) the owned Normal breeding parents.
+ */
+function pairCountFor(world: World, route: BredRoute | CoopRoute, form: Form): number {
+  if (route.kind === 'coop') return form === 'normal' ? world.parents.normal.dragons.length : 0;
+  return countPairs(parentIndex(world, breedingFor(route, form)), route.requirement);
 }
 
 /** Why a Bred Route's Requirement has no Valid pair. */
@@ -188,11 +194,9 @@ function computeBreedable(world: World, cave: Cave): ReadonlySet<string> {
   return result;
 }
 
-/** routeStatus's `met`, without counting every pair or explaining a miss. */
+/** routeStatus's `met` for a Route a cave uses, without explaining a miss. `form` is the Dragon's own. */
 function routeIsMet(world: World, route: Route, form: Form): boolean {
-  if (route.kind === 'coop') return form === 'normal' && world.parents.normal.dragons.length > 0;
-  if (route.kind !== 'bred') return false;
-  return countPairs(parentIndex(world, breedingFor(route, form)), route.requirement) > 0;
+  return (route.kind === 'bred' || route.kind === 'coop') && pairCountFor(world, route, form) > 0;
 }
 
 /**
