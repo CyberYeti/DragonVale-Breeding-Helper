@@ -25,6 +25,16 @@ export function readStoredJson(key: string): unknown {
   }
 }
 
+/** Removes `key`. Returns false when storage refused it. */
+export function removeStored(key: string): boolean {
+  try {
+    localStorage.removeItem(PREFIX + key);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /** Stores `value` under `key`. Returns false when storage refused it. */
 export function writeStored(key: string, value: string): boolean {
   try {

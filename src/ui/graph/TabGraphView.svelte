@@ -15,6 +15,10 @@
 
   One instance draws both the `tab-graph` level and the `tree` above it, so
   the canvas can move the tree's nodes out of the graph and back.
+
+  The tab graph is a main graph: dragging its nodes saves the arrangement
+  for this tab and cave (SavedArrangements), on top of the automatic
+  layout. Drags inside a pulled tree last while the tree is open.
 -->
 <script lang="ts">
   import { untrack } from 'svelte';
@@ -31,6 +35,8 @@
   import { tabContents, type Tab } from '../../lib/core/menu';
   import { useNav } from '../nav.svelte';
   import { useStore } from '../store.svelte';
+  import { tabGraphName, withMoves } from './arrangement';
+  import { useArrangements } from './arrangement.svelte';
   import { place } from './flow';
   import GraphView from './GraphView.svelte';
   import ClickPanelFrame from './panel/ClickPanelFrame.svelte';
@@ -41,6 +47,7 @@
 
   const store = useStore();
   const nav = useNav();
+  const arrangements = useArrangements();
 
   type Graph = { graph: TabGraph; positions: ReadonlyMap<NodeId, Position> } | { error: string };
   type Built = { model: GraphModel; positions: ReadonlyMap<NodeId, Position> } | { error: string };
@@ -56,18 +63,21 @@
     }
   });
 
+  /** The layout with the player's saved moves; ids no longer in the graph are ignored. */
+  const arranged = $derived('error' in graph ? null : withMoves(graph.positions, arrangements.moves(tab, store.cave)));
+
   const built = $derived.by((): Built => {
     if ('error' in graph) return graph;
-    if (!tree) return { model: graph.graph, positions: graph.positions };
+    const positions = arranged ?? graph.positions;
+    if (!tree) return { model: graph.graph, positions };
     try {
-      return { model: pullTree(graph.graph, tree), positions: graph.positions };
+      return { model: pullTree(graph.graph, tree), positions };
     } catch (e) {
       return { error: e instanceof Error ? e.message : String(e) };
     }
   });
 
-  const tabKey = $derived(tab.kind === 'page' ? `page:${tab.page}` : tab.kind);
-  const fitKey = $derived(`${tabKey}:${store.cave}${tree ? `:${tree.dragon}:${tree.form}` : ''}`);
+  const fitKey = $derived(`${tabGraphName(tab)}:${store.cave}${tree ? `:${tree.dragon}:${tree.form}` : ''}`);
 
   /** The click panel works on the pulled tree; a plain tab graph has none to open. */
   const panel = new ClickPanel(
@@ -109,6 +119,8 @@
           model={built.model}
           positions={built.positions}
           large
+          arrangement={arrangements.resets}
+          onarrange={(moves) => arrangements.move(tab, store.cave, moves)}
           selected={panel.selected}
           {fitKey}
           {onnodeclick}
