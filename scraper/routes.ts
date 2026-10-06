@@ -2,6 +2,11 @@
 // (spec §4 "Routes" and "What the scraper works out"). Module:BreedingSandbox
 // on the wiki is the reference for what each hint key means.
 //
+// A "hint" here is one Dragon's raw record in the wiki's Data:BreedingHints.json
+// (`breedingHints[Name]`), exactly as the wiki stores it. It is a scraper-only
+// word: the scraper maps each hint to Routes, and nothing past the snapshot
+// sees hints.
+//
 // Every hint key is either mapped or deliberately ignored; any other key fails
 // the run, since the wiki can add or rename keys without notice.
 

@@ -3,7 +3,8 @@
 // fail-level problems and returns everything else in `report`.
 //
 // Routes come from Data:BreedingHints.json through routesFor (routes.ts), and
-// `elements` keeps only the Elements some Route uses.
+// `elements` keeps only the Elements some Route uses. A "hint" is one Dragon's
+// raw record in that page, not a Route: the scraper maps hints to Routes.
 //
 // Seams for later tickets:
 //   - Renames (#27): `renames` is carried over from `previous`; the report
