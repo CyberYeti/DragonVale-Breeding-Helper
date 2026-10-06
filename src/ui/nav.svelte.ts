@@ -5,6 +5,14 @@
 // Search, filters, select mode and graphs reset on reload. The tab is kept
 // (a per-browser convenience, like the cave), so a reload lands on the same
 // page.
+//
+// Browser history: once `connectHistory` runs, every tab change and every
+// graph level opened pushes a history entry holding the tab and the level
+// stack; re-targeting the level on top replaces the entry instead. The
+// browser's back (button, mouse, gesture) pops an entry and `popstate` puts
+// that entry's tab and levels back. The app's own back (← Back, Escape, the
+// graph background) goes through `history.go` too, so both kinds of back
+// step through the same entries. The URL never changes.
 /* eslint-disable svelte/prefer-svelte-reactivity -- sets here are replaced, never mutated */
 
 import { getContext, setContext } from 'svelte';
@@ -14,6 +22,23 @@ import { isRecord, type Snapshot } from '../lib/snapshot';
 import { readStoredJson, writeStored } from './storage';
 
 const TAB_KEY = 'nav:v1';
+
+/** Marks a history entry as one of ours. */
+const ENTRY_MARK = 'dvbh-nav';
+
+/** What a history entry holds: the tab and graph levels to show on returning to it. */
+interface HistoryEntry {
+  readonly mark: typeof ENTRY_MARK;
+  readonly tab: Tab;
+  readonly levels: readonly GraphLevel[];
+}
+
+/** The parts of `window.history` Nav uses (tests pass a fake). */
+export interface HistoryPort {
+  pushState(data: unknown, unused: string): void;
+  replaceState(data: unknown, unused: string): void;
+  go(delta: number): void;
+}
 
 /**
  * One level above the tiles. The top of the stack is what's on screen.
@@ -41,6 +66,10 @@ export class Nav {
   levels: readonly GraphLevel[] = $state.raw([]);
 
   readonly #snapshot: Snapshot;
+  /** The browser history, once connected. Without it, back works on `levels` alone. */
+  #history: HistoryPort | null = null;
+  /** Steps back asked of the history whose `popstate` hasn't arrived yet. */
+  #pendingBack = 0;
 
   constructor(snapshot: Snapshot) {
     this.#snapshot = snapshot;
@@ -58,13 +87,12 @@ export class Nav {
     return this.levels.at(-1) ?? null;
   }
 
-  /** Shows `tab`: clears search, leaves select mode and closes any graph. */
+  /** Shows `tab`: clears search, leaves select mode and closes any graph. A new tab is a history step. */
   goTo(tab: Tab): void {
-    this.tab = tab;
-    this.query = '';
-    this.exitSelect();
+    const step = tabKey(tab) !== tabKey(this.tab) || this.levels.length > 0;
+    this.#showTab(tab);
     this.levels = [];
-    writeStored(TAB_KEY, JSON.stringify({ tab }));
+    this.#record(step ? 'push' : 'replace');
   }
 
   /** Sets the search text. Leaving the view clears the selection. */
@@ -101,27 +129,120 @@ export class Nav {
   /** A tile click: the Dragon's Focus view, in the form the tile opens as. */
   openFocus(target: string, form: Form): void {
     this.levels = [...this.levels, { kind: 'focus', target, form }];
+    this.#record('push');
+  }
+
+  /** A new Target for the Focus view on top: replaces that level, so back still goes straight to the tiles. */
+  retarget(target: string, form: Form): void {
+    if (this.level?.kind !== 'focus') {
+      this.openFocus(target, form);
+      return;
+    }
+    this.levels = [...this.levels.slice(0, -1), { kind: 'focus', target, form }];
+    this.#record('replace');
   }
 
   /** The Graph button: the current tab's graph. */
   openTabGraph(): void {
     this.levels = [{ kind: 'tab-graph', tab: this.tab }];
+    this.#record('push');
   }
 
   /** A click on a Dragon in a tab graph: pulls its tree, replacing any tree already pulled. */
   pullTree(target: string, form: Form): void {
+    const replacing = this.level?.kind === 'tree';
     const below = this.levels.filter((l) => l.kind !== 'tree');
     this.levels = [...below, { kind: 'tree', target, form }];
+    this.#record(replacing ? 'replace' : 'push');
   }
 
   /** Back one level (Escape, the background, ← Back): tree → tab graph → tiles. */
   back(): void {
-    this.levels = this.levels.slice(0, -1);
+    this.#stepBack(1);
   }
 
   /** Back to the tiles. */
   closeGraphs(): void {
+    this.#stepBack(this.levels.length);
+  }
+
+  // ---- Browser history ------------------------------------------------------
+
+  /**
+   * Ties the tab and graph levels to the browser history (see the file
+   * comment). The current entry becomes the current tab's tiles, so a reload
+   * never reopens a graph. `events` is where `popstate` fires (the window).
+   * Returns the disconnect.
+   */
+  connectHistory(history: HistoryPort, events: EventTarget): () => void {
+    this.#history = history;
+    this.#pendingBack = 0;
     this.levels = [];
+    this.#record('replace');
+    const onpopstate = (event: Event) => this.#restore('state' in event ? event.state : null);
+    events.addEventListener('popstate', onpopstate);
+    return () => {
+      events.removeEventListener('popstate', onpopstate);
+      if (this.#history === history) this.#history = null;
+    };
+  }
+
+  /**
+   * Goes back `count` levels. Connected, it asks the history and lets
+   * `popstate` change the levels; steps already asked for count against the
+   * levels left, so a quick double Escape never backs out past the tiles.
+   */
+  #stepBack(count: number): void {
+    const steps = Math.min(count, this.levels.length - this.#pendingBack);
+    if (steps <= 0) return;
+    const history = this.#history;
+    if (!history) {
+      this.levels = this.levels.slice(0, -steps);
+      return;
+    }
+    this.#pendingBack += steps;
+    history.go(-steps);
+  }
+
+  /** Writes the current tab and levels to the history: as a new entry, or over the current one. */
+  #record(how: 'push' | 'replace'): void {
+    const history = this.#history;
+    if (!history) return;
+    const entry: HistoryEntry = {
+      mark: ENTRY_MARK,
+      tab: $state.snapshot(this.tab),
+      levels: $state.snapshot(this.levels),
+    };
+    if (how === 'push') history.pushState(entry, '');
+    else history.replaceState(entry, '');
+  }
+
+  /** `popstate`: shows the entry's tab and levels (an entry that isn't ours shows the tiles). */
+  #restore(state: unknown): void {
+    this.#pendingBack = 0;
+    if (!isRecord(state) || state.mark !== ENTRY_MARK) {
+      this.levels = [];
+      return;
+    }
+    if (this.#valid(state.tab) && tabKey(state.tab) !== tabKey(this.tab)) this.#showTab(state.tab);
+    this.levels = Array.isArray(state.levels) ? state.levels.filter((l) => this.#validLevel(l)) : [];
+  }
+
+  #showTab(tab: Tab): void {
+    this.tab = tab;
+    this.query = '';
+    this.exitSelect();
+    writeStored(TAB_KEY, JSON.stringify({ tab }));
+  }
+
+  #validLevel(level: unknown): level is GraphLevel {
+    if (!isRecord(level)) return false;
+    if (level.kind === 'tab-graph') return this.#valid(level.tab);
+    return (
+      (level.kind === 'focus' || level.kind === 'tree') &&
+      typeof level.target === 'string' &&
+      (level.form === 'normal' || level.form === 'rift')
+    );
   }
 
   #valid(tab: unknown): tab is Tab {
@@ -129,6 +250,11 @@ export class Nav {
     if (tab.kind === 'breedable' || tab.kind === 'limited' || tab.kind === 'event') return true;
     return tab.kind === 'page' && this.#snapshot.pages.some((p) => p.name === tab.page);
   }
+}
+
+/** Equal for the same tab. */
+function tabKey(tab: Tab): string {
+  return tab.kind === 'page' ? `page:${tab.page}` : tab.kind;
 }
 
 // ---- Context ----------------------------------------------------------------
