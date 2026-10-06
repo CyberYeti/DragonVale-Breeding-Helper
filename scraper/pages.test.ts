@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { fetchPages, liveRequestUrl, PAGE_TITLES, RAW_DIR, USER_AGENT, writeRawPages, type RawPages } from './pages';
+import { fetchPages, PAGE_TITLES, RAW_DIR, writeRawPages, type RawPages } from './pages';
 
 const rawDir = join(import.meta.dirname, '..', RAW_DIR);
 
@@ -44,8 +44,9 @@ describe('fetchPages, live', () => {
       'Data:Dragonarium.json',
       'Data:Limited.json',
     ]);
-    expect((init.headers as Record<string, string>)['User-Agent']).toBe(USER_AGENT);
-    expect(url).toBe(liveRequestUrl());
+    const headers = init.headers as Record<string, string>;
+    expect(headers['User-Agent']).toMatch(/^DragonValeBreedingHelper\/\S+ \(https:\/\/github\.com\/.+\)$/);
+    expect(headers['Api-User-Agent']).toBe(headers['User-Agent']);
   });
 
   it('returns each page text and revision ID, with the fetch time', async () => {

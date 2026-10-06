@@ -1,6 +1,6 @@
 // The load pipeline (spec §7 "Loading (and importing)"), shared by `load`
 // and `previewImport`: migrate → renames → orphans → notice → new revision.
-import type { Snapshot } from '../../snapshot';
+import { isRecord, type Snapshot } from '../../snapshot';
 import {
   FORMAT_VERSION,
   type Collection,
@@ -173,8 +173,4 @@ function readBlob(raw: unknown): CollectionBlob | CollectionError {
 
 function sameEntry(a: Entry | undefined, b: Entry | undefined): boolean {
   return (a?.normal ?? false) === (b?.normal ?? false) && (a?.rift ?? false) === (b?.rift ?? false);
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }

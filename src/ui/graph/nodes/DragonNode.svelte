@@ -2,7 +2,7 @@
   A Dragon node: the same DragonTile as the menu (greyscale, sheen, banners,
   ticks), described by core/tile for the chosen cave and Display settings.
   An owned Target gets the "Owned" banner from the graph's `owned` badge;
-  the node's other badges (Summoned, Purchased, Dead end, Can't be a parent)
+  the node's other badges (Summoned, Purchased, Dead end)
   are chips under the tile. A tick writes the Collection; a click anywhere
   else reaches the graph's node click.
 -->

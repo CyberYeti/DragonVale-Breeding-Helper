@@ -17,7 +17,7 @@ export function isPng(data: Uint8Array): boolean {
   return data.length >= 8 && Buffer.from(data.subarray(0, 8)).equals(SIGNATURE);
 }
 
-export type DecodedPng = {
+type DecodedPng = {
   width: number;
   height: number;
   colorType: number;
@@ -29,7 +29,7 @@ export type DecodedPng = {
   kept: { type: string; body: Buffer }[];
 };
 
-export function decodePng(data: Uint8Array): DecodedPng {
+function decodePng(data: Uint8Array): DecodedPng {
   const { header, idat, kept } = readChunks(data);
   const { width, height, bitDepth, colorType, interlace } = header;
   const channels = CHANNELS[colorType];
@@ -39,7 +39,7 @@ export function decodePng(data: Uint8Array): DecodedPng {
   return { width, height, colorType, channels, pixels: unfilter(inflateSync(idat), width, height, channels), kept };
 }
 
-export function encodePng(png: DecodedPng): Buffer {
+function encodePng(png: DecodedPng): Buffer {
   const { width, height, colorType, channels, pixels, kept } = png;
   const stride = width * channels;
   const rows = Buffer.alloc(height * (1 + stride));

@@ -18,7 +18,7 @@ export type ParentIndex = {
   readonly dragons: readonly Dragon[];
   readonly byName: ReadonlyMap<string, Dragon>;
   /** Each parent's `breedingElements` as a set. */
-  readonly pool: ReadonlyMap<Dragon, ReadonlySet<string>>;
+  readonly elementsOf: ReadonlyMap<Dragon, ReadonlySet<string>>;
   /** Element → the parents that carry it. */
   readonly carriers: ReadonlyMap<string, readonly Dragon[]>;
   /** Opposite primaries among the parents, such as Plant Dragon + Metal Dragon. */
@@ -37,10 +37,10 @@ export function parentIndex(world: World, breeding: Breeding): ParentIndex {
 
 function buildIndex(world: World, breeding: Breeding): ParentIndex {
   const { dragons } = world.parents[breeding];
-  const pool = new Map(dragons.map((d) => [d, new Set(d.breedingElements)] as const));
+  const elementsOf = new Map(dragons.map((d) => [d, new Set(d.breedingElements)] as const));
 
   const carriers = new Map<string, Dragon[]>();
-  for (const [dragon, elements] of pool) {
+  for (const [dragon, elements] of elementsOf) {
     for (const element of elements) {
       let list = carriers.get(element);
       if (!list) carriers.set(element, (list = []));
@@ -50,7 +50,7 @@ function buildIndex(world: World, breeding: Breeding): ParentIndex {
 
   // The primary of an Element is the Primary Dragon that carries only it.
   const primaryOf = new Map<string, Dragon>();
-  for (const [dragon, elements] of pool) {
+  for (const [dragon, elements] of elementsOf) {
     if (dragon.rarity === 'Primary' && elements.size === 1) primaryOf.set([...elements][0]!, dragon);
   }
   const opposites: Pair[] = [];
@@ -70,7 +70,7 @@ function buildIndex(world: World, breeding: Breeding): ParentIndex {
   return {
     dragons,
     byName: new Map(dragons.map((d) => [d.name, d])),
-    pool,
+    elementsOf,
     carriers,
     opposites,
     oppositeOf,
@@ -117,7 +117,7 @@ function namedParents(index: ParentIndex, req: Requirement): Dragon[] | null {
  * the carriers of an Element `fixed` lacks, or of `elementOnBothParents`.
  */
 function partnersOf(index: ParentIndex, req: Requirement, fixed: Dragon): readonly Dragon[] {
-  const own = index.pool.get(fixed)!;
+  const own = index.elementsOf.get(fixed)!;
   let best: readonly Dragon[] = index.dragons;
   const narrowing = (req.elements ?? []).filter((e) => !own.has(e));
   if (req.elementOnBothParents !== undefined) narrowing.push(req.elementOnBothParents);
@@ -141,7 +141,7 @@ function groups(index: ParentIndex, req: Requirement): Group[] {
   const required = [...new Set(req.elements ?? [])];
   const byKey = new Map<string | number, Group>();
   for (const dragon of candidates) {
-    const pool = index.pool.get(dragon)!;
+    const pool = index.elementsOf.get(dragon)!;
     let key: string | number;
     if (req.minDistinctElements !== undefined) {
       key = [...pool].sort().join('\u0000');
@@ -158,7 +158,7 @@ function groups(index: ParentIndex, req: Requirement): Group[] {
 
 /** Whether `dragon` is among an unnamed Requirement's candidates. */
 const isCandidate = (index: ParentIndex, req: Requirement, dragon: Dragon) =>
-  req.elementOnBothParents === undefined || index.pool.get(dragon)!.has(req.elementOnBothParents);
+  req.elementOnBothParents === undefined || index.elementsOf.get(dragon)!.has(req.elementOnBothParents);
 
 /**
  * The number of Valid pairs from `index`'s parents that meet `req`.
@@ -168,7 +168,7 @@ export function countPairs(index: ParentIndex, req: Requirement, allowOpposites 
   const named = namedParents(index, req);
   if (!named) return 0;
   const valid = (a: Dragon, b: Dragon) =>
-    (allowOpposites || !areOpposites(index, a, b)) && poolsMeet(req, index.pool.get(a)!, index.pool.get(b)!);
+    (allowOpposites || !areOpposites(index, a, b)) && poolsMeet(req, index.elementsOf.get(a)!, index.elementsOf.get(b)!);
 
   if (named.length === 2) return valid(named[0]!, named[1]!) ? 1 : 0;
   if (named.length === 1) {
@@ -191,7 +191,7 @@ export function countPairs(index: ParentIndex, req: Requirement, allowOpposites 
   }
   if (!allowOpposites) {
     for (const [a, b] of index.opposites) {
-      if (isCandidate(index, req, a) && isCandidate(index, req, b) && poolsMeet(req, index.pool.get(a)!, index.pool.get(b)!)) {
+      if (isCandidate(index, req, a) && isCandidate(index, req, b) && poolsMeet(req, index.elementsOf.get(a)!, index.elementsOf.get(b)!)) {
         count--;
       }
     }
@@ -206,7 +206,7 @@ export function oppositePairMeeting(index: ParentIndex, req: Requirement): Pair 
   for (const [a, b] of index.opposites) {
     if (named.some((d) => d !== a && d !== b)) continue;
     if (named.length === 2 && named[0] === named[1]) continue;
-    if (poolsMeet(req, index.pool.get(a)!, index.pool.get(b)!)) return [a, b];
+    if (poolsMeet(req, index.elementsOf.get(a)!, index.elementsOf.get(b)!)) return [a, b];
   }
   return null;
 }
@@ -216,7 +216,7 @@ export function* pairs(index: ParentIndex, req: Requirement): Generator<Pair, vo
   const named = namedParents(index, req);
   if (!named) return;
   const valid = (a: Dragon, b: Dragon) =>
-    !areOpposites(index, a, b) && poolsMeet(req, index.pool.get(a)!, index.pool.get(b)!);
+    !areOpposites(index, a, b) && poolsMeet(req, index.elementsOf.get(a)!, index.elementsOf.get(b)!);
 
   if (named.length === 2) {
     if (valid(named[0]!, named[1]!)) yield [named[0]!, named[1]!];

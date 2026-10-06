@@ -1,7 +1,7 @@
 // describeTile: what one Dragon tile shows in a cave (spec §8 Dragon tile).
 
 import type { Dragon } from '../../snapshot';
-import { breedableNow, caveCanMake, caveForm, ownedPerSetting, type Cave } from '../breeding';
+import { breedableNow, caveCanMake, caveForm, noBreeding, ownedPerSetting, type Cave } from '../breeding';
 import { formsOf, isOwned, ticks, type Collection } from '../collection';
 import type { World } from '../world';
 import type { Banner, Display, Tick, TileView } from './types';
@@ -24,12 +24,8 @@ export function describeTile(world: World, dragon: Dragon, cave: Cave, display: 
 
 /** The first banner that applies, in spec §8's order. */
 function banner(world: World, dragon: Dragon, cave: Cave): Banner | null {
-  const kinds = new Set(dragon.routes.map((route) => route.kind));
-  if (!kinds.has('bred') && !kinds.has('coop')) {
-    if (kinds.has('summoned')) return { kind: 'summoning-only' };
-    if (kinds.has('evolved')) return { kind: 'evolution-only' };
-    return { kind: 'shop-only' };
-  }
+  const only = noBreeding(dragon);
+  if (only) return { kind: only };
   if (dragon.isLimited && !world.available.has(dragon.name)) return { kind: 'not-available' };
   if (!caveCanMake(dragon, cave)) return { kind: 'not-breedable-in-cave', cave };
   if (world.purchaseOnly.has(dragon.name)) return { kind: 'purchase-only' };

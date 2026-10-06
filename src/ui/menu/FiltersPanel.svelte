@@ -7,7 +7,8 @@
   import { NO_FILTERS } from '../../lib/core/menu';
   import { useNav } from '../nav.svelte';
   import { useStore } from '../store.svelte';
-  import { caveName, rarityColour } from '../tile/labels';
+  import { caveName } from '../../lib/core/breeding';
+  import { rarityColour } from '../tile/labels';
   import { RARITIES, SHOWS, raritySymbol, showLabel, toggleRarity } from './filterLabels';
 
   let { ondone }: { ondone: () => void } = $props();

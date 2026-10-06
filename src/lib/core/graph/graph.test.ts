@@ -397,6 +397,12 @@ describe("rule 7: Targets that can't be bred", () => {
     expect(m.target!.reasons.map((r) => r.label)).toEqual(['Summoning only']);
   });
 
+  it('words the reason as the tile banner does on mixed Routes', () => {
+    const odd = dragon({ name: 'Odd', elements: ['Fire'], traits: 'none', routes: [evolved('Fire'), purchased()] });
+    const m = focus({ dragons: [...primaries(), odd] }, 'Odd');
+    expect(m.target!.reasons.map((r) => r.label)).toEqual(['Evolution only']);
+  });
+
   it('dims a Target that is not Available and says so', () => {
     const love = limited({ name: 'Love', elements: ['Plant', 'Light'] });
     const m = focus({ dragons: [...primaries(), love], owned: ['Plant', 'Light'] }, 'Love');
@@ -462,13 +468,20 @@ describe("rule 9: the friend's node", () => {
     expect(m.edges.some((e) => e.target === friend.id)).toBe(false);
   });
 
-  it('never expands a named Dragon that cannot be a parent', () => {
+  it('never draws a Dragon that cannot be a parent as one, and never meets its Route (rule 9)', () => {
     const gem = dragon({ name: 'Ruby', rarity: 'Gemstone', elements: ['Fire'], canBeParent: false, routes: [bred(['Fire'])] });
-    const odd = dragon({ name: 'Odd', elements: ['Fire'], routes: [bred({ parents: ['Ruby'] })] });
-    const m = focus({ dragons: [...primaries(), gem, odd] }, 'Odd');
-    const ruby = dragonNode(m, 'Ruby');
-    expect(ruby.expanded).toBe(false);
-    expect(kinds(ruby.badges)).toEqual(['cannot-be-parent']);
+    const odd = dragon({ name: 'Odd', elements: ['Fire'], routes: [bred({ elements: ['Fire'], parents: ['Ruby'] })] });
+    // Owning Ruby doesn't help: it still can't be a parent.
+    const m = focus({ dragons: [...primaries(), gem, odd], owned: ['Fire', 'Ruby'] }, 'Odd');
+    expectWellFormed(m);
+    expect(hasDragon(m, 'Ruby')).toBe(false);
+    const pill = onlyRoute(m, dragonNode(m, 'Odd'));
+    expect(pill.met).toBe(false);
+    expect(pill.state).not.toBe('met');
+    expect(describeInputs(m, pill)).toEqual(['[Fire]']);
+    const out = outEdge(m, pill);
+    expect(kinds(out.badges)).toContain('cannot-be-parent');
+    expect(out.badges.map((b) => b.label)).toContain("Needs Ruby, which can't be a parent");
   });
 });
 

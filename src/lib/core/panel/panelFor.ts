@@ -6,7 +6,11 @@ import {
   breedableNow,
   breedingFor,
   caveCanMake,
+  caveName,
   formFor,
+  noBreeding,
+  noBreedingText,
+  NOT_AVAILABLE,
   routeStatus,
   validPairs,
   wouldBeValidPair,
@@ -198,16 +202,6 @@ function elementPanel(world: World, cave: Cave, target: Target, element: string,
 
 // ---- Dragon -------------------------------------------------------------------
 
-const CAVE_NAMES: Record<Cave, string> = { normal: 'Normal', rift: 'Rift', coop: 'Co-op' };
-
-const ROUTE_KIND_NAMES: Record<Route['kind'], string> = {
-  bred: 'Bred',
-  coop: 'Co-op bred',
-  evolved: 'Evolved',
-  summoned: 'Summoned',
-  purchased: 'Purchased',
-};
-
 function dragonPanel(world: World, cave: Cave, target: Target, dragon: Dragon, asked: Form): DragonPanel {
   const form = formFor(dragon, asked);
   const making = cavesFor(form, cave);
@@ -216,17 +210,18 @@ function dragonPanel(world: World, cave: Cave, target: Target, dragon: Dragon, a
 
   const reasons: string[] = [];
   if (!owned && !breedable) {
-    if (!dragon.routes.some((r) => r.kind === 'bred' || r.kind === 'coop')) {
-      reasons.push(`Not bred: ${joinAnd([...new Set(dragon.routes.map((r) => ROUTE_KIND_NAMES[r.kind]))])} only`);
+    const only = noBreeding(dragon);
+    if (only) {
+      reasons.push(noBreedingText(only));
     } else if (!caveCanMake(dragon, making)) {
-      reasons.push(`The ${CAVE_NAMES[making]} cave can't make it`);
+      reasons.push(`The ${caveName(making)} cave can't make it`);
     }
-    if (!world.available.has(dragon.name)) reasons.push('Not Available right now');
+    if (!world.available.has(dragon.name)) reasons.push(`${NOT_AVAILABLE} right now`);
     if (world.purchaseOnly.has(dragon.name)) reasons.push('Purchase only right now');
     if (reasons.length === 0) reasons.push('No Route is met yet');
   }
 
-  const riftForm = form === 'rift' && dragon.traits.kind === 'all';
+  const riftForm = form === 'rift' && formsOf(dragon).length > 1;
   return {
     kind: 'dragon',
     dragon,

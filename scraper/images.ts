@@ -27,9 +27,9 @@ import { API_URL, USER_AGENT, type RawPages } from './pages';
 import { cropPng, isPng, type CropBox } from './png';
 
 /** Thumbnail width asked of imageinfo (spec §4). */
-export const THUMB_WIDTH = 120;
+const THUMB_WIDTH = 120;
 /** The API's limit on titles per query. */
-export const BATCH_SIZE = 50;
+const BATCH_SIZE = 50;
 
 export type ImageOverrides = {
   /** Dragon name -> wiki file name. */
@@ -48,7 +48,7 @@ export type ImageOverrides = {
  *   - Seasonal: one file per season; the Spring one is used
  *   - Names with punctuation keep it in the file name
  */
-export const IMAGE_OVERRIDES: ImageOverrides = {
+const IMAGE_OVERRIDES: ImageOverrides = {
   dragons: {
     Kairos: 'KairosAdult.png',
     Gaia: 'GaiaAdult.png',
@@ -74,10 +74,10 @@ function numbered(base: string, count: number): Record<string, string> {
 }
 
 /** Hourglass inside LimitedTimeDragonariumHelpIcon.png, in the original file's pixels. */
-export const HOURGLASS_CROP: CropBox = { x: 84, y: 84, width: 146, height: 146 };
+const HOURGLASS_CROP: CropBox = { x: 84, y: 84, width: 146, height: 146 };
 
 /** The fixed menu icons: wiki file, and a crop of the original file where one is needed. */
-export const MENU_FILES: Record<MenuIcon, { file: string; crop?: CropBox }> = {
+const MENU_FILES: Record<MenuIcon, { file: string; crop?: CropBox }> = {
   breedable: { file: 'BreedingHeartIcon.png' },
   limited: { file: 'LimitedTimeDragonariumHelpIcon.png', crop: HOURGLASS_CROP },
   dragonarium: { file: 'DragonariumBasic.png' },
@@ -101,19 +101,19 @@ export type ImageTarget = {
   crop?: CropBox;
 };
 
-export function dragonImageFile(name: string, overrides: ImageOverrides = IMAGE_OVERRIDES): string {
+function dragonImageFile(name: string, overrides: ImageOverrides = IMAGE_OVERRIDES): string {
   return overrides.dragons[name] ?? `${squash(name)}DragonAdult.png`;
 }
 
-export function elementIconFile(name: string, overrides: ImageOverrides = IMAGE_OVERRIDES): string {
+function elementIconFile(name: string, overrides: ImageOverrides = IMAGE_OVERRIDES): string {
   return overrides.elements[name] ?? `Icon ${name}.png`;
 }
 
-export function pageIconFile(name: string, overrides: ImageOverrides = IMAGE_OVERRIDES): string {
+function pageIconFile(name: string, overrides: ImageOverrides = IMAGE_OVERRIDES): string {
   return overrides.pages[name] ?? `${squash(name)}DragonariumIcon.png`;
 }
 
-export function eventIconFile(eventName: string): string {
+function eventIconFile(eventName: string): string {
   return `${squash(eventName)}DragonariumIcon.png`;
 }
 
@@ -121,7 +121,7 @@ export function eventIconFile(eventName: string): string {
  * Every image the snapshot and the menus need. Throws if two targets would
  * share a local path (two names that squash to the same thing).
  */
-export function planImages(snapshot: Snapshot, eventNames: string[], overrides: ImageOverrides = IMAGE_OVERRIDES): ImageTarget[] {
+function planImages(snapshot: Snapshot, eventNames: string[], overrides: ImageOverrides = IMAGE_OVERRIDES): ImageTarget[] {
   const targets: ImageTarget[] = [
     ...snapshot.dragons.map((d) => target('dragon', d.name, dragonImageFile(d.name, overrides), `dragons/${squash(d.name)}.png`)),
     ...snapshot.elements.map((e) => target('element', e.name, elementIconFile(e.name, overrides), `elements/${squash(e.name)}.png`)),
@@ -158,7 +158,7 @@ export function currentEventNames(raw: RawPages): string[] {
   }
 }
 
-export function batches<T>(items: readonly T[], size = BATCH_SIZE): T[][] {
+function batches<T>(items: readonly T[], size = BATCH_SIZE): T[][] {
   if (size < 1) throw new Error('Batch size must be at least 1');
   const out: T[][] = [];
   for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
@@ -166,7 +166,7 @@ export function batches<T>(items: readonly T[], size = BATCH_SIZE): T[][] {
 }
 
 /** One imageinfo query for up to BATCH_SIZE files, asking for the thumbnail URL as well. */
-export function imageInfoUrl(files: readonly string[]): string {
+function imageInfoUrl(files: readonly string[]): string {
   if (files.length > BATCH_SIZE) throw new Error(`imageinfo takes at most ${BATCH_SIZE} titles, got ${files.length}`);
   const params = new URLSearchParams({
     action: 'query',
@@ -181,7 +181,7 @@ export function imageInfoUrl(files: readonly string[]): string {
   return `${API_URL}?${params}`;
 }
 
-export type ResolvedFile = { url: string; thumbUrl: string } | null;
+type ResolvedFile = { url: string; thumbUrl: string } | null;
 
 /**
  * Reads an imageinfo response (formatversion=2) into file name -> URLs, for
@@ -189,7 +189,7 @@ export type ResolvedFile = { url: string; thumbUrl: string } | null;
  * and follows redirects; both are traced back to the name asked for. A file
  * the wiki doesn't have maps to null.
  */
-export function parseImageInfo(body: unknown, files: readonly string[]): Map<string, ResolvedFile> {
+function parseImageInfo(body: unknown, files: readonly string[]): Map<string, ResolvedFile> {
   const b = body as {
     error?: { info?: string };
     query?: { normalized?: FromTo[]; redirects?: FromTo[]; pages?: ImageInfoPage[] };
@@ -217,7 +217,7 @@ export function parseImageInfo(body: unknown, files: readonly string[]): Map<str
  * The wiki's CDN answers with WebP unless asked for the original format,
  * whatever the Accept header says; format=original keeps the PNG.
  */
-export function asPng(url: string): string {
+function asPng(url: string): string {
   const u = new URL(url);
   u.searchParams.set('format', 'original');
   return u.toString();
@@ -227,7 +227,7 @@ type FromTo = { from: string; to: string };
 type ImageInfoPage = { title: string; missing?: boolean; imageinfo?: { url?: string; thumburl?: string }[] };
 
 /** The snapshot with `image` / `icon` set to the path of each target found on disk, else null. */
-export function applyImagePaths(snapshot: Snapshot, targets: readonly ImageTarget[], onDisk: ReadonlySet<string>): Snapshot {
+function applyImagePaths(snapshot: Snapshot, targets: readonly ImageTarget[], onDisk: ReadonlySet<string>): Snapshot {
   const pathFor = (kind: ImageKind, key: string): string | null => {
     const t = targets.find((x) => x.kind === kind && x.key === key);
     return t && onDisk.has(t.path) ? t.path : null;

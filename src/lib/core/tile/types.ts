@@ -4,9 +4,6 @@ import type { Dragon } from '../../snapshot';
 import type { Cave, OwnedForms } from '../breeding';
 import type { Form } from '../collection';
 
-/** Owned forms lives in core/breeding so core/menu shares it; re-exported here. */
-export type { OwnedForms } from '../breeding';
-
 /** The Display popover's settings. */
 export type Display = {
   readonly ownedForms: OwnedForms;

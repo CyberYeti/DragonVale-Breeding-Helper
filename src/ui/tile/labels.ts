@@ -1,25 +1,17 @@
 // Display text and asset URLs for a Dragon tile. Wording only; the rules that
 // pick a banner or tick live in core/tile.
-import type { Cave } from '../../lib/core/breeding';
+import { caveName, noBreedingText, NOT_AVAILABLE } from '../../lib/core/breeding';
 import type { Banner, Tick } from '../../lib/core/tile';
 import type { Rarity } from '../../lib/snapshot';
-
-const CAVE_NAMES: Record<Cave, string> = { normal: 'Normal', rift: 'Rift', coop: 'Co-op' };
-
-export function caveName(cave: Cave): string {
-  return CAVE_NAMES[cave];
-}
 
 export function bannerText(banner: Banner): string {
   switch (banner.kind) {
     case 'summoning-only':
-      return 'Summoning only';
     case 'evolution-only':
-      return 'Evolution only';
     case 'shop-only':
-      return 'Shop only';
+      return noBreedingText(banner.kind);
     case 'not-available':
-      return 'Not available';
+      return NOT_AVAILABLE;
     case 'not-breedable-in-cave':
       return `Not breedable in ${caveName(banner.cave)} cave`;
     case 'purchase-only':
@@ -32,8 +24,14 @@ export function bannerBlocks(banner: Banner): boolean {
   return banner.kind !== 'purchase-only';
 }
 
+/** The tick's name, the same whether it is on or off (its accessible label). */
+export function tickName(tick: Tick): string {
+  return tick.label === 'owned' ? 'Owned' : tick.label === 'rift' ? 'Rift' : 'Normal';
+}
+
+/** The tick's visible text: the Owned tick shows ✔ only while it is on. */
 export function tickText(tick: Tick): string {
-  return tick.label === 'owned' ? '✔ Owned' : tick.label === 'rift' ? 'Rift' : 'Normal';
+  return tick.label === 'owned' && tick.owned ? '✔ Owned' : tickName(tick);
 }
 
 /** The CSS custom property holding a rarity's border colour (src/ui/theme.css). */

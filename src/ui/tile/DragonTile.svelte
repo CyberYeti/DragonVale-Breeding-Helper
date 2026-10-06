@@ -8,7 +8,7 @@
 -->
 <script lang="ts">
   import type { Tick, TileView } from '../../lib/core/tile';
-  import { assetUrl, bannerBlocks, bannerText, rarityColour, tickText } from './labels';
+  import { assetUrl, bannerBlocks, bannerText, rarityColour, tickName, tickText } from './labels';
 
   type Props = {
     view: TileView;
@@ -108,7 +108,7 @@
           class:on={tick.owned}
           class:rift={tick.label === 'rift'}
           aria-pressed={tick.owned}
-          aria-label="{tickText(tick)}: {dragon.name}"
+          aria-label="{tickName(tick)}: {dragon.name}"
           onclick={(event) => toggle(event, tick)}>{tickText(tick)}</button
         >
       {/each}

@@ -7,8 +7,10 @@ export {
   caveCanMake,
   caveForm,
   formFor,
+  noBreeding,
   routeStatus,
   validPairs,
 } from './rules';
 export { ownedPerSetting } from './owned';
+export { caveName, noBreedingText, routeKindName, NOT_AVAILABLE } from './names';
 export { wouldBeValidPair } from './pairs';

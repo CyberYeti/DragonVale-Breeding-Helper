@@ -3,9 +3,8 @@
   with the game's cave art. The choice lives in the store and survives reloads.
 -->
 <script lang="ts">
-  import type { Cave } from '../../lib/core/breeding';
   import { useStore } from '../store.svelte';
-  import { caveName } from '../tile/labels';
+  import { caveName, type Cave } from '../../lib/core/breeding';
   import MenuIcon from './MenuIcon.svelte';
   import { CAVE_ICONS } from './tabInfo';
 

@@ -13,6 +13,12 @@ export type Cave = 'normal' | 'rift' | 'coop';
 export type OwnedForms = 'either' | 'normal' | 'rift';
 
 /**
+ * How a Dragon with no Bred or Co-op bred Route is obtained instead (spec §8,
+ * banner 1): Summoning only, Evolution only, or Shop only (the rift primaries).
+ */
+export type NoBreeding = 'summoning-only' | 'evolution-only' | 'shop-only';
+
+/**
  * Two parents. Unordered, except that a named parent comes first (for a
  * one-name Requirement) and a Co-op bred Route's friend's Dragon comes first.
  * Both can be the same Dragon: the Collection has no counts.
