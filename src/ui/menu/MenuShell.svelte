@@ -18,6 +18,7 @@
   import Footer from './Footer.svelte';
   import Notices from './Notices.svelte';
   import PageHeader from './PageHeader.svelte';
+  import SelectBar from './SelectBar.svelte';
   import Sidebar from './Sidebar.svelte';
   import TileGrid from './TileGrid.svelte';
   import UndoToast from './UndoToast.svelte';
@@ -91,14 +92,17 @@
       <TileGrid />
       <Footer />
     </main>
-    <!-- Floating bars (select mode's action bar, the Undo toast) go here, after the page.
-         The layer has no height and sits on top of the bottom nav, so a bar placed
-         at bottom: 24px floats above the nav on a phone and above the page's foot
-         on desktop. -->
+    <!-- Floating bars (the Undo toast) go here, after the page. The layer has no
+         height and sits on top of whatever bar ends the column (the bottom nav on a
+         phone, select mode's Mark/Unmark bar), so a toast placed at bottom: 24px
+         floats above it; on desktop it floats above the page's foot. -->
     <div class="floating">
       <UndoToast />
     </div>
-    {#if !nav.selecting}
+    {#if nav.selecting}
+      <!-- Select mode's Mark/Unmark bar; on a phone it takes the bottom nav's place. -->
+      <SelectBar />
+    {:else}
       <div class="bottom-nav">
         <BottomNav onDragonarium={openDrawer} />
       </div>
