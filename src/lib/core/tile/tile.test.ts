@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { Cave } from '../breeding';
+import type { Cave, OwnedForms } from '../breeding';
 import {
   coop,
   dragon,
@@ -15,7 +15,7 @@ import {
   type WorldSpec,
 } from '../testing/fixtures';
 import type { World } from '../world';
-import { describeTile, type Display, type OwnedForms, type TileView } from './index';
+import { describeTile, type Display, type TileView } from './index';
 
 const EITHER: Display = { ownedForms: 'either', allInColour: false };
 const CAVES: Cave[] = ['normal', 'rift', 'coop'];
