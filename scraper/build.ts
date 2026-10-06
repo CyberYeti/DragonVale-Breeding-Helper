@@ -323,7 +323,7 @@ function addRoutes(
 
 /** Spec §4: the snapshot keeps only Elements used by at least one Route, in Data:Game.json order. */
 function usedElements(elements: Element[], dragons: Dragon[]): Element[] {
-  const used = elementsUsedBy(dragons.flatMap((d) => d.routes));
+  const used = elementsUsedBy(dragons);
   return elements.filter((e) => used.has(e.name));
 }
 

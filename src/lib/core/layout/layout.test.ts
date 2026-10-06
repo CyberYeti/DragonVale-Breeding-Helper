@@ -71,6 +71,8 @@ describe('layout of a Focus tree', () => {
     ['Rainbow, with a rule node', focus(realCast(), 'Rainbow')],
     ['Nebula, with a friend node', focus(realCast(), 'Nebula')],
     ['Zaffer in Rift form', focus(realCast(), 'Zaffer', [], 'rift')],
+    ['Fire, a primary whose Route pill needs nothing drawn', focus(realCast(), 'Fire')],
+    ['Air, whose primary parents breed only from themselves', focus(realCast(), 'Air')],
   ];
 
   it.each(trees)('%s: every edge points up and the Target is highest', (_, m) => {

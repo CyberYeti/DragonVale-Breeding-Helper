@@ -10,7 +10,7 @@
 // Every hint key is either mapped or deliberately ignored; any other key fails
 // the run, since the wiki can add or rename keys without notice.
 
-import { isRecord, type BredRoute, type Conditions, type ElementKind, type Rarity, type Requirement, type Route } from '../src/lib/snapshot';
+import { isRecord, type BredRoute, type Conditions, type Dragon, type ElementKind, type Rarity, type Requirement, type Route } from '../src/lib/snapshot';
 
 /** Keys of a hint that are price data, not breeding data. */
 const IGNORED_KEYS = new Set(['BuyPrice', 'BuyPriceType']);
@@ -78,14 +78,19 @@ export function routesFor(
 }
 
 /**
- * The 10 basic primaries are bought; the 9 without a hint are also bred from
- * their own Element. Rift primaries have no hint and are only bought.
+ * The 10 basic primaries are bought. The 9 without a hint are also bred, but
+ * only from one already owned: itself plus itself or an opposite hybrid
+ * carrying its Element (Module:BreedingSandbox's primary_dragons_rule). Rift
+ * primaries have no hint and are only bought.
  */
 function routesWithoutHint(dragon: RouteDragon, context: RouteContext, problems: RouteProblems): Route[] | null {
   const { name, rarity, elements } = dragon;
   const isPrimary = (e: string | undefined) => e !== undefined && context.elementKind.get(e) === 'primary';
   if (rarity === 'Primary' && elements.length === 1 && isPrimary(elements[0])) {
-    return [{ kind: 'bred', requirement: { elements: [...elements] } }, { kind: 'purchased' }];
+    return [
+      { kind: 'bred', requirement: { parents: [name], partner: 'self-or-opposite-hybrid' } },
+      { kind: 'purchased' },
+    ];
   }
   const others = elements.filter((e) => e !== RIFT);
   if (elements.includes(RIFT) && others.length === 1 && isPrimary(others[0])) {
@@ -303,15 +308,23 @@ class HintReader {
   }
 }
 
-/** Every Element some Route uses: in its requirement or its Conditions. */
-export function elementsUsedBy(routes: readonly Route[]): Set<string> {
+/**
+ * Every Element some Dragon's Route uses: in its requirement or its
+ * Conditions. A `partner` Route uses its named parent's Elements (but Rift),
+ * since the opposite hybrid has to carry them.
+ */
+export function elementsUsedBy(dragons: readonly Pick<Dragon, 'name' | 'elements' | 'routes'>[]): Set<string> {
+  const elementsOf = new Map(dragons.map((d) => [d.name, d.elements]));
   const used = new Set<string>();
-  for (const route of routes) {
+  for (const route of dragons.flatMap((d) => d.routes)) {
     if (route.kind !== 'bred' && route.kind !== 'coop') continue;
     if (route.kind === 'bred') {
-      const { elements = [], elementOnBothParents } = route.requirement;
+      const { elements = [], elementOnBothParents, partner, parents = [] } = route.requirement;
       for (const e of elements) used.add(e);
       if (elementOnBothParents) used.add(elementOnBothParents);
+      if (partner) {
+        for (const e of parents.flatMap((p) => elementsOf.get(p) ?? [])) if (e !== RIFT) used.add(e);
+      }
     }
     const c = route.conditions;
     for (const e of [c?.alignment, c?.parentTrait, ...(c?.namedParentTraits ?? []).map((t) => t.trait)]) {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { Dragon, Snapshot, Traits } from '../../snapshot';
+import { SCHEMA_VERSION, type Dragon, type Snapshot, type Traits } from '../../snapshot';
 import {
   CollectionLoadError,
   FORMAT_VERSION,
@@ -43,7 +43,7 @@ const snap = (
   revision = 'r2',
 ): Snapshot => ({
   meta: {
-    schemaVersion: 1,
+    schemaVersion: SCHEMA_VERSION,
     revision,
     source: 'https://dragonvale.fandom.com',
     license: 'CC BY-SA 3.0',

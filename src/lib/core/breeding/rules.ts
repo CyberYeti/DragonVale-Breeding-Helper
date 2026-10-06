@@ -81,7 +81,8 @@ const MET: RouteReason = { kind: 'met' };
  * in `form` (a single-form Dragon always uses its one form).
  *
  * - Bred: some Valid pair from the parents that count meets it. A Rift form,
- *   or a `rift: "only"` Route, counts only Rift breeding parents.
+ *   or a `rift: "only"` Route, counts only Rift breeding parents. A basic
+ *   primary's `partner` Route is met only once the primary itself counts.
  * - Co-op bred: the Collection holds any Dragon that counts as a Normal
  *   breeding parent (a friend lends the other). Never met for a Rift form.
  * - Evolved: the base Dragon is owned (in `form`, if it has it).
@@ -126,9 +127,11 @@ function pairCountFor(world: World, route: BredRoute | CoopRoute, form: Form): n
 
 /** Why a Bred Route's Requirement has no Valid pair. */
 function whyNot(index: ParentIndex, req: Requirement): RouteReason {
-  if (index.dragons.length === 0) return { kind: 'no-parents' };
-
   const missingParents = (req.parents ?? []).filter((name) => !index.byName.has(name));
+  // A partner Route can only be met from its named parent, so say that first.
+  if (req.partner && missingParents.length === 1) return { kind: 'needs-owned', dragon: missingParents[0]! };
+
+  if (index.dragons.length === 0) return { kind: 'no-parents' };
   if (missingParents.length > 0) return { kind: 'missing-parents', dragons: missingParents };
 
   const both = req.elementOnBothParents === undefined ? [] : [req.elementOnBothParents];

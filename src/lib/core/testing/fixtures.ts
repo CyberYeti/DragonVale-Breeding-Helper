@@ -6,19 +6,20 @@
 //     overlay: { rotation: ['Love'], events: [{ ends: '2026-10-07', shop: [{ dragon: 'Haystack', breedable: false }] }] },
 //   });
 
-import type {
-  BredRoute,
-  Conditions,
-  CoopRoute,
-  Dragon,
-  Element,
-  ElementKind,
-  EvolvedRoute,
-  PurchasedRoute,
-  Requirement,
-  Snapshot,
-  SummonedRoute,
-  Traits,
+import {
+  SCHEMA_VERSION,
+  type BredRoute,
+  type Conditions,
+  type CoopRoute,
+  type Dragon,
+  type Element,
+  type ElementKind,
+  type EvolvedRoute,
+  type PurchasedRoute,
+  type Requirement,
+  type Snapshot,
+  type SummonedRoute,
+  type Traits,
 } from '../../snapshot';
 import { FORMAT_VERSION, load, type Collection, type CollectionBlob, type Form } from '../collection';
 import type { EndDate, LimitedEvent, Overlay, RotationEntry, ShopEntry } from '../limited';
@@ -137,8 +138,9 @@ export function riftDragon(spec: Omit<DragonSpec, 'traits'> & { trait: string })
 }
 
 /**
- * A basic primary such as Fire: one form, Bred from its own Element, also
- * Purchased. `order` follows PRIMARY_ELEMENTS.
+ * A basic primary such as Fire: one form, Bred only from itself plus itself
+ * or an opposite hybrid (`partner`), also Purchased. `order` follows
+ * PRIMARY_ELEMENTS.
  */
 export function primary(element: string, spec: Partial<DragonSpec> = {}): Dragon {
   const index = (PRIMARY_ELEMENTS as readonly string[]).indexOf(element);
@@ -148,7 +150,7 @@ export function primary(element: string, spec: Partial<DragonSpec> = {}): Dragon
     order: index >= 0 ? index + 1 : nextOrder++,
     elements: [element],
     traits: 'none',
-    routes: [bred([element]), purchased()],
+    routes: [bred({ parents: [element], partner: 'self-or-opposite-hybrid' }), purchased()],
     ...spec,
   });
 }
@@ -258,7 +260,7 @@ export function snapshot(dragons: Dragon[], extra: Partial<Snapshot> = {}): Snap
   const elements: Element[] = [...names].map((name) => ({ name, kind: ELEMENT_KINDS[name] ?? 'other', icon: null }));
   return {
     meta: {
-      schemaVersion: 1,
+      schemaVersion: SCHEMA_VERSION,
       revision: 'test',
       source: 'https://dragonvale.fandom.com',
       license: 'CC BY-SA 3.0',

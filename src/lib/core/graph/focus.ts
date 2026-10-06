@@ -1,7 +1,7 @@
 // The Focus view tree (spec §9, Focus view rules 1–9).
 
 import type { BredRoute, CoopRoute, Dragon, EvolvedRoute, Route } from '../../snapshot';
-import { breedingFor, caveCanMake, caveForm, formFor, noBreeding, routeStatus, type Cave } from '../breeding';
+import { breedingFor, caveCanMake, caveForm, formFor, noBreeding, partnerText, routeStatus, type Cave } from '../breeding';
 import { isOwned, type Form } from '../collection';
 import type { Breeding, World } from '../world';
 import { generations } from './generation';
@@ -159,9 +159,12 @@ export class Builder {
       const parent = this.world.dragons.get(name);
       return parent ? [parent] : [];
     });
+    // A Route naming its own Dragon (a basic primary's partner Route) draws no
+    // self-edge and doesn't expand: a badge says so instead.
+    const self = named.some((p) => p.name === dragon.name);
     // Rule 9: a Dragon that can't be a parent never appears as one. The Route
     // says it needs one instead, and is never met.
-    const parents = named.filter((p) => p.canBeParent);
+    const parents = named.filter((p) => p.canBeParent && p.name !== dragon.name);
     const nonParents = named.filter((p) => !p.canBeParent).map((p) => p.name);
     const met = status.met && nonParents.length === 0;
     const unavailable = parents
@@ -177,6 +180,7 @@ export class Builder {
           : 'normal';
     const badges: Badge[] = [];
     if (purchaseOnly) badges.push(badge({ kind: 'purchase-only' }));
+    if (self) badges.push(badge({ kind: 'self-parent', text: selfText(this.world, dragon.name, req) }));
     if (nonParents.length > 0) badges.push(badge({ kind: 'cannot-be-parent', dragons: nonParents }));
     if (unavailable.length > 0) badges.push(badge({ kind: 'not-available', dragons: unavailable }));
     if (status.reason.kind === 'opposites' || status.reason.kind === 'no-valid-pair') {
@@ -317,6 +321,10 @@ export class Builder {
     return caves.includes(this.cave) ? [] : [badge({ kind: 'other-cave', caves })];
   }
 }
+
+/** The `self-parent` badge's words: the partner rule, or that the Dragon must already be owned. */
+const selfText = (world: World, name: string, req: BredRoute['requirement']): string =>
+  req.partner ? partnerText(world, name) : `Needs a ${name} you already own`;
 
 /** Whether `cave` uses a Route of this kind (spec §6, What each Breeding cave makes). */
 const caveUses = (route: Route, cave: Cave): boolean =>

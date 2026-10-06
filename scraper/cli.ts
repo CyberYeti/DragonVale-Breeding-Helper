@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createInterface } from 'node:readline';
-import { loadSnapshot, type Snapshot } from '../src/lib/snapshot';
+import { SCHEMA_VERSION, isRecord, loadSnapshot, type Snapshot } from '../src/lib/snapshot';
 import { buildSnapshot, type BuildReport } from './build';
 import { applyRenames, confirmRenames, type AskRename, type RenameCandidate } from './renames';
 import { fetchPages, writeRawPages, PAGE_TITLES, RAW_DIR, type RawPages } from './pages';
@@ -83,7 +83,11 @@ async function main(args: string[]): Promise<void> {
   console.log(`Wrote ${SNAPSHOT_FILE}.`);
 }
 
-/** The committed snapshot, if there is one: renames carry over from it. */
+/**
+ * The committed snapshot, if there is one: renames carry over from it. One
+ * from an older schema is still read, since only its renames and its
+ * Dragons' names and order are used, which every schema so far has.
+ */
 async function readPrevious(): Promise<Snapshot | null> {
   let text: string;
   try {
@@ -91,7 +95,14 @@ async function readPrevious(): Promise<Snapshot | null> {
   } catch {
     return null;
   }
-  return loadSnapshot(JSON.parse(text));
+  const json: unknown = JSON.parse(text);
+  const meta = isRecord(json) ? json.meta : undefined;
+  const version = isRecord(meta) ? meta.schemaVersion : undefined;
+  if (typeof version === 'number' && version < SCHEMA_VERSION) {
+    console.log(`The committed snapshot is schema version ${version}; reading only its renames and Dragon names.`);
+    return json as Snapshot;
+  }
+  return loadSnapshot(json);
 }
 
 function printReport({ counts, warnings, added, removed, renameCandidates }: BuildReport): void {

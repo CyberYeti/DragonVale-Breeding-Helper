@@ -23,6 +23,15 @@ function worldOwning(count: number) {
   return buildWorld(snapshot, load(blob, snapshot).collection, noOverlay, NOW);
 }
 
+/** A World owning exactly `names`, in normal form. */
+function named(names: string[]) {
+  const entries: CollectionBlob['entries'] = Object.fromEntries(names.map((n) => [n, { normal: true, rift: false }]));
+  const blob: CollectionBlob = { formatVersion: FORMAT_VERSION, snapshotRevision: snapshot.meta.revision, entries };
+  return buildWorld(snapshot, load(blob, snapshot).collection, noOverlay, NOW);
+}
+
+const dragonNamed = (name: string) => snapshot.dragons.find((d) => d.name === name)!;
+
 describe('breeding on the real snapshot', () => {
   it('works out Breedable now for ~400 owned in well under a second', () => {
     const caves: Cave[] = ['normal', 'rift', 'coop'];
@@ -47,11 +56,6 @@ describe('breeding on the real snapshot', () => {
   });
 
   it('meets real Routes the way the spec says', () => {
-    const named = (names: string[]) => {
-      const entries: CollectionBlob['entries'] = Object.fromEntries(names.map((n) => [n, { normal: true, rift: false }]));
-      const blob: CollectionBlob = { formatVersion: FORMAT_VERSION, snapshotRevision: snapshot.meta.revision, entries };
-      return buildWorld(snapshot, load(blob, snapshot).collection, noOverlay, NOW);
-    };
     const seasonal = snapshot.dragons.find((d) => d.name === 'Seasonal')!;
     const bredRoute = seasonal.routes.find((r) => r.kind === 'bred')!;
     expect(routeStatus(named(['Air', 'Fire', 'Plant']), seasonal, bredRoute, 'normal').met).toBe(false);
@@ -62,5 +66,35 @@ describe('breeding on the real snapshot', () => {
       kind: 'opposites',
       pair: ['Plant', 'Metal'],
     });
+  });
+
+  it('breeds a primary only from one already owned (Module:BreedingSandbox primary_dragons_rule)', () => {
+    const fire = dragonNamed('Fire');
+    const fireRoute = fire.routes.find((r) => r.kind === 'bred')!;
+
+    // Lava + Plant carry Fire, but no Fire is owned: no Fire.
+    const lavaPlant = named(['Lava', 'Plant']);
+    expect(routeStatus(lavaPlant, fire, fireRoute, 'normal')).toEqual({
+      met: false,
+      pairCount: 0,
+      reason: { kind: 'needs-owned', dragon: 'Fire' },
+    });
+    expect(breedableNow(lavaPlant, 'normal').has('Fire')).toBe(false);
+
+    // Fire + Blue Fire: Fire + Fire and Fire + Blue Fire. Fire is owned, so still not Breedable now.
+    const fireBlueFire = named(['Fire', 'Blue Fire']);
+    expect(routeStatus(fireBlueFire, fire, fireRoute, 'normal')).toMatchObject({ met: true, pairCount: 2 });
+    expect(breedableNow(fireBlueFire, 'normal').has('Fire')).toBe(false);
+    expect(routeStatus(named(['Fire', 'Frostfire', 'Lava']), fire, fireRoute, 'normal').pairCount).toBe(2);
+  });
+
+  it('never makes a basic primary Breedable now through its Bred Route, whatever is owned', () => {
+    const primaries = snapshot.dragons.filter((d) => d.rarity === 'Primary').map((d) => d.name);
+    expect(primaries).toHaveLength(10);
+    for (const cave of ['normal', 'rift', 'coop'] as const) {
+      const breedable = breedableNow(worldOwning(400), cave);
+      // Air's own Route is Water + Fire; the other 9 need themselves.
+      expect(primaries.filter((p) => p !== 'Air' && breedable.has(p)), cave).toEqual([]);
+    }
   });
 });

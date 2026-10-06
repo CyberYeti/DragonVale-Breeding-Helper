@@ -12,5 +12,5 @@ export {
   validPairs,
 } from './rules';
 export { ownedPerSetting } from './owned';
-export { caveName, noBreedingText, routeKindName, NOT_AVAILABLE } from './names';
+export { caveName, noBreedingText, partnerText, routeKindName, NOT_AVAILABLE } from './names';
 export { wouldBeValidPair } from './pairs';

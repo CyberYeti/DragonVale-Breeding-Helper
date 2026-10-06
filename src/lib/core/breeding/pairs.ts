@@ -24,6 +24,8 @@ export type ParentIndex = {
   /** Opposite primaries among the parents, such as Plant Dragon + Metal Dragon. */
   readonly opposites: readonly Pair[];
   readonly oppositeOf: ReadonlyMap<Dragon, ReadonlySet<Dragon>>;
+  /** The snapshot's opposite Elements, each way: Fire → Cold, Cold → Fire. */
+  readonly oppositeElement: ReadonlyMap<string, string>;
 };
 
 const cache = new WeakMap<World, Partial<Record<Breeding, ParentIndex>>>();
@@ -74,8 +76,37 @@ function buildIndex(world: World, breeding: Breeding): ParentIndex {
     carriers,
     opposites,
     oppositeOf,
+    oppositeElement: oppositeElements(world),
   };
 }
+
+const oppositeCache = new WeakMap<World, ReadonlyMap<string, string>>();
+
+/** The snapshot's opposite Elements, each way. Cached per World. */
+function oppositeElements(world: World): ReadonlyMap<string, string> {
+  let found = oppositeCache.get(world);
+  if (!found) {
+    const map = new Map<string, string>();
+    for (const [x, y] of world.snapshot.opposites) map.set(x, y).set(y, x);
+    oppositeCache.set(world, (found = map));
+  }
+  return found;
+}
+
+/**
+ * Whether `other` may be the second parent next to `named` under a
+ * `self-or-opposite-hybrid` partner rule: `named` itself, or an opposite
+ * hybrid (Elements, ignoring Rift, exactly two opposite ones) that carries
+ * every Element of `named` (Module:BreedingSandbox, primary_dragons_rule).
+ */
+function partnerFits(opposite: ReadonlyMap<string, string>, named: Dragon, other: Dragon): boolean {
+  if (other.name === named.name) return true;
+  const own = other.elements.filter((e) => e !== RIFT);
+  if (own.length !== 2 || opposite.get(own[0]!) !== own[1]) return false;
+  return named.elements.every((e) => e === RIFT || own.includes(e));
+}
+
+const RIFT = 'Rift';
 
 export const areOpposites = (index: ParentIndex, a: Dragon, b: Dragon): boolean =>
   index.oppositeOf.get(a)?.has(b) ?? false;
@@ -161,6 +192,16 @@ const isCandidate = (index: ParentIndex, req: Requirement, dragon: Dragon) =>
   req.elementOnBothParents === undefined || index.elementsOf.get(dragon)!.has(req.elementOnBothParents);
 
 /**
+ * Whether a pair passes `req.partner`: with a one-name Requirement, `a` is
+ * the named parent and `b` must fit next to it. No partner rule passes.
+ */
+function partnerOk(index: ParentIndex, req: Requirement, a: Dragon, b: Dragon): boolean {
+  if (!req.partner) return true;
+  const name = req.parents?.length === 1 ? req.parents[0] : undefined;
+  return a.name === name && partnerFits(index.oppositeElement, a, b);
+}
+
+/**
  * The number of Valid pairs from `index`'s parents that meet `req`.
  * With `allowOpposites`, opposite primaries count too (to explain a miss).
  */
@@ -168,7 +209,9 @@ export function countPairs(index: ParentIndex, req: Requirement, allowOpposites 
   const named = namedParents(index, req);
   if (!named) return 0;
   const valid = (a: Dragon, b: Dragon) =>
-    (allowOpposites || !areOpposites(index, a, b)) && poolsMeet(req, index.elementsOf.get(a)!, index.elementsOf.get(b)!);
+    (allowOpposites || !areOpposites(index, a, b)) &&
+    partnerOk(index, req, a, b) &&
+    poolsMeet(req, index.elementsOf.get(a)!, index.elementsOf.get(b)!);
 
   if (named.length === 2) return valid(named[0]!, named[1]!) ? 1 : 0;
   if (named.length === 1) {
@@ -177,6 +220,7 @@ export function countPairs(index: ParentIndex, req: Requirement, allowOpposites 
     for (const other of partnersOf(index, req, fixed)) if (valid(fixed, other)) count++;
     return count;
   }
+  if (req.partner) return 0;
 
   const all = groups(index, req);
   let count = 0;
@@ -202,7 +246,7 @@ export function countPairs(index: ParentIndex, req: Requirement, allowOpposites 
 /** The first opposite-primary pair that would meet `req` if opposites were allowed. */
 export function oppositePairMeeting(index: ParentIndex, req: Requirement): Pair | null {
   const named = namedParents(index, req);
-  if (!named) return null;
+  if (!named || req.partner) return null;
   for (const [a, b] of index.opposites) {
     if (named.some((d) => d !== a && d !== b)) continue;
     if (named.length === 2 && named[0] === named[1]) continue;
@@ -216,7 +260,9 @@ export function* pairs(index: ParentIndex, req: Requirement): Generator<Pair, vo
   const named = namedParents(index, req);
   if (!named) return;
   const valid = (a: Dragon, b: Dragon) =>
-    !areOpposites(index, a, b) && poolsMeet(req, index.elementsOf.get(a)!, index.elementsOf.get(b)!);
+    !areOpposites(index, a, b) &&
+    partnerOk(index, req, a, b) &&
+    poolsMeet(req, index.elementsOf.get(a)!, index.elementsOf.get(b)!);
 
   if (named.length === 2) {
     if (valid(named[0]!, named[1]!)) yield [named[0]!, named[1]!];
@@ -227,6 +273,7 @@ export function* pairs(index: ParentIndex, req: Requirement): Generator<Pair, vo
     for (const other of partnersOf(index, req, fixed)) if (valid(fixed, other)) yield [fixed, other];
     return;
   }
+  if (req.partner) return;
 
   const all = groups(index, req);
   for (let i = 0; i < all.length; i++) {
@@ -259,7 +306,8 @@ const isPrimaryOf = (dragon: Dragon, element: string) =>
 /**
  * Whether `a` and `b` would make a Valid pair for `req` if both counted as
  * parents, whoever owns them: both can be parents, they aren't opposite
- * primaries, any named parents are them, and their pools meet the Elements.
+ * primaries, any named parents are them, the other fits any `partner` rule,
+ * and their pools meet the Elements.
  */
 export function wouldBeValidPair(world: World, req: Requirement, a: Dragon, b: Dragon): boolean {
   if (!a.canBeParent || !b.canBeParent) return false;
@@ -273,6 +321,11 @@ export function wouldBeValidPair(world: World, req: Requirement, a: Dragon, b: D
     if (!((a.name === n0 && b.name === n1) || (a.name === n1 && b.name === n0))) return false;
   } else if (names.length === 1 && a.name !== names[0] && b.name !== names[0]) {
     return false;
+  }
+  if (req.partner) {
+    const opposite = oppositeElements(world);
+    const fits = (n: Dragon, o: Dragon) => n.name === names[0] && partnerFits(opposite, n, o);
+    if (names.length !== 1 || !(fits(a, b) || fits(b, a))) return false;
   }
   return poolsMeet(req, poolOf(a), poolOf(b));
 }

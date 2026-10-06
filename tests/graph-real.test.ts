@@ -95,6 +95,10 @@ describe('tabGraph and pullTree on the real snapshot', () => {
         expect(graph.members).toHaveLength(new Set(names).size);
         expect(elapsed, `${cave} cave took ${elapsed.toFixed(0)} ms`).toBeLessThan(2000);
 
+        // No Dragon feeds its own Route pill (a basic primary breeds only from itself).
+        const owners = new Map(graph.nodes.flatMap((n) => (n.kind === 'route' ? [[n.id, n.owner] as const] : [])));
+        expect(graph.edges.filter((e) => owners.get(e.target) === e.source).map((e) => e.id)).toEqual([]);
+
         const dragons = graph.nodes.filter((n): n is DragonNode => n.kind === 'dragon');
         expect(dragons.every((n) => Number.isInteger(n.generation) && n.generation >= 1)).toBe(true);
         // Generations increase upward, except on an edge that closes a cycle (the Chrysalis family).

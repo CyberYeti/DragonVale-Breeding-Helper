@@ -54,6 +54,8 @@ const solarflare = () =>
 const solis = () =>
   dragon({ name: 'Solis', rarity: 'Galaxy', elements: ['Galaxy', 'Sun'], routes: [bred(['Fire', 'Plant'])] });
 const kampos = () => riftDragon({ name: 'Kampos', elements: ['Water', 'Air'], trait: 'Water' });
+const lava = () => dragon({ name: 'Lava', elements: ['Fire', 'Earth'] });
+const blueFire = () => dragon({ name: 'Blue Fire', rarity: 'Rare', elements: ['Fire', 'Cold'] });
 
 /** routeStatus of `name`'s first (or `index`th) Route. */
 function status(w: World, name: string, form: Form = 'normal', index = 0) {
@@ -169,6 +171,37 @@ describe('Valid pair', () => {
     expect(status(w, 'Lava').reason).toEqual({ kind: 'missing-elements', elements: ['Fire'] });
   });
 
+  it('a primary breeds only from itself: Lava + Plant make no Fire', () => {
+    const w = world({ dragons: [...primaries(), lava(), blueFire()], owned: ['Lava', 'Plant'] });
+    expect(status(w, 'Fire')).toEqual({ met: false, pairCount: 0, reason: { kind: 'needs-owned', dragon: 'Fire' } });
+    expect([...validPairs(w, routeOf(w, 'Fire'), 'normal')]).toEqual([]);
+    expect(breedableNow(w, 'normal').has('Fire')).toBe(false);
+    // Even with nothing owned, the reason is the missing Fire.
+    expect(status(world({ dragons: primaries() }), 'Fire').reason).toEqual({ kind: 'needs-owned', dragon: 'Fire' });
+  });
+
+  it('a primary breeds from itself plus itself or an opposite hybrid carrying its Element', () => {
+    const w = world({ dragons: [...primaries(), lava(), blueFire()], owned: ['Fire', 'Blue Fire'] });
+    expect(status(w, 'Fire')).toMatchObject({ met: true, pairCount: 2 });
+    expect(pairNames(validPairs(w, routeOf(w, 'Fire'), 'normal')).sort()).toEqual(['Fire+Blue Fire', 'Fire+Fire']);
+    // Fire is owned, so it still isn't Breedable now.
+    expect(breedableNow(w, 'normal').has('Fire')).toBe(false);
+    // Blue Fire carries Cold too, but Cold isn't owned: no Cold.
+    expect(status(w, 'Cold').reason).toEqual({ kind: 'needs-owned', dragon: 'Cold' });
+  });
+
+  it("a primary's partner is never an opposite primary or a hybrid that isn't opposite", () => {
+    const w = world({ dragons: [...primaries(), lava(), blueFire()], owned: ['Fire', 'Cold', 'Lava'] });
+    expect(pairNames(validPairs(w, routeOf(w, 'Fire'), 'normal'))).toEqual(['Fire+Fire']);
+    expect(pairNames(validPairs(w, routeOf(w, 'Cold'), 'normal'))).toEqual(['Cold+Cold']);
+  });
+
+  it('an opposite hybrid with Rift still counts, ignoring Rift', () => {
+    const fever = riftDragon({ name: 'Fever', elements: ['Cold', 'Fire'], trait: 'Cold' });
+    const w = world({ dragons: [...primaries(), fever], owned: ['Cold', 'Fever'] });
+    expect(pairNames(validPairs(w, routeOf(w, 'Cold'), 'normal')).sort()).toEqual(['Cold+Cold', 'Cold+Fever']);
+  });
+
   it('says when no owned Dragon counts as a parent', () => {
     expect(status(world({ dragons: [...primaries(), flower()] }), 'Flower').reason).toEqual({ kind: 'no-parents' });
   });
@@ -186,6 +219,8 @@ describe('Valid pair', () => {
       { anyPair: true },
       { parents: ['Lava'], elements: ['Cold'] },
       { parents: ['Plant', 'Metal'] },
+      { parents: ['Fire'], partner: 'self-or-opposite-hybrid' },
+      { parents: ['Plant'], partner: 'self-or-opposite-hybrid' },
       {},
     ];
     for (const requirement of requirements) {
@@ -215,6 +250,14 @@ function bruteForce(parents: readonly Dragon[], req: Requirement): Pair[] {
       const names = req.parents ?? [];
       if (names.length === 2 && !((names[0] === a.name && names[1] === b.name) || (names[0] === b.name && names[1] === a.name))) continue;
       if (names.length === 1 && a.name !== names[0] && b.name !== names[0]) continue;
+      if (req.partner) {
+        const [named, other] = a.name === names[0] ? [a, b] : [b, a];
+        const hybrid = other.elements.filter((e) => e !== 'Rift');
+        const fits =
+          other === named ||
+          (hybrid.length === 2 && opposite.has(hybrid.join('|')) && named.elements.every((e) => hybrid.includes(e)));
+        if (!fits) continue;
+      }
       if (!(req.elements ?? []).every((e) => pool.has(e))) continue;
       if (req.minDistinctElements !== undefined && pool.size < req.minDistinctElements) continue;
       const both = req.elementOnBothParents;
@@ -333,9 +376,9 @@ describe('Breedable now', () => {
     expect(breedableNow(rift, 'normal').has('Lava')).toBe(true);
   });
 
-  it('includes a primary bred from itself or from a pair carrying its Element', () => {
+  it('never includes a primary that is not owned, even when a pair carries its Element', () => {
     const w = world({ dragons: [...primaries(), dragon({ name: 'Lava', elements: ['Fire', 'Earth'] })], owned: ['Lava'] });
-    expect([...breedableNow(w, 'normal')].sort()).toEqual(['Earth', 'Fire']);
+    expect([...breedableNow(w, 'normal')]).toEqual([]);
   });
 
   it('excludes Purchase only and not Available Dragons', () => {
@@ -408,5 +451,17 @@ describe('wouldBeValidPair', () => {
     expect(wouldBeValidPair(w, { parents: ['Moss'], elements: ['Metal'] }, d('Chrome'), d('Metal'))).toBe(false);
     expect(wouldBeValidPair(w, { parents: ['Moss', 'Chrome'] }, d('Chrome'), d('Moss'))).toBe(true);
     expect(wouldBeValidPair(w, { parents: ['Moss', 'Chrome'] }, d('Moss'), d('Moss'))).toBe(false);
+  });
+
+  it("follows a primary's partner rule: itself, or an opposite hybrid carrying its Element", () => {
+    const w = world({ dragons: [...primaries(), ironwood(), chrome(), moss()] });
+    const d = (name: string) => w.dragons.get(name)!;
+    const req = (name: string) => (routeOf(w, name) as Route & { kind: 'bred' }).requirement;
+    expect(wouldBeValidPair(w, req('Plant'), d('Plant'), d('Plant'))).toBe(true);
+    expect(wouldBeValidPair(w, req('Plant'), d('Ironwood'), d('Plant'))).toBe(true);
+    expect(wouldBeValidPair(w, req('Metal'), d('Metal'), d('Ironwood'))).toBe(true);
+    expect(wouldBeValidPair(w, req('Plant'), d('Plant'), d('Moss'))).toBe(false); // not an opposite hybrid
+    expect(wouldBeValidPair(w, req('Plant'), d('Ironwood'), d('Ironwood'))).toBe(false); // no Plant Dragon
+    expect(wouldBeValidPair(w, req('Plant'), d('Plant'), d('Metal'))).toBe(false); // opposites
   });
 });

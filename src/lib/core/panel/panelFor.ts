@@ -11,6 +11,7 @@ import {
   noBreeding,
   noBreedingText,
   NOT_AVAILABLE,
+  partnerText,
   routeStatus,
   validPairs,
   wouldBeValidPair,
@@ -101,7 +102,7 @@ function reasonText(world: World, route: Route, reason: RouteReason, breeding: B
         return `Evolves from ${name(route.from)}${decorations}`;
       }
       if (route.kind === 'coop') return `A friend lends ${name(route.friendsDragon)}; any Dragon you own is the other parent`;
-      return null;
+      return partnerParent(route) ? partnerText(world, partnerParent(route)!, name) : null;
     case 'not-bred':
       if (route.kind === 'summoned') {
         return route.artifacts.length > 0 ? `Summoned with ${joinAnd(route.artifacts)}` : 'Summoned, not bred';
@@ -115,6 +116,8 @@ function reasonText(world: World, route: Route, reason: RouteReason, breeding: B
         : 'You own no Dragon that can be a parent';
     case 'missing-parents':
       return `Needs ${joinAnd(reason.dragons.map(name))}${breeding === 'rift' && route.kind === 'bred' ? ' in Rift breeding' : ''}`;
+    case 'needs-owned':
+      return `Needs a ${name(reason.dragon)} you already own${breeding === 'rift' ? ' in Rift breeding' : ''}: ${lowerFirst(partnerText(world, reason.dragon, name))}`;
     case 'missing-elements':
       return `Nothing you own${breeding === 'rift' ? ' in Rift form' : ''} carries ${joinAnd(reason.elements)}`;
     case 'too-few-elements':
@@ -289,6 +292,12 @@ const byCandidateOrder = (a: Candidate, b: Candidate) =>
   Number(b.breedableNow) - Number(a.breedableNow) ||
   Number(b.available) - Number(a.available) ||
   simplerFirst(a.dragon, b.dragon);
+
+/** A `self-or-opposite-hybrid` Bred Route's named parent, else undefined. */
+const partnerParent = (route: Route): string | undefined =>
+  route.kind === 'bred' && route.requirement.partner ? route.requirement.parents?.[0] : undefined;
+
+const lowerFirst = (text: string) => text.charAt(0).toLowerCase() + text.slice(1);
 
 function joinAnd(items: readonly string[]): string {
   if (items.length <= 1) return items.join('');

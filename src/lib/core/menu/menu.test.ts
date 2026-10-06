@@ -208,8 +208,8 @@ describe('applyView filters', () => {
     const w = menuWorld(owned);
     // Love needs Light; Haystack is Purchase only; Motley isn't Available.
     expect(flat(view(w, PLANT, filters({ breedableNow: true })).sections)).toEqual([]);
-    // Flower carries Fire, so Lava (with Earth) and Fire are Breedable now.
-    expect(flat(view(w, FIRE, filters({ breedableNow: true })).sections)).toEqual(['Lava', 'Fire']);
+    // Flower carries Fire, so Lava (with Earth) is Breedable now; Fire isn't, since it breeds only from a Fire.
+    expect(flat(view(w, FIRE, filters({ breedableNow: true })).sections)).toEqual(['Lava']);
     const w2 = menuWorld({ ...owned, Fire: true });
     expect(flat(view(w2, FIRE, filters({ breedableNow: true })).sections)).toEqual(['Lava']);
   });

@@ -199,6 +199,22 @@ describe('tabGraph', () => {
 
 // ---- pullTree -----------------------------------------------------------------
 
+describe('a basic primary in a tab graph', () => {
+  it('draws no self-loop: no edge from a Dragon into its own Route pill, in the tab graph or a pulled tree', () => {
+    const w = worldFor({ dragons: cast(), owned: ['Flower'] });
+    const graph = tabGraph(w, ['Fire', 'Lava', 'Flower'], 'normal');
+    const pulled = pullTree(graph, { dragon: 'Fire', form: 'normal' });
+    for (const m of [graph, pulled]) {
+      expectWellFormed(m);
+      expect(parentEdges(m).filter(([parent, made]) => parent.id === made.id)).toEqual([]);
+    }
+    const fire = dragonNode(pulled, 'Fire');
+    const pill = pulled.nodes.find((n): n is RouteNode => n.kind === 'route' && n.owner === fire.id)!;
+    expect(pill.pull).toBe('lit');
+    expect(pulled.edges.filter((e) => e.target === pill.id)).toEqual([]);
+  });
+});
+
 describe('pullTree', () => {
   const setup = () => {
     const w = worldFor({ dragons: cast(), owned: ['Flower'] });
