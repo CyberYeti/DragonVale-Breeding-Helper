@@ -14,7 +14,7 @@ export const ARRANGEMENT_VERSION = 1;
 /** Moved nodes: where the player left each one. */
 export type Moves = ReadonlyMap<NodeId, Position>;
 
-/** Names a tab's graph: `page:<page>`, `breedable`, `limited` or `event`. */
+/** Names a tab's graph: `page:<page>`, `all`, `breedable`, `limited` or `event`. */
 export function tabGraphName(tab: Tab): string {
   return tab.kind === 'page' ? `page:${tab.page}` : tab.kind;
 }

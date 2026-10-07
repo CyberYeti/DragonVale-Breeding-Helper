@@ -3,7 +3,7 @@ import type { Dragon } from '../../snapshot';
 import type { Form } from '../collection';
 import { focusTree, type GraphModel, type GraphNodeKind } from '../graph';
 import { bred, dragon, primaries, realCast, world, type Owned } from '../testing/fixtures';
-import { layout, type Layout, type LayoutInput } from './index';
+import { BIG_GRAPH_NODES, layout, type Layout, type LayoutInput } from './index';
 
 // ---- Helpers ------------------------------------------------------------------
 
@@ -129,6 +129,25 @@ describe('layout without a top node', () => {
     expectTopHighest({ ...input, top: 'Ember' }, placed);
     expect(placed.width).toBeGreaterThan(0);
     expect(placed.height).toBeGreaterThan(0);
+  });
+
+  it(`stays bottom-up for a graph over ${BIG_GRAPH_NODES} nodes (the faster ranking)`, () => {
+    // 10 Element hubs; each Dragon has a Route pill fed by two hubs and, after
+    // the first few, by an older Dragon: like the All Dragons tab graph.
+    const nodes: LayoutInput['nodes'][number][] = [];
+    const edges: LayoutInput['edges'][number][] = [];
+    for (let e = 0; e < 10; e++) nodes.push({ id: `e${e}`, width: 40, height: 40 });
+    for (let d = 0; d < 600; d++) {
+      nodes.push({ id: `r${d}`, width: 50, height: 20 }, { id: `d${d}`, width: 120, height: 150 });
+      edges.push({ source: `e${d % 10}`, target: `r${d}` }, { source: `e${(d * 3 + 1) % 10}`, target: `r${d}` });
+      if (d >= 20) edges.push({ source: `d${(d * 7) % d}`, target: `r${d}` });
+      edges.push({ source: `r${d}`, target: `d${d}` });
+    }
+    expect(nodes.length).toBeGreaterThan(BIG_GRAPH_NODES);
+    const input: LayoutInput = { nodes, edges };
+    const placed = layout(input);
+    expect(placed.positions.size).toBe(nodes.length);
+    expect(downwardEdges(input, placed)).toEqual([]);
   });
 
   it('throws for an edge to a node it was not given', () => {

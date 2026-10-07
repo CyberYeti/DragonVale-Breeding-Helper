@@ -1,7 +1,7 @@
 <!--
   A small menu icon (tab, page, cave or Event art) from public/images. Falls
-  back to `icon.fallback` when the file is missing, and draws nothing if that
-  fails too. Size comes from `--icon-size` (default 20px).
+  back to each of `icon.fallbacks` in turn when a file is missing, and draws
+  nothing if they all fail. Size comes from `--icon-size` (default 20px).
 -->
 <script lang="ts">
   import { assetUrl } from '../tile/labels';
@@ -11,7 +11,7 @@
 
   /** Sources that failed to load. */
   let failed = $state<readonly string[]>([]);
-  const src = $derived([icon.src, icon.fallback].find((s) => s !== undefined && !failed.includes(s)));
+  const src = $derived([icon.src, ...(icon.fallbacks ?? [])].find((s) => !failed.includes(s)));
 </script>
 
 {#if src}
@@ -35,17 +35,12 @@
     object-fit: contain;
     display: block;
   }
-  /* Art with a wide frame: zoom in and clip to a circle. */
-  .crop {
-    overflow: hidden;
-    border-radius: 50%;
-  }
+  /*
+   * A square already cut to a disc (the hourglass): clip to a circle, no
+   * zoom, so the frame's corners go and the disc fills the icon box like the
+   * other icons' art does.
+   */
   .crop img {
-    position: absolute;
-    width: 190%;
-    height: 190%;
-    max-width: none;
-    left: -45%;
-    top: -45%;
+    border-radius: 50%;
   }
 </style>

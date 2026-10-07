@@ -20,18 +20,18 @@
   for this tab and cave (SavedArrangements), on top of the automatic
   layout. Drags inside a pulled tree last while the tree is open.
 -->
+<script lang="ts" module>
+  import type { NodeId, TabGraph } from '../../lib/core/graph';
+  import type { Position } from '../../lib/core/layout';
+  import type { World } from '../../lib/core/world';
+
+  /** Laid-out tab graphs, by World, then `<tab graph>:<cave>`. A World is dropped with its cache. */
+  const laidOut = new WeakMap<World, Map<string, { graph: TabGraph; positions: ReadonlyMap<NodeId, Position> }>>();
+</script>
+
 <script lang="ts">
   import { untrack } from 'svelte';
-  import {
-    pullTree,
-    tabGraph,
-    type GraphModel,
-    type GraphNode,
-    type NodeId,
-    type TabGraph,
-    type Target,
-  } from '../../lib/core/graph';
-  import type { Position } from '../../lib/core/layout';
+  import { pullTree, tabGraph, type GraphModel, type GraphNode, type Target } from '../../lib/core/graph';
   import { tabContents, type Tab } from '../../lib/core/menu';
   import { useNav } from '../nav.svelte';
   import { useStore } from '../store.svelte';
@@ -52,12 +52,23 @@
   type Graph = { graph: TabGraph; positions: ReadonlyMap<NodeId, Position> } | { error: string };
   type Built = { model: GraphModel; positions: ReadonlyMap<NodeId, Position> } | { error: string };
 
-  /** The tab graph and its layout: rebuilt for a new tab, cave or Collection, not for a new tree. */
+  /**
+   * The tab graph and its layout: rebuilt for a new tab, cave or Collection,
+   * not for a new tree. Kept per World, so reopening a big graph (All Dragons
+   * takes a few seconds to lay out) is instant until the Collection changes.
+   */
   const graph = $derived.by((): Graph => {
+    const world = store.world;
+    const key = `${tabGraphName(tab)}:${store.cave}`;
+    const cached = laidOut.get(world)?.get(key);
+    if (cached) return cached;
     try {
-      const names = tabContents(store.world, tab, store.cave).sections.flatMap((s) => s.items.map((i) => i.dragon.name));
-      const g = tabGraph(store.world, names, store.cave);
-      return { graph: g, positions: place(g) };
+      const names = tabContents(world, tab, store.cave).sections.flatMap((s) => s.items.map((i) => i.dragon.name));
+      const g = tabGraph(world, names, store.cave);
+      const done = { graph: g, positions: place(g) };
+      if (!laidOut.has(world)) laidOut.set(world, new Map());
+      laidOut.get(world)!.set(key, done);
+      return done;
     } catch (e) {
       return { error: e instanceof Error ? e.message : String(e) };
     }

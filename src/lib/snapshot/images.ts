@@ -34,10 +34,26 @@ export type MenuIcon = keyof typeof MENU_ICONS;
 export const GENERIC_EVENT_ICON = `${IMAGES_DIR}/events/generic.svg`;
 
 /**
- * Where an Event's own icon is saved, if the wiki had one when the snapshot
- * was built. The file may not exist (a newer Event, or none on the wiki), so
- * the app falls back to GENERIC_EVENT_ICON when it fails to load.
+ * An Event's series: the part of its name before the first ":" ("Om of Noms:
+ * Country Roads II" -> "Om of Noms"), or the whole name when it has no ":".
  */
-export function eventIconPath(eventName: string): string {
-  return `${IMAGES_DIR}/events/${squash(eventName)}.png`;
+export function eventSeries(eventName: string): string {
+  const colon = eventName.indexOf(':');
+  return (colon < 0 ? eventName : eventName.slice(0, colon)).trim();
+}
+
+/** The key an Event icon is saved under: the name squashed and lower-cased ("Om of Noms" -> "omofnoms"). */
+export function eventIconKey(name: string): string {
+  return squash(name).toLowerCase();
+}
+
+/**
+ * Where an Event's icon may be saved, in the order to try: its own (full
+ * name), then its series'. The wiki names most Event icons after the series,
+ * so usually only the second exists; neither may (a newer Event, or none on
+ * the wiki), so the app falls back to GENERIC_EVENT_ICON after both.
+ */
+export function eventIconPaths(eventName: string): string[] {
+  const keys = [eventIconKey(eventName), eventIconKey(eventSeries(eventName))].filter((k) => k !== '');
+  return [...new Set(keys)].map((key) => `${IMAGES_DIR}/events/${key}.png`);
 }

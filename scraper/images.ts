@@ -8,8 +8,11 @@
 //   Elements  Icon <Element>.png, for the Elements in the snapshot
 //   Pages     <Name without spaces/punctuation>DragonariumIcon.png
 //   Menu      the fixed icons in MENU_FILES (paths in src/lib/snapshot/images)
-//   Events    <EventNameSquashed>DragonariumIcon.png for each running Event,
-//             if the wiki has one
+//   Events    for each running Event, the first the wiki has of
+//             <Name>DragonariumIcon.png for its full name, then for its series
+//             (the part before ":"), each with words title-cased and then
+//             plainly squashed; saved under the key the app looks up
+//             (eventIconPaths in src/lib/snapshot/images)
 //
 // Network etiquette: one imageinfo request per 50 files, every request
 // sequential with a pause between, a descriptive User-Agent, and retries with
@@ -22,7 +25,7 @@
 
 import { access, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
-import { IMAGES_DIR, MENU_ICONS, eventIconPath, squash, type MenuIcon, type Snapshot } from '../src/lib/snapshot';
+import { IMAGES_DIR, MENU_ICONS, eventIconPaths, eventSeries, squash, type MenuIcon, type Snapshot } from '../src/lib/snapshot';
 import { API_URL, USER_AGENT, type RawPages } from './pages';
 import { cropPng, isPng, type CropBox } from './png';
 
@@ -113,15 +116,41 @@ function pageIconFile(name: string, overrides: ImageOverrides = IMAGE_OVERRIDES)
   return overrides.pages[name] ?? `${squash(name)}DragonariumIcon.png`;
 }
 
-function eventIconFile(eventName: string): string {
-  return `${squash(eventName)}DragonariumIcon.png`;
+/** Each word's first letter upper-cased, then squashed: "Om of Noms" -> "OmOfNoms". */
+function titleSquash(name: string): string {
+  return squash(name.replace(/(^|[^A-Za-z0-9])([a-z])/g, (_, before: string, c: string) => before + c.toUpperCase()));
+}
+
+/** One file to try for an Event's icon, and where it's saved if found. */
+type EventCandidate = { file: string; path: string };
+
+/**
+ * The files to try for an Event's icon, in order: the full name title-cased,
+ * then plainly squashed (saved under the full-name key), then the same for
+ * the series (saved under the series key). The wiki names Event icons after
+ * the series with every word capitalised ("OmOfNomsDragonariumIcon.png").
+ */
+function eventCandidates(eventName: string): EventCandidate[] {
+  const [fullPath, seriesPath = fullPath] = eventIconPaths(eventName);
+  const out: EventCandidate[] = [];
+  for (const [name, path] of [
+    [eventName, fullPath],
+    [eventSeries(eventName), seriesPath],
+  ] as const) {
+    if (path === undefined) continue;
+    for (const stem of [titleSquash(name), squash(name)]) {
+      const file = `${stem}DragonariumIcon.png`;
+      if (stem !== '' && !out.some((c) => c.file === file)) out.push({ file, path });
+    }
+  }
+  return out;
 }
 
 /**
  * Every image the snapshot and the menus need. Throws if two targets would
  * share a local path (two names that squash to the same thing).
  */
-function planImages(snapshot: Snapshot, eventNames: string[], overrides: ImageOverrides = IMAGE_OVERRIDES): ImageTarget[] {
+function planImages(snapshot: Snapshot, overrides: ImageOverrides = IMAGE_OVERRIDES): ImageTarget[] {
   const targets: ImageTarget[] = [
     ...snapshot.dragons.map((d) => target('dragon', d.name, dragonImageFile(d.name, overrides), `dragons/${squash(d.name)}.png`)),
     ...snapshot.elements.map((e) => target('element', e.name, elementIconFile(e.name, overrides), `elements/${squash(e.name)}.png`)),
@@ -133,7 +162,6 @@ function planImages(snapshot: Snapshot, eventNames: string[], overrides: ImageOv
       path: MENU_ICONS[key],
       ...(crop ? { crop } : {}),
     })),
-    ...eventNames.map((name) => ({ kind: 'event' as const, key: name, file: eventIconFile(name), path: eventIconPath(name) })),
   ];
   const seen = new Map<string, ImageTarget>();
   for (const t of targets) {
@@ -274,25 +302,32 @@ export async function downloadImages(
   options: DownloadOptions,
 ): Promise<{ snapshot: Snapshot; report: ImageReport }> {
   const { root, eventNames = [], overrides = IMAGE_OVERRIDES, download = true, log = () => {} } = options;
-  const targets = planImages(snapshot, eventNames, overrides);
-  const local = (t: ImageTarget) => join(root, 'public', t.path);
+  const targets = planImages(snapshot, overrides);
+  const events = eventNames.map((name) => ({ name, candidates: eventCandidates(name) }));
+  const local = (t: { path: string }) => join(root, 'public', t.path);
 
   const onDisk = new Set<string>();
-  for (const t of targets) if (await exists(local(t))) onDisk.add(t.path);
-  const existing = onDisk.size;
+  for (const t of [...targets, ...events.flatMap((e) => e.candidates)]) if (await exists(local(t))) onDisk.add(t.path);
+  const hasIcon = (e: (typeof events)[number]) => e.candidates.some((c) => onDisk.has(c.path));
+  const existing = targets.filter((t) => onDisk.has(t.path)).length + events.filter(hasIcon).length;
   const todo = targets.filter((t) => !onDisk.has(t.path));
+  const eventsTodo = events.filter((e) => !hasIcon(e));
   const downloaded: string[] = [];
   const client = new PoliteClient(options.fetch ?? fetch, options.delayMs ?? 250, options.sleep ?? sleep);
 
-  if (download && todo.length > 0) {
-    const files = [...new Set(todo.map((t) => t.file))];
+  if (download && todo.length + eventsTodo.length > 0) {
+    const files = [...new Set([...todo.map((t) => t.file), ...eventsTodo.flatMap((e) => e.candidates.map((c) => c.file))])];
     log(`Resolving ${files.length} files in ${Math.ceil(files.length / BATCH_SIZE)} imageinfo requests...`);
     const resolved = new Map<string, ResolvedFile>();
     for (const batch of batches(files)) {
       const body = await (await client.get(imageInfoUrl(batch), 'application/json')).json();
       for (const [file, r] of parseImageInfo(body, batch)) resolved.set(file, r);
     }
-    const found = todo.filter((t) => resolved.get(t.file));
+    const found: { file: string; path: string; crop?: CropBox }[] = todo.filter((t) => resolved.get(t.file));
+    for (const e of eventsTodo) {
+      const first = e.candidates.find((c) => resolved.get(c.file));
+      if (first && !found.some((f) => f.path === first.path)) found.push(first);
+    }
     log(`Downloading ${found.length} files...`);
     for (const t of found) {
       const r = resolved.get(t.file)!;
@@ -306,7 +341,12 @@ export async function downloadImages(
     }
   }
 
-  const missing = targets.filter((t) => !onDisk.has(t.path));
+  const missing: ImageTarget[] = [
+    ...targets.filter((t) => !onDisk.has(t.path)),
+    ...events
+      .filter((e) => !hasIcon(e))
+      .map((e) => ({ kind: 'event' as const, key: e.name, file: e.candidates.map((c) => c.file).join(' / '), path: e.candidates[0]?.path ?? '' })),
+  ];
   const warnings = missing
     .filter((t) => t.kind !== 'event')
     .map((t) => `image missing: ${t.kind} ${t.key} (File:${t.file})`);

@@ -6,9 +6,11 @@ import type { EndDate } from '../limited';
 
 export type { OwnedForms } from '../breeding';
 
-/** What the menu shows: a Dragonarium page (by name) or one of the three tabs. */
+/** What the menu shows: a Dragonarium page (by name) or one of the four tabs. */
 export type Tab =
   | { readonly kind: 'page'; readonly page: string }
+  /** Every Dragon in the snapshot. */
+  | { readonly kind: 'all' }
   | { readonly kind: 'breedable' }
   | { readonly kind: 'limited' }
   | { readonly kind: 'event' };
@@ -32,6 +34,7 @@ export type EventInfo = {
 /** A run of tiles under one heading. */
 export type Section =
   | { readonly kind: 'page'; readonly page: DragonariumPage; readonly items: readonly MenuItem[] }
+  | { readonly kind: 'all'; readonly items: readonly MenuItem[] }
   | { readonly kind: 'breedable'; readonly items: readonly MenuItem[] }
   | { readonly kind: 'rotation'; readonly items: readonly MenuItem[] }
   | { readonly kind: 'event'; readonly event: EventInfo; readonly items: readonly MenuItem[] }
@@ -89,6 +92,8 @@ export type GroupCount = {
 
 /** Owned/total for every sidebar entry. */
 export type SidebarCounts = {
+  /** Every Dragon. */
+  readonly all: Count;
   readonly breedable: Count;
   readonly limited: Count;
   readonly event: Count;

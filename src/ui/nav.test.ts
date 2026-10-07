@@ -107,6 +107,20 @@ describe('Nav history', () => {
     expect(nav.level).toEqual({ kind: 'focus', target: 'Fire', form: 'normal' });
   });
 
+  it('the All tab is a history step with its own tab graph', () => {
+    const { nav, history } = connected();
+    nav.goTo({ kind: 'all' });
+    nav.openTabGraph();
+    expect(nav.level).toEqual({ kind: 'tab-graph', tab: { kind: 'all' } });
+    history.browserBack();
+    expect(nav.levels).toEqual([]);
+    expect(nav.tab).toEqual({ kind: 'all' });
+    history.browserBack();
+    expect(nav.tab).toEqual({ kind: 'breedable' });
+    history.browserForward();
+    expect(nav.tab).toEqual({ kind: 'all' });
+  });
+
   it('closeGraphs steps back over every level at once', () => {
     const { nav, history } = connected();
     nav.openTabGraph();

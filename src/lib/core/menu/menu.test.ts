@@ -114,6 +114,18 @@ describe('tabContents', () => {
     expect(tabContents(menuWorld(), { kind: 'page', page: 'Nope' }, 'normal').sections).toEqual([]);
   });
 
+  it('All holds every Dragon once, in release order, whatever the cave', () => {
+    const dragons = cast();
+    const shuffled = world({ snapshot: snapshot([...dragons].reverse(), { pages: PAGES }), overlay: EVENT, now: NOW });
+    const byOrder = [...dragons].sort((a, b) => a.order - b.order).map((d) => d.name);
+    for (const cave of ['normal', 'rift', 'coop'] as const) {
+      const contents = tabContents(shuffled, { kind: 'all' }, cave);
+      expect(contents.sections.map((s) => s.kind)).toEqual(['all']);
+      expect(flat(contents.sections)).toEqual(byOrder);
+      expect(contents).toMatchObject({ noEvent: false, notRecognised: [] });
+    }
+  });
+
   it('Breedable now lists what the chosen cave can breed now', () => {
     const w = menuWorld(['Fire', 'Earth', 'Plant', 'Water', 'Air']);
     const normal = flat(tabContents(w, { kind: 'breedable' }, 'normal').sections);
@@ -383,6 +395,27 @@ describe('sidebarCounts', () => {
     expect(elemental!.count).toEqual({ owned: 4, total: 7 });
     expect(epic!.count).toEqual({ owned: 0, total: 1 });
     expect(special!.count).toEqual({ owned: 1, total: 1 });
+  });
+
+  it('All counts every Dragon, and matches its page header', () => {
+    expect(sidebarCounts(w, 'normal', either).all).toEqual({ owned: 6, total: cast().length });
+    for (const ownedForms of ['either', 'normal', 'rift'] as const) {
+      for (const cave of ['normal', 'rift', 'coop'] as const) {
+        const v = view(w, { kind: 'all' }, NO_FILTERS, ownedForms, cave);
+        expect({ owned: v.owned, total: v.total }).toEqual(sidebarCounts(w, cave, { ownedForms }).all);
+      }
+    }
+    expect(sidebarCounts(w, 'normal', { ownedForms: 'normal' }).all.total).toBe(cast().length - 1); // Kampos hidden
+  });
+
+  it('filters and search apply on All', () => {
+    const owned = view(w, { kind: 'all' }, filters({ show: 'owned' }));
+    expect(flat(owned.sections).sort()).toEqual(['Earth', 'Fire', 'Flower', 'Kampos', 'Lava', 'Plant']);
+    const epic = view(w, { kind: 'all' }, filters({ rarities: ['Epic'] }));
+    expect(flat(epic.sections)).toEqual(['Sun']);
+    const searched = view(w, { kind: 'all' }, NO_FILTERS, 'either', 'normal', 'lav');
+    expect(searched.sections.map((s) => s.kind)).toEqual(['search']);
+    expect(flat(searched.sections)).toEqual(['Lava']);
   });
 
   it('Breedable now matches the tab', () => {

@@ -12,6 +12,7 @@ describe('arrangementKey', () => {
     expect(arrangementKey({ kind: 'page', page: 'Spooky' }, 'normal')).toBe('arrangement:v1:page:Spooky:normal');
     expect(arrangementKey({ kind: 'event' }, 'rift')).toBe('arrangement:v1:event:rift');
     expect(arrangementKey({ kind: 'breedable' }, 'coop')).toBe('arrangement:v1:breedable:coop');
+    expect(arrangementKey({ kind: 'all' }, 'normal')).toBe('arrangement:v1:all:normal');
     expect(tabGraphName({ kind: 'limited' })).toBe('limited');
   });
 

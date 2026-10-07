@@ -247,7 +247,7 @@ export class Nav {
 
   #valid(tab: unknown): tab is Tab {
     if (!isRecord(tab)) return false;
-    if (tab.kind === 'breedable' || tab.kind === 'limited' || tab.kind === 'event') return true;
+    if (tab.kind === 'all' || tab.kind === 'breedable' || tab.kind === 'limited' || tab.kind === 'event') return true;
     return tab.kind === 'page' && this.#snapshot.pages.some((p) => p.name === tab.page);
   }
 }
