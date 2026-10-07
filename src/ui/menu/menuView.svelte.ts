@@ -5,7 +5,7 @@
 // computation instead of each calling core/menu.
 
 import { getContext, setContext } from 'svelte';
-import { applyView, sidebarCounts, tabContents, type SidebarCounts, type TabContents, type View } from '../../lib/core/menu';
+import { applyView, graphRoots, sidebarCounts, tabContents, type SidebarCounts, type TabContents, type View } from '../../lib/core/menu';
 import type { Nav } from '../nav.svelte';
 import type { AppStore } from '../store.svelte';
 
@@ -26,6 +26,14 @@ export class MenuView {
       this.#store.world,
       this.#store.cave,
     ),
+  );
+
+  /** The graph header's Show all: the tab graph draws the whole tab. Only the graph reads it; the filters stay as they are. */
+  showAllInGraph = $state(false);
+
+  /** The tab graph's roots: the Dragons shown now, live with search and filters, or the whole tab on Show all. */
+  readonly graphRoots = $derived.by(() =>
+    graphRoots(this.contents.sections, this.view.sections, this.showAllInGraph),
   );
 
   /** Owned/total for every sidebar entry. */

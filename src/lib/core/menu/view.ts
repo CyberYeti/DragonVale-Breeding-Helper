@@ -75,6 +75,24 @@ export function shownNames(sections: readonly Section[]): string[] {
 }
 
 /**
+ * The Dragons a tab graph draws as its roots: every Dragon `shown` (the view's
+ * sections, after search and filters), or the whole tab's `tab` sections when
+ * `all`. `narrowed` is whether `shown` leaves out any Dragon of the tab, or
+ * has one the tab doesn't (a search).
+ */
+export function graphRoots(
+  tab: readonly Section[],
+  shown: readonly Section[],
+  all: boolean,
+): { names: string[]; narrowed: boolean; tabCount: number } {
+  const whole = shownNames(tab);
+  const wholeSet = new Set(whole);
+  const some = shownNames(shown);
+  const narrowed = some.length !== whole.length || some.some((n) => !wholeSet.has(n));
+  return { names: all || !narrowed ? whole : some, narrowed, tabCount: whole.length };
+}
+
+/**
  * Owned/total for every sidebar entry under Owned forms in `cave`: the four
  * tabs, every Dragonarium page, and each page group (each Dragon once).
  */

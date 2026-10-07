@@ -1,7 +1,8 @@
 <!--
-  The tab graph (spec §9, Kinds of graph): every Dragon on the tab, before
-  search and filters, plus everything they need, in the chosen cave. Drawn
-  with the large-graph rules.
+  The tab graph (spec §9, Kinds of graph): the Dragons the menu shows (after
+  search and filters; the whole tab on the header's Show all), plus everything
+  they need, in the chosen cave. Live with the filters. Drawn with the
+  large-graph rules.
 
   - Tapping a Dragon pulls its path into a Target-on-top tree over the
     faded graph (nav.pullTree). Tapping another Dragon, faded or in the
@@ -18,7 +19,8 @@
 
   The tab graph is a main graph: dragging its nodes saves the arrangement
   for this tab and cave (SavedArrangements), on top of the automatic
-  layout. Drags inside a pulled tree last while the tree is open.
+  layout. Drags inside a pulled tree, or in a graph narrowed by the filters,
+  last while the view is open.
 -->
 <script lang="ts" module>
   import type { NodeId, TabGraph } from '../../lib/core/graph';
@@ -32,7 +34,8 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import { pullTree, tabGraph, type GraphModel, type GraphNode, type Target } from '../../lib/core/graph';
-  import { tabContents, type Tab } from '../../lib/core/menu';
+  import type { Tab } from '../../lib/core/menu';
+  import { useMenuView } from '../menu/menuView.svelte';
   import { useNav } from '../nav.svelte';
   import { useStore } from '../store.svelte';
   import { tabGraphName, withMoves } from './arrangement';
@@ -48,6 +51,11 @@
   const store = useStore();
   const nav = useNav();
   const arrangements = useArrangements();
+  const menu = useMenuView();
+
+  /** The Dragons drawn as roots: the ones shown now, or the whole tab. A narrowed graph keeps no arrangement. */
+  const roots = $derived(menu.graphRoots);
+  const filtered = $derived(roots.narrowed && !menu.showAllInGraph);
 
   type Graph = { graph: TabGraph; positions: ReadonlyMap<NodeId, Position> } | { error: string };
   type Built = { model: GraphModel; positions: ReadonlyMap<NodeId, Position> } | { error: string };
@@ -60,22 +68,26 @@
   const graph = $derived.by((): Graph => {
     const world = store.world;
     const key = `${tabGraphName(tab)}:${store.cave}`;
-    const cached = laidOut.get(world)?.get(key);
+    const cached = filtered ? undefined : laidOut.get(world)?.get(key);
     if (cached) return cached;
     try {
-      const names = tabContents(world, tab, store.cave).sections.flatMap((s) => s.items.map((i) => i.dragon.name));
-      const g = tabGraph(world, names, store.cave);
+      const g = tabGraph(world, roots.names, store.cave);
       const done = { graph: g, positions: place(g) };
-      if (!laidOut.has(world)) laidOut.set(world, new Map());
-      laidOut.get(world)!.set(key, done);
+      // A filtered graph follows the filters, so it's laid out each time and never kept.
+      if (!filtered) {
+        if (!laidOut.has(world)) laidOut.set(world, new Map());
+        laidOut.get(world)!.set(key, done);
+      }
       return done;
     } catch (e) {
       return { error: e instanceof Error ? e.message : String(e) };
     }
   });
 
-  /** The layout with the player's saved moves; ids no longer in the graph are ignored. */
-  const arranged = $derived('error' in graph ? null : withMoves(graph.positions, arrangements.moves(tab, store.cave)));
+  /** The layout with the player's saved moves; ids no longer in the graph are ignored. A filtered graph has none. */
+  const arranged = $derived(
+    'error' in graph || filtered ? null : withMoves(graph.positions, arrangements.moves(tab, store.cave)),
+  );
 
   const built = $derived.by((): Built => {
     if ('error' in graph) return graph;
@@ -88,7 +100,9 @@
     }
   });
 
-  const fitKey = $derived(`${tabGraphName(tab)}:${store.cave}${tree ? `:${tree.dragon}:${tree.form}` : ''}`);
+  const fitKey = $derived(
+    `${tabGraphName(tab)}:${store.cave}${filtered ? `:${roots.names.join('|')}` : ''}${tree ? `:${tree.dragon}:${tree.form}` : ''}`,
+  );
 
   /** The click panel works on the pulled tree; a plain tab graph has none to open. */
   const panel = new ClickPanel(
@@ -123,7 +137,7 @@
 <div class="tab-graph">
   {#if 'model' in built}
     {#if built.model.nodes.length === 0}
-      <p class="note">Nothing on this tab to draw.</p>
+      <p class="note">{filtered ? 'No Dragons match the filters. Use Show all to draw the whole tab.' : 'Nothing on this tab to draw.'}</p>
     {:else}
       <ClickPanelFrame {panel}>
         <GraphView
@@ -131,7 +145,7 @@
           positions={built.positions}
           large
           arrangement={arrangements.resets}
-          onarrange={(moves) => arrangements.move(tab, store.cave, moves)}
+          onarrange={filtered ? undefined : (moves) => arrangements.move(tab, store.cave, moves)}
           selected={panel.selected}
           {fitKey}
           {onnodeclick}

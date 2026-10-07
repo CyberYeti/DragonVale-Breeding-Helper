@@ -22,6 +22,14 @@
   const arrangements = new SavedArrangements();
   provideArrangements(arrangements);
 
+  /** Whether the tab graph draws only the shown Dragons (its arrangement is then neither used nor saved). */
+  const filtered = $derived(menu.graphRoots.narrowed && !menu.showAllInGraph);
+
+  // Show all is for the graph that's open: the next one starts filtered again.
+  $effect(() => {
+    if (!nav.level) menu.showAllInGraph = false;
+  });
+
   /** The tab graph a pulled tree sits on (or the tab graph itself). */
   const tabLevel = $derived(
     nav.levels.find((l): l is Extract<GraphLevel, { kind: 'tab-graph' }> => l.kind === 'tab-graph') ?? null,
@@ -51,7 +59,21 @@
       <button type="button" onclick={() => nav.back()}>← Back</button>
       <b>{title(level)}</b>
       <span class="muted">{level.kind === 'focus' ? 'Focus view' : 'Tab graph'} · {caveName(store.cave)} cave</span>
-      {#if level.kind === 'tab-graph' && arrangements.has(level.tab, store.cave)}
+      {#if level.kind !== 'focus' && menu.graphRoots.narrowed}
+        <button
+          type="button"
+          class="scope"
+          aria-pressed={menu.showAllInGraph}
+          title={menu.showAllInGraph
+            ? 'Draw only the Dragons the filters show. The filters themselves are not changed'
+            : 'Draw every Dragon on the tab. The filters themselves are not changed'}
+          onclick={() => (menu.showAllInGraph = !menu.showAllInGraph)}
+          >{menu.showAllInGraph
+            ? `All ${menu.graphRoots.tabCount} · Show filtered`
+            : `Showing ${menu.graphRoots.names.length} of ${menu.graphRoots.tabCount} · Show all`}</button
+        >
+      {/if}
+      {#if level.kind === 'tab-graph' && !filtered && arrangements.has(level.tab, store.cave)}
         <button
           type="button"
           class="reset"
@@ -97,8 +119,15 @@
     background: var(--card);
     cursor: pointer;
   }
+  .head .scope,
   .head .reset {
     margin-left: auto;
+  }
+  .head .scope + .reset {
+    margin-left: 0;
+  }
+  .head .scope[aria-pressed='true'] {
+    background: var(--bg);
   }
   .muted {
     color: var(--muted);

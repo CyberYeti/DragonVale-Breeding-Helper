@@ -20,6 +20,7 @@ import {
   NO_FILTERS,
   applyView,
   daysLeft,
+  graphRoots,
   shownNames,
   sidebarCounts,
   tabContents,
@@ -284,6 +285,19 @@ describe('applyView filters', () => {
       'normal',
     ).sections;
     expect(shownNames(sections)).toEqual(['Lava', 'Flower', 'Haystack', 'Motley']);
+  });
+
+  it('graphRoots: a tab graph is rooted at the shown Dragons, or the whole tab on Show all', () => {
+    const w = menuWorld();
+    const tab = [...tabContents(w, FIRE, 'normal').sections, ...tabContents(w, PLANT, 'normal').sections];
+    const shown = applyView(tab, '', filters({ rarities: ['Hybrid'] }), either, w, 'normal').sections;
+
+    const some = graphRoots(tab, shown, false);
+    expect(some).toMatchObject({ names: ['Lava', 'Flower', 'Haystack', 'Motley'], narrowed: true });
+    expect(some.tabCount).toBe(shownNames(tab).length);
+
+    expect(graphRoots(tab, shown, true)).toMatchObject({ names: shownNames(tab), narrowed: true });
+    expect(graphRoots(tab, tab, false)).toMatchObject({ names: shownNames(tab), narrowed: false });
   });
 });
 
