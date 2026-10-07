@@ -30,6 +30,12 @@ export type LayoutOptions = {
   readonly margin?: number;
 };
 
+/**
+ * Graphs with more nodes than this get the faster row ranking (see `layout`).
+ * The biggest tab graph but All Dragons has under 400 nodes.
+ */
+export const BIG_GRAPH_NODES = 1000;
+
 /** A node's top-left corner, the way Svelte Flow positions nodes. y grows downward. */
 export type Position = { readonly x: number; readonly y: number };
 
@@ -50,6 +56,11 @@ export type Layout = {
  * are the only ones drawn pointing down; in a Focus tree that's the extra
  * edge back to a Dragon already in the view.
  *
+ * Rows come from dagre's network simplex, the tightest. Above
+ * BIG_GRAPH_NODES nodes they come from its tight-tree ranker instead: network
+ * simplex took about 25 s on the ~2,000-node All Dragons tab graph, tight
+ * tree about 0.3 s, for a layout a little wider and with longer edges.
+ *
  * Throws if an edge names a node that isn't in `nodes`, or `top` isn't one.
  */
 export function layout(input: LayoutInput, options: LayoutOptions = {}): Layout {
@@ -63,7 +74,14 @@ export function layout(input: LayoutInput, options: LayoutOptions = {}): Layout 
   if (input.top != null && !ids.has(input.top)) throw new Error(`layout: unknown top node ${input.top}`);
 
   const g = new dagre.graphlib.Graph({ multigraph: true });
-  g.setGraph({ rankdir: 'BT', nodesep: nodeSep, ranksep: rankSep, marginx: margin, marginy: margin });
+  g.setGraph({
+    rankdir: 'BT',
+    nodesep: nodeSep,
+    ranksep: rankSep,
+    marginx: margin,
+    marginy: margin,
+    ranker: input.nodes.length > BIG_GRAPH_NODES ? 'tight-tree' : 'network-simplex',
+  });
   g.setDefaultEdgeLabel(() => ({}));
   for (const n of input.nodes) g.setNode(n.id, { width: n.width, height: n.height });
 

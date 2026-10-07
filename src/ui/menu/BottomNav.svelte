@@ -1,6 +1,6 @@
 <!--
   The phone layout's bottom nav (spec §8 Phone layout): Dragonarium (opens
-  the ☰ drawer, lit while a Dragonarium page is on show), Breedable, Limited
+  the ☰ drawer, lit while a Dragonarium page or All Dragons is on show), Breedable, Limited
   and Event. MenuShell shows it only at phone width and hides it in select
   mode, where the Mark/Unmark bar takes its place.
 -->
@@ -34,7 +34,7 @@
 </script>
 
 <nav class="bottom" aria-label="Tabs">
-  <button type="button" class:on={isOn('page')} aria-haspopup="dialog" onclick={onDragonarium}>
+  <button type="button" class:on={isOn('page') || isOn('all')} aria-haspopup="dialog" onclick={onDragonarium}>
     <MenuIcon icon={{ src: MENU_ICONS.dragonarium }} />
     <span>Dragonarium</span>
   </button>

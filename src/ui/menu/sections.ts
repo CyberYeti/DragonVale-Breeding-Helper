@@ -14,6 +14,8 @@ export function sectionHeading(section: Section, count: number): string | null {
   switch (section.kind) {
     case 'page':
       return section.page.name;
+    case 'all':
+      return 'All Dragons';
     case 'event':
       return section.event.name;
     case 'breedable':
@@ -59,6 +61,7 @@ export function emptyText(section: Section, hiddenByFilters: boolean, caveTitle:
     case 'event':
       return 'This Event has no Dragons to show.';
     case 'page':
+    case 'all':
       return 'Nothing here with this Owned forms setting.';
   }
 }

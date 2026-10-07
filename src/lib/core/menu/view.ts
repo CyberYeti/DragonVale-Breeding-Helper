@@ -75,7 +75,7 @@ export function shownNames(sections: readonly Section[]): string[] {
 }
 
 /**
- * Owned/total for every sidebar entry under Owned forms in `cave`: the three
+ * Owned/total for every sidebar entry under Owned forms in `cave`: the four
  * tabs, every Dragonarium page, and each page group (each Dragon once).
  */
 export function sidebarCounts(world: World, cave: Cave, display: MenuDisplay): SidebarCounts {
@@ -83,7 +83,7 @@ export function sidebarCounts(world: World, cave: Cave, display: MenuDisplay): S
   const owned = (d: Dragon) => ownedPerSetting(world.collection, d, cave, ownedForms);
   const countDragons = (dragons: Iterable<Dragon>) =>
     countOf([...dragons].filter((d) => isShown(d, ownedForms)), owned);
-  const tabCount = (kind: 'breedable' | 'limited' | 'event') =>
+  const tabCount = (kind: 'all' | 'breedable' | 'limited' | 'event') =>
     countDragons(tabContents(world, { kind }, cave).sections.flatMap((s) => s.items.map((i) => i.dragon)));
   const pageDragons = (page: DragonariumPage) =>
     page.dragons.map((n) => world.dragons.get(n)).filter((d): d is Dragon => d !== undefined);
@@ -97,7 +97,7 @@ export function sidebarCounts(world: World, cave: Cave, display: MenuDisplay): S
     };
   });
 
-  return { breedable: tabCount('breedable'), limited: tabCount('limited'), event: tabCount('event'), groups };
+  return { all: tabCount('all'), breedable: tabCount('breedable'), limited: tabCount('limited'), event: tabCount('event'), groups };
 }
 
 const GROUPS: readonly PageGroup[] = ['elemental', 'epic', 'special'];

@@ -1,6 +1,6 @@
 <!--
   The left sidebar (spec §8 Desktop layout), top to bottom: the Breeding cave
-  picker; the Breedable now, Limited rotation and Event tabs; the Elemental /
+  picker; the All Dragons, Breedable now, Limited rotation and Event tabs; the Elemental /
   Epic / Special page groups as an exclusive accordion. Every entry shows
   owned/total. The open group is local state.
 -->
@@ -11,7 +11,7 @@
   import CavePicker from './CavePicker.svelte';
   import { useMenuView } from './menuView.svelte';
   import NavEntry from './NavEntry.svelte';
-  import { BREEDABLE_ICON, GROUP_TITLES, LIMITED_ICON, eventIcon, eventLabel, pageIcon } from './tabInfo';
+  import { ALL_ICON, ALL_TITLE, BREEDABLE_ICON, GROUP_TITLES, LIMITED_ICON, eventIcon, eventLabel, pageIcon } from './tabInfo';
 
   const store = useStore();
   const nav = useNav();
@@ -40,6 +40,7 @@
   <CavePicker />
 
   <div class="tabs">
+    <NavEntry tab={{ kind: 'all' }} label={ALL_TITLE} icon={ALL_ICON} count={counts.all} />
     <NavEntry tab={{ kind: 'breedable' }} label="Breedable now" icon={BREEDABLE_ICON} count={counts.breedable} />
     <NavEntry tab={{ kind: 'limited' }} label="Limited rotation" icon={LIMITED_ICON} count={counts.limited} />
     <NavEntry

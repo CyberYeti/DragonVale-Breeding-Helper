@@ -20,6 +20,9 @@ export const GROUP_TITLES: Record<DragonariumPage['group'], string> = {
   special: 'Special',
 };
 
+/** The All tab: every Dragon, under the Dragonarium's icon. */
+export const ALL_ICON: IconSpec = { src: MENU_ICONS.dragonarium };
+export const ALL_TITLE = 'All Dragons';
 export const BREEDABLE_ICON: IconSpec = { src: MENU_ICONS.breedable };
 /**
  * The hourglass: the scraper already cut the green disc out of the wiki's
@@ -55,6 +58,8 @@ export function tabHeading(
   switch (tab.kind) {
     case 'page':
       return { title: tab.page, icon: pageIcon(snapshot.pages.find((p) => p.name === tab.page)) };
+    case 'all':
+      return { title: ALL_TITLE, icon: ALL_ICON };
     case 'breedable':
       return { title: 'Breedable now', icon: BREEDABLE_ICON };
     case 'limited':

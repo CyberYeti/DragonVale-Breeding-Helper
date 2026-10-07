@@ -11,6 +11,7 @@ import type { MenuItem, Section, Tab, TabContents } from './types';
  *
  * - Dragonarium page: one section, the page's Dragons in the game's order.
  *   An unknown page name gives no sections.
+ * - All: one section, every Dragon in the snapshot in release order.
  * - Breedable now: one section, every Dragon Breedable now in `cave`, in
  *   snapshot order.
  * - Limited rotation: one section, the overlay's list with end dates.
@@ -26,6 +27,10 @@ export function tabContents(world: World, tab: Tab, cave: Cave): TabContents {
       const page = world.snapshot.pages.find((p) => p.name === tab.page);
       if (!page) return contents([]);
       return contents([{ kind: 'page', page, items: itemsFor(world, page.dragons) }]);
+    }
+    case 'all': {
+      const items = [...world.snapshot.dragons].sort((a, b) => a.order - b.order).map((dragon) => ({ dragon }));
+      return contents([{ kind: 'all', items }]);
     }
     case 'breedable': {
       const names = breedableNow(world, cave);
