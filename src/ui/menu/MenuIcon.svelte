@@ -35,17 +35,12 @@
     object-fit: contain;
     display: block;
   }
-  /* Art with a wide frame: zoom in and clip to a circle. */
-  .crop {
-    overflow: hidden;
-    border-radius: 50%;
-  }
+  /*
+   * A square already cut to a disc (the hourglass): clip to a circle, no
+   * zoom, so the frame's corners go and the disc fills the icon box like the
+   * other icons' art does.
+   */
   .crop img {
-    position: absolute;
-    width: 190%;
-    height: 190%;
-    max-width: none;
-    left: -45%;
-    top: -45%;
+    border-radius: 50%;
   }
 </style>

@@ -21,7 +21,10 @@ export const GROUP_TITLES: Record<DragonariumPage['group'], string> = {
 };
 
 export const BREEDABLE_ICON: IconSpec = { src: MENU_ICONS.breedable };
-/** The hourglass art has a wide frame; it is cropped to a circle. */
+/**
+ * The hourglass: the scraper already cut the green disc out of the wiki's
+ * framed art; the circle clip removes the frame's corners left in the square.
+ */
 export const LIMITED_ICON: IconSpec = { src: MENU_ICONS.limited, crop: true };
 
 /**
