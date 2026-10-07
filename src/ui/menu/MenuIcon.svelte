@@ -1,7 +1,7 @@
 <!--
   A small menu icon (tab, page, cave or Event art) from public/images. Falls
-  back to `icon.fallback` when the file is missing, and draws nothing if that
-  fails too. Size comes from `--icon-size` (default 20px).
+  back to each of `icon.fallbacks` in turn when a file is missing, and draws
+  nothing if they all fail. Size comes from `--icon-size` (default 20px).
 -->
 <script lang="ts">
   import { assetUrl } from '../tile/labels';
@@ -11,7 +11,7 @@
 
   /** Sources that failed to load. */
   let failed = $state<readonly string[]>([]);
-  const src = $derived([icon.src, icon.fallback].find((s) => s !== undefined && !failed.includes(s)));
+  const src = $derived([icon.src, ...(icon.fallbacks ?? [])].find((s) => !failed.includes(s)));
 </script>
 
 {#if src}

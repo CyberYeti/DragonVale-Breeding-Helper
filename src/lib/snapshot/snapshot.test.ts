@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   SCHEMA_VERSION,
+  eventIconPaths,
   loadSnapshot,
   type Route,
   type RouteKind,
@@ -91,5 +92,17 @@ describe('loadSnapshot', () => {
     expect(() => loadSnapshot({})).toThrow(/no meta\.schemaVersion/);
     expect(() => loadSnapshot(null)).toThrow(/no meta\.schemaVersion/);
     expect(() => loadSnapshot([])).toThrow(/no meta\.schemaVersion/);
+  });
+});
+
+describe('eventIconPaths', () => {
+  it('tries the full name, then the series before the ":"', () => {
+    expect(eventIconPaths('Om of Noms: Country Roads II')).toEqual([
+      'images/events/omofnomscountryroadsii.png',
+      'images/events/omofnoms.png',
+    ]);
+  });
+  it('has one path for a name with no series', () => {
+    expect(eventIconPaths('Dragon Derby')).toEqual(['images/events/dragonderby.png']);
   });
 });

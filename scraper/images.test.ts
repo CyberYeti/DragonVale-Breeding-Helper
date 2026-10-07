@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { crc32, deflateSync, inflateSync } from 'node:zlib';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { MENU_ICONS, SCHEMA_VERSION, eventIconPath, type Dragon, type Snapshot } from '../src/lib/snapshot';
+import { MENU_ICONS, SCHEMA_VERSION, eventIconPaths, type Dragon, type Snapshot } from '../src/lib/snapshot';
 import { currentEventNames, downloadImages, type DownloadOptions, type ImageOverrides } from './images';
 import type { RawPages } from './pages';
 
@@ -167,16 +167,58 @@ describe('downloadImages', () => {
         'Icon Fire.png',
         'GemstoneAllDragonariumIcon.png',
         'OmofNomsDragonariumIcon.png',
-        'OmofNomsCountryRoadsIIDragonariumIcon.png',
+        'OmOfNomsCountryRoadsIIDragonariumIcon.png',
       ]),
     );
     expect(out.dragons[0]!.image).toBe('images/dragons/DrakE.png');
     expect(out.elements[0]!.icon).toBe('images/elements/Fire.png');
     expect(out.pages.map((p) => p.icon)).toEqual(['images/pages/GemstoneAll.png', 'images/pages/OmofNoms.png']);
-    expect(eventIconPath(event)).toBe('images/events/OmofNomsCountryRoadsII.png');
-    for (const path of [...Object.values(MENU_ICONS), out.dragons[0]!.image!, eventIconPath(event)]) {
+    // The wiki has the full-name icon here, so it is saved under the full-name key.
+    expect(eventIconPaths(event)[0]).toBe('images/events/omofnomscountryroadsii.png');
+    for (const path of [...Object.values(MENU_ICONS), out.dragons[0]!.image!, eventIconPaths(event)[0]!]) {
       expect(await onDisk(path), path).toBe(true);
     }
+  });
+
+  // ---- Event icons ----------------------------------------------------------------
+
+  const roads = 'Om of Noms: Country Roads II';
+  const eventIconFiles = [
+    'OmOfNomsCountryRoadsIIDragonariumIcon.png',
+    'OmofNomsCountryRoadsIIDragonariumIcon.png',
+    'OmOfNomsDragonariumIcon.png',
+    'OmofNomsDragonariumIcon.png',
+  ];
+
+  it("tries an Event's full name, then its series, title-cased then plain, in one imageinfo query", async () => {
+    const wiki = fakeWiki({ absent: new Set(eventIconFiles.filter((f) => f !== 'OmOfNomsDragonariumIcon.png')) });
+    const { report } = await downloadImages(snapshot([]), options(wiki.fetchFn, { eventNames: [roads] }));
+    expect(wiki.queries).toHaveLength(1);
+    expect(wiki.asked().filter((f) => eventIconFiles.includes(f))).toEqual(eventIconFiles);
+    // The series' icon, saved under the series key, which the app tries second.
+    expect(wiki.urls).toContain('https://cdn/OmOfNomsDragonariumIcon.png/120?format=original');
+    expect(report.downloaded).toContain('images/events/omofnoms.png');
+    expect(eventIconPaths(roads)[1]).toBe('images/events/omofnoms.png');
+    expect(await onDisk('images/events/omofnomscountryroadsii.png')).toBe(false);
+    expect(report.missing).toEqual([]);
+  });
+
+  it('downloads a series icon once for two Events of the series, and skips it next run', async () => {
+    const absent = new Set([...eventIconFiles.slice(0, 2), 'OmOfNomsBigDragonariumIcon.png', 'OmofNomsBigDragonariumIcon.png']);
+    const first = fakeWiki({ absent });
+    const { report } = await downloadImages(snapshot([]), options(first.fetchFn, { eventNames: [roads, 'Om of Noms: Big'] }));
+    expect(report.downloaded.filter((p) => p.startsWith('images/events/'))).toEqual(['images/events/omofnoms.png']);
+
+    const second = fakeWiki({ absent });
+    await downloadImages(snapshot([]), options(second.fetchFn, { eventNames: [roads] }));
+    expect(second.asked().filter((f) => eventIconFiles.includes(f))).toEqual([]);
+  });
+
+  it('reports an Event with no icon as missing, without a warning', async () => {
+    const wiki = fakeWiki({ absent: new Set(eventIconFiles) });
+    const { report } = await downloadImages(snapshot([]), options(wiki.fetchFn, { eventNames: [roads] }));
+    expect(report.missing.map((t) => [t.kind, t.key])).toEqual([['event', roads]]);
+    expect(report.warnings).toEqual([]);
   });
 
   it('honours Dragon, Element and page overrides passed in', async () => {
