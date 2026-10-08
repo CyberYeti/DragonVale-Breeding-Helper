@@ -5,12 +5,19 @@
 -->
 <script lang="ts">
   import { BaseEdge, EdgeLabel, getBezierPath, type EdgeProps } from '@xyflow/svelte';
-  import type { FlowEdge } from './flow';
+  import { loopPath, type FlowEdge } from './flow';
 
   let { id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, data, markerEnd }: EdgeProps<FlowEdge> =
     $props();
 
-  const path = $derived(getBezierPath({ sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition }));
+  /** The curve and the middle for the label. A loop edge swings round the nodes (see `loopPath`). */
+  const path = $derived.by(() => {
+    if (data?.loop) {
+      const loop = loopPath(sourceX, sourceY, targetX, targetY);
+      return [loop.d, loop.mx, loop.my] as const;
+    }
+    return getBezierPath({ sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition });
+  });
   const badges = $derived(data?.edge.badges ?? []);
 </script>
 

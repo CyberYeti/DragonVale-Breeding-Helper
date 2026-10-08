@@ -18,6 +18,8 @@
   /* Click panel headlines: not met, no Valid pair yet */
   --bad: #c62828;
   --warn: #b26a00;
+  /* Arrows that close a loop in a graph */
+  --loop: #ef6c00;
   /* Banners across the art */
   --banner-bg: #000b;
   --banner-blocked-bg: #5a1a1ae6;
@@ -45,6 +47,7 @@
     --line: #383840;
     --bad: #ef6c6c;
     --warn: #f0a840;
+    --loop: #ff9d2e;
   }
 }
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Dragon } from '../../snapshot';
 import type { Form } from '../collection';
-import { focusTree, type GraphModel, type GraphNodeKind } from '../graph';
+import { focusTree, tabGraph, type GraphModel, type GraphNodeKind } from '../graph';
 import { bred, dragon, primaries, realCast, world, type Owned } from '../testing/fixtures';
 import { BIG_GRAPH_NODES, layout, type Layout, type LayoutInput } from './index';
 
@@ -91,27 +91,25 @@ describe('layout of a Focus tree', () => {
     expect(downwardEdges(input, placed)).toEqual([]);
     expectTopHighest(input, placed);
   });
+});
 
-  it('keeps the Target highest in a cycle; only the edge closing it points down (Chrysalis family)', () => {
-    const m = focus(
-      [
+describe('layout without a top node', () => {
+  it('keeps a cycle in a tab graph; only the edge closing it points down (Chrysalis family)', () => {
+    const w = world({
+      dragons: [
         ...primaries(),
         dragon({ name: 'Chrysalis', elements: ['Plant'], routes: [bred({ parents: ['Butterfly'] }), bred({ parents: ['Moth'] })] }),
         dragon({ name: 'Butterfly', elements: ['Plant'], routes: [bred({ parents: ['Moth'] })] }),
         dragon({ name: 'Moth', elements: ['Plant'], routes: [bred({ parents: ['Chrysalis'] })] }),
       ],
-      'Chrysalis',
-    );
+    });
+    const m = tabGraph(w, ['Chrysalis', 'Butterfly', 'Moth'], 'normal');
     const input = toInput(m);
     const placed = layout(input);
-    expectTopHighest(input, placed);
-    // The Target back into Moth's Route.
-    expect(downwardEdges(input, placed)).toEqual([{ source: m.target!.node, target: expect.any(String) }]);
+    expect(downwardEdges(input, placed)).toHaveLength(1);
     expectNoOverlap(input, placed);
   });
-});
 
-describe('layout without a top node', () => {
   it('places an acyclic graph bottom-up, newest on top', () => {
     const input: LayoutInput = {
       nodes: ['Fire', 'Earth', 'r1', 'Lava', 'r2', 'Ember'].map((id) => ({ id, width: 50, height: 30 })),

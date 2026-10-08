@@ -105,11 +105,11 @@ export function layout(input: LayoutInput, options: LayoutOptions = {}): Layout 
 }
 
 /**
- * Indexes of the edges that close a cycle. A depth-first walk goes down
+ * Indexes of the edges that close a cycle (`layout` turns these round). A depth-first walk goes down
  * (target → source) from `top`, then from each sink, then from anything left;
  * an edge leading back to a node still on the walk's path closes a cycle.
  */
-function cycleClosingEdges(input: LayoutInput): Set<number> {
+export function cycleClosingEdges(input: LayoutInput): Set<number> {
   const below = new Map<string, number[]>(input.nodes.map((n) => [n.id, []]));
   const hasOut = new Set<string>();
   input.edges.forEach((e, i) => {

@@ -145,7 +145,7 @@ export type GraphEdge = {
  * On a Route's out-edge (pill → Dragon): purchase-only, self-parent,
  * cannot-be-parent, not-available, no-valid-pair, condition, other-cave. On an in-edge:
  * both-parents, decoration (evolves-from), any-dragon (coop-only). On a
- * Dragon node: owned, purchased, summoned, dead-end.
+ * Dragon node: owned, purchased, summoned, dead-end, loop.
  */
 export type Badge = { readonly label: string } & (
   | { readonly kind: 'owned' }
@@ -153,6 +153,11 @@ export type Badge = { readonly label: string } & (
   | { readonly kind: 'summoned'; readonly artifacts: readonly string[] }
   /** A Dragon none of whose Routes can be bred (Summoned, Purchased): its branch ends. */
   | { readonly kind: 'dead-end' }
+  /**
+   * A Focus view left out a Route of this Dragon because it needs these
+   * Dragons, which are already above it on the path from the Target.
+   */
+  | { readonly kind: 'loop'; readonly dragons: readonly string[] }
   /**
    * The Route names Dragons that can't be parents (spec §9 rule 9). They
    * aren't drawn as its parents, and the Route is never met.

@@ -46,7 +46,7 @@ export function focusIn(world: World, target: Target, cave: Cave, members: Reado
   if (!dragon) throw new Error(`focusTree: no Dragon named ${target.dragon}`);
   const form = formFor(dragon, target.form);
 
-  const build = new Builder(world, cave, new Set([dragonId(dragon.name, form)]), members);
+  const build = new Builder(world, cave, new Set([dragonId(dragon.name, form)]), members, true);
   const node = build.dragon(dragon, form, isOwned(world.collection, dragon, form));
   build.expand(node, dragon);
 
@@ -64,18 +64,23 @@ export const dragonId = (name: string, form: Form): NodeId => `dragon:${name}:${
  * Builds a model by the Focus view rules. `roots` are drawn as Targets: always
  * expanded, dimmed when not Available, badged when owned. The Focus view has
  * one; a tab graph has every Dragon of the tab. With `members` set, every
- * other Dragon node is `outside`.
+ * other Dragon node is `outside`. With `cutLoops` set (the Focus view), a Route
+ * that needs a Dragon already on the path down from the Target is not drawn;
+ * a `loop` badge on its Dragon says so.
  */
 export class Builder {
   private readonly nodeMap = new Map<NodeId, GraphNode | MutableDragonNode>();
   private readonly edgeMap = new Map<string, GraphEdge>();
   private readonly generation: ReadonlyMap<string, number>;
+  /** The Dragon nodes being expanded, from the root down to the one in hand. */
+  private readonly path = new Set<NodeId>();
 
   constructor(
     private readonly world: World,
     private readonly cave: Cave,
     private readonly roots: ReadonlySet<NodeId>,
     private readonly members: ReadonlySet<NodeId> | null = null,
+    private readonly cutLoops = false,
   ) {
     this.generation = generations(world);
   }
@@ -121,6 +126,7 @@ export class Builder {
     if (node.expanded) return;
     if (!this.roots.has(node.id) && node.owned) return;
     node.expanded = true;
+    this.path.add(node.id);
 
     let breedable = false;
     dragon.routes.forEach((route, index) => {
@@ -146,6 +152,22 @@ export class Builder {
       }
     });
     if (!breedable) node.badges.push(badge({ kind: 'dead-end' }));
+    this.path.delete(node.id);
+  }
+
+  /**
+   * Whether the Route needs a Dragon already above `owner` on the path. If so,
+   * a `loop` badge on `owner` names them and the Route is left out: getting
+   * that Dragon just to breed itself makes no sense.
+   */
+  private loopsBack(owner: MutableDragonNode, needs: readonly { dragon: Dragon; form: Form }[]): boolean {
+    if (!this.cutLoops) return false;
+    const names = needs.filter((n) => this.path.has(dragonId(n.dragon.name, n.form))).map((n) => n.dragon.name);
+    if (names.length === 0) return false;
+    const before = owner.badges.find((b) => b.kind === 'loop');
+    const all = [...new Set([...(before?.kind === 'loop' ? before.dragons : []), ...names])];
+    owner.badges = [...owner.badges.filter((b) => b !== before), badge({ kind: 'loop', dragons: all })];
+    return true;
   }
 
   private bredRoute(owner: MutableDragonNode, dragon: Dragon, route: BredRoute, index: number): void {
@@ -166,6 +188,7 @@ export class Builder {
     // says it needs one instead, and is never met.
     const parents = named.filter((p) => p.canBeParent && p.name !== dragon.name);
     const nonParents = named.filter((p) => !p.canBeParent).map((p) => p.name);
+    if (this.loopsBack(owner, parents.map((p) => ({ dragon: p, form: formFor(p, breeding) })))) return;
     const met = status.met && nonParents.length === 0;
     const unavailable = parents
       .filter((p) => !parentSet.names.has(p.name) && !this.world.available.has(p.name))
@@ -238,6 +261,7 @@ export class Builder {
     const status = routeStatus(this.world, dragon, route, owner.form);
     const base = this.world.dragons.get(route.from);
     const baseForm = base ? formFor(base, owner.form) : owner.form;
+    if (base && this.loopsBack(owner, [{ dragon: base, form: baseForm }])) return;
     const baseOwned = base ? isOwned(this.world.collection, base, baseForm) : false;
     const unavailable = base && !baseOwned && !this.world.available.has(base.name);
 

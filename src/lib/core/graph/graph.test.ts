@@ -307,25 +307,56 @@ describe('rule 3: only missing named parents expand', () => {
     }
   });
 
-  it('draws an extra edge to a Dragon already in the view and handles cycles (Chrysalis family)', () => {
+  it('shares a Dragon reached twice without a loop: one node, two edges', () => {
+    const dragons = [
+      ...primaries(),
+      dragon({ name: 'Top', elements: ['Plant'], routes: [bred({ parents: ['Left', 'Right'] })] }),
+      dragon({ name: 'Left', elements: ['Plant'], routes: [bred({ parents: ['Base'] })] }),
+      dragon({ name: 'Right', elements: ['Plant'], routes: [bred({ parents: ['Base'] })] }),
+      dragon({ name: 'Base', elements: ['Plant'], routes: [bred(['Plant'])] }),
+    ];
+    const m = focus({ dragons }, 'Top');
+    expectWellFormed(m);
+    expect(m.edges.filter((e) => e.source === dragonNode(m, 'Base').id)).toHaveLength(2);
+    expect(m.nodes.some((n) => n.kind === 'dragon' && kinds(n.badges).includes('loop'))).toBe(false);
+  });
+
+  it('cuts a Route that needs a Dragon already above it, and says so (loops)', () => {
+    // A needs C, B needs A, C needs B, and D needs B: D <- B <- A <- C, and C's
+    // Route (which needs B, above it) is left out.
+    const dragons = [
+      ...primaries(),
+      dragon({ name: 'D', elements: ['Plant'], routes: [bred({ parents: ['B'] })] }),
+      dragon({ name: 'B', elements: ['Plant'], routes: [bred({ parents: ['A'] })] }),
+      dragon({ name: 'A', elements: ['Plant'], routes: [bred({ parents: ['C'] })] }),
+      dragon({ name: 'C', elements: ['Plant'], routes: [bred({ parents: ['B'] })] }),
+    ];
+    const m = focus({ dragons }, 'D');
+    expectWellFormed(m);
+    const c = dragonNode(m, 'C');
+    expect(routesOf(m, c)).toEqual([]);
+    expect(m.edges.some((e) => e.source === dragonNode(m, 'B').id && e.target.includes(c.id))).toBe(false);
+    expect(m.edges.filter((e) => e.source === c.id)).toHaveLength(1);
+    expect(c.badges.map((b) => b.label)).toEqual(['Route via B not shown: already above']);
+    expect(kinds(c.badges)).not.toContain('dead-end');
+    expect(m.nodes.filter((n) => n.kind === 'dragon')).toHaveLength(4);
+  });
+
+  it("keeps a Dragon's other Routes when only one loops back (Chrysalis family)", () => {
     const dragons = [
       ...primaries(),
       dragon({ name: 'Chrysalis', elements: ['Plant'], routes: [bred({ parents: ['Butterfly'] }), bred({ parents: ['Moth'] })] }),
       dragon({ name: 'Butterfly', elements: ['Plant'], routes: [bred({ parents: ['Moth'] })] }),
-      dragon({ name: 'Moth', elements: ['Plant'], routes: [bred({ parents: ['Chrysalis'] })] }),
+      dragon({ name: 'Moth', elements: ['Plant'], routes: [bred({ parents: ['Chrysalis'] }), bred(['Plant'])] }),
     ];
     const m = focus({ dragons }, 'Chrysalis');
     expectWellFormed(m);
-    expect(m.nodes.filter((n) => n.kind === 'dragon').map((n) => (n as DragonNode).dragon)).toEqual([
-      'Chrysalis',
-      'Butterfly',
-      'Moth',
-    ]);
     const moth = dragonNode(m, 'Moth');
-    // Moth feeds Butterfly's Route and Chrysalis's second Route: one node, two edges.
+    expect(routesOf(m, moth)).toHaveLength(1);
+    expect(describeInputs(m, onlyRoute(m, moth))).toEqual(['[Plant]']);
+    expect(kinds(moth.badges)).toEqual(['loop']);
+    // Moth still feeds Butterfly's Route and Chrysalis's second Route.
     expect(m.edges.filter((e) => e.source === moth.id)).toHaveLength(2);
-    // The cycle back to the Target is an edge into Moth's Route, not a new node.
-    expect(describeInputs(m, onlyRoute(m, moth))).toEqual(['Chrysalis']);
   });
 });
 

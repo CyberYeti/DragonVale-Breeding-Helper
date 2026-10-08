@@ -55,6 +55,7 @@
     type FlowNode,
   } from './flow';
   import { easeInOut, MOVE_MS, reducedMotion } from './motion';
+  import GraphKey from './GraphKey.svelte';
   import DragonNode from './nodes/DragonNode.svelte';
   import ElementNode from './nodes/ElementNode.svelte';
   import FriendNode from './nodes/FriendNode.svelte';
@@ -375,15 +376,18 @@
         <svg class="background" class:faint={tree !== null} aria-hidden="true">
           <path class="other" d={still.other} />
           <path class="met" d={still.met} />
+          <path class="loop" d={still.loop} />
           {#if dragPaths}
             <path class="other" d={dragPaths.live.other} />
             <path class="met" d={dragPaths.live.met} />
+            <path class="loop" d={dragPaths.live.loop} />
           {/if}
         </svg>
       </ViewportPortal>
     {/if}
     <Controls showLock={false} />
   </SvelteFlow>
+  <GraphKey {model} />
 </div>
 
 <style>
@@ -442,6 +446,10 @@
     stroke: var(--own);
     stroke-opacity: 0.7;
   }
+  .background .loop {
+    stroke: var(--loop);
+    stroke-opacity: 0.85;
+  }
   .background.faint path {
     stroke-opacity: 0.08;
     stroke-width: 1;
@@ -496,6 +504,10 @@
     stroke: #c62828;
     stroke-dasharray: 5 4;
   }
+  .canvas :global(.svelte-flow__edge.is-loop .svelte-flow__edge-path) {
+    stroke: var(--loop);
+    stroke-width: 2;
+  }
   .canvas :global(.svelte-flow__edge.ge-evolves-from .svelte-flow__edge-path) {
     stroke-dasharray: 7 4;
   }
@@ -530,6 +542,7 @@
   .canvas :global(.chip.b-purchase-only),
   .canvas :global(.chip.b-not-available),
   .canvas :global(.chip.b-dead-end),
+  .canvas :global(.chip.b-loop),
   .canvas :global(.chip.b-cannot-be-parent) {
     border-color: #c62828;
     color: #c62828;

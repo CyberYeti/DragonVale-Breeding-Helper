@@ -4,12 +4,12 @@
 
 import { MarkerType, type Edge, type Node } from '@xyflow/svelte';
 import type { GraphEdge, GraphModel, GraphNode, GraphNodeKind, NodeId } from '../../lib/core/graph';
-import { layout, type Layout, type Position } from '../../lib/core/layout';
+import { cycleClosingEdges, layout, type Layout, type Position } from '../../lib/core/layout';
 
 /** Svelte Flow's `type` for each kind of node is the GraphNode kind. */
 export type FlowNodeData = { node: GraphNode; target: boolean };
-/** `lit`: on the selected Route's path, drawn at full brightness. */
-export type FlowEdgeData = { edge: GraphEdge; lit: boolean };
+/** `lit`: on the selected Route's path, drawn at full brightness. `loop`: closes a cycle, drawn curved and coloured. */
+export type FlowEdgeData = { edge: GraphEdge; lit: boolean; loop: boolean };
 export type FlowNode = Node<FlowNodeData, GraphNodeKind>;
 export type FlowEdge = Edge<FlowEdgeData, 'badge'>;
 
@@ -111,10 +111,50 @@ function placeAll(nodes: readonly GraphNode[], edges: readonly GraphEdge[], top:
   );
 }
 
+const loopCache = new WeakMap<GraphModel, ReadonlySet<string>>();
+
+/**
+ * The ids of the edges that close a cycle: the ones the layout turns round, so
+ * they point down the page. A pulled tree is a Focus view, which has no loops,
+ * so only the faded tab graph behind it counts.
+ */
+export function loopEdges(model: GraphModel): ReadonlySet<string> {
+  let found = loopCache.get(model);
+  if (!found) {
+    const pulled = model.nodes.some((n) => n.pull !== undefined);
+    const edges = model.edges.filter((e) => e.pull !== 'lit');
+    const closing = cycleClosingEdges({
+      nodes: model.nodes.map((n) => ({ id: n.id, width: 0, height: 0 })),
+      edges: edges.map((e) => ({ source: e.source, target: e.target })),
+      top: pulled ? null : (model.target?.node ?? null),
+    });
+    loopCache.set(model, (found = new Set([...closing].map((i) => edges[i]!.id))));
+  }
+  return found;
+}
+
+/**
+ * A loop edge's curve, from the top of what is needed (x1, y1) down to the
+ * bottom of what it makes (x2, y2): it leaves upward, swings out past the
+ * source's side so it clears the nodes between, and comes back up into the
+ * target. `mx`, `my` is the middle, for the label.
+ */
+export function loopPath(x1: number, y1: number, x2: number, y2: number): { d: string; mx: number; my: number } {
+  const reach = 70 + Math.min(Math.abs(y2 - y1) * 0.1, 120);
+  const xo = Math.round(x1 >= x2 ? Math.max(x1, x2) + reach : Math.min(x1, x2) - reach);
+  const ya = Math.round(y1 - 60);
+  const yb = Math.round(y2 + 60);
+  return {
+    d: `M${Math.round(x1)} ${Math.round(y1)}C${xo} ${ya} ${xo} ${yb} ${Math.round(x2)} ${Math.round(y2)}`,
+    mx: (x1 + 6 * xo + x2) / 8,
+    my: (y1 + 3 * ya + 3 * yb + y2) / 8,
+  };
+}
+
 /**
  * Large graphs (spec §9 Performance rules) draw every edge that isn't lit as
  * part of a merged SVG path behind the nodes instead of as a Svelte Flow edge:
- * one path for met edges and one for the rest. Each runs from the top middle
+ * one path for met edges, one for loop edges and one for the rest. Each runs from the top middle
  * of what is needed to the bottom middle of what it makes, as the real edges
  * do. Positions are where the nodes sit in the tab graph. `include` picks
  * some of the edges, so a drag can redraw just the ones touching the
@@ -124,9 +164,11 @@ export function backgroundPaths(
   model: GraphModel,
   positions: ReadonlyMap<NodeId, Position>,
   include: (edge: GraphEdge) => boolean = () => true,
-): { readonly met: string; readonly other: string } {
+): { readonly met: string; readonly loop: string; readonly other: string } {
+  const loops = loopEdges(model);
   const boxes = new Map(model.nodes.map((n) => [n.id, nodeSize(n, false)]));
   let met = '';
+  let loop = '';
   let other = '';
   for (const e of model.edges) {
     if (e.pull === 'lit' || !include(e)) continue;
@@ -140,11 +182,15 @@ export function backgroundPaths(
     const x2 = Math.round(b.x + sb.width / 2);
     const y2 = Math.round(b.y + sb.height);
     const my = Math.round((y1 + y2) / 2);
+    if (loops.has(e.id)) {
+      loop += loopPath(x1, y1, x2, y2).d;
+      continue;
+    }
     const d = `M${x1} ${y1}C${x1} ${my} ${x2} ${my} ${x2} ${y2}`;
     if (e.state === 'met') met += d;
     else other += d;
   }
-  return { met, other };
+  return { met, loop, other };
 }
 
 /** The box around the nodes `include` picks at `positions`, in flow px; null when it picks none. */
@@ -171,6 +217,7 @@ export function nodesBounds(
 }
 
 /** Edge colours by state, matching the CSS in GraphCanvas. */
+const LOOP_COLOUR = '#ef6c00';
 const MARKER_COLOURS: Record<GraphEdge['state'], string> = {
   normal: '#8a8a92',
   met: '#2e7d32',
@@ -237,16 +284,22 @@ export function toFlowNodes(model: GraphModel, { positions, selected, sized, mov
 
 export function toFlowEdges(model: GraphModel, { selected }: Pick<ToFlowOptions, 'selected'> = {}): FlowEdge[] {
   const lit = selectedPath(model, selected);
+  const loops = loopEdges(model);
   return model.edges.map((edge) => ({
     id: edge.id,
     type: 'badge',
     source: edge.source,
     target: edge.target,
-    data: { edge, lit: lit.has(edge.id) },
+    data: { edge, lit: lit.has(edge.id), loop: loops.has(edge.id) },
     selectable: false,
     focusable: false,
-    class: classes(`ge-${edge.kind} st-${edge.state}`, edge.pull && `pull-${edge.pull}`, lit.has(edge.id) && 'lit'),
-    markerEnd: { type: MarkerType.ArrowClosed, width: 14, height: 14, color: MARKER_COLOURS[edge.state] },
+    class: classes(`ge-${edge.kind} st-${edge.state}`, edge.pull && `pull-${edge.pull}`, lit.has(edge.id) && 'lit', loops.has(edge.id) && 'is-loop'),
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      width: 14,
+      height: 14,
+      color: loops.has(edge.id) ? LOOP_COLOUR : MARKER_COLOURS[edge.state],
+    },
     zIndex: edge.pull === 'faded' ? 0 : 1,
   }));
 }

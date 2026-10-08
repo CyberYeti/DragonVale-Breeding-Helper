@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import type { GraphModel } from '../../lib/core/graph';
 import type { Position } from '../../lib/core/layout';
-import { backgroundPaths, nodesBounds } from './flow';
+import { backgroundPaths, loopEdges, loopPath, nodesBounds } from './flow';
 
 const element = (id: string, pull?: 'lit' | 'faded') => ({ id, kind: 'element', pull }) as const;
 const edge = (id: string, source: string, target: string, pull?: 'lit' | 'faded') =>
@@ -48,5 +48,38 @@ describe('backgroundPaths', () => {
     expect(after).not.toBe(before);
     // Both edges now end at the bottom middle of c's new box.
     expect(after.match(/28 564/g)).toHaveLength(2);
+  });
+});
+
+describe('loop edges', () => {
+  // a -> b -> c -> a: one edge closes the cycle.
+  const cycle = {
+    nodes: [element('a'), element('b'), element('c')],
+    edges: [edge('ab', 'a', 'b'), edge('bc', 'b', 'c'), edge('ca', 'c', 'a')],
+    target: null,
+  } as unknown as GraphModel;
+
+  it('finds exactly the edge that closes a cycle, and none in an acyclic graph', () => {
+    expect([...loopEdges(cycle)]).toHaveLength(1);
+    expect(loopEdges(model).size).toBe(0);
+  });
+
+  it('draws loop edges as their own background path, curved out past the source', () => {
+    const at = new Map<string, Position>([
+      ['a', { x: 0, y: 400 }],
+      ['b', { x: 0, y: 200 }],
+      ['c', { x: 0, y: 0 }],
+    ]);
+    const paths = backgroundPaths(cycle, at);
+    expect(paths.loop.match(/M/g)).toHaveLength(1);
+    expect(paths.other.match(/M/g)).toHaveLength(2);
+  });
+
+  it('loopPath leaves the source upward and ends at the target', () => {
+    const { d, mx } = loopPath(100, 50, 100, 300);
+    expect(d.startsWith('M100 50C')).toBe(true);
+    expect(d.endsWith(' 100 300')).toBe(true);
+    expect(mx).toBeGreaterThan(100);
+    expect(loopPath(100, 50, 300, 300).mx).toBeLessThan(100);
   });
 });
