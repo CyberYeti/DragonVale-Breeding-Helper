@@ -2,9 +2,10 @@
 // can't fail at runtime, so nothing here throws: junk is skipped, unknown names
 // are reported, bad dates mean "no end date".
 
+import { NameMatcher } from './fuzzy';
 import type { EndDate, LimitedEvent, Overlay, RotationEntry, ShopEntry } from './types';
 
-export const emptyOverlay = (): Overlay => ({ rotation: [], events: [], notRecognised: [] });
+export const emptyOverlay = (): Overlay => ({ rotation: [], events: [], notRecognised: [], corrected: [] });
 
 /**
  * Parses the page's text (the page content itself, not the api.php envelope)
@@ -14,7 +15,9 @@ export const emptyOverlay = (): Overlay => ({ rotation: [], events: [], notRecog
  *   shop. Other top-level keys (`decorations`, `islandThemes`, …) are ignored.
  * - Shop entries that aren't objects or have no `Cost` are skipped (today
  *   `islands`, `islandThemes`).
- * - Names match `dragonNames` exactly; the rest go in `notRecognised`.
+ * - Names match `dragonNames` exactly. A name that is clearly a typo of exactly
+ *   one Dragon (see `NameMatcher`) counts as that Dragon and is listed in
+ *   `corrected`; the rest go in `notRecognised`.
  * - A Dragon's own `countdown` overrides its Event's. Anything whose end date
  *   is before `now`'s local day is absent; an Event that has ended takes its
  *   whole shop with it.
@@ -30,21 +33,32 @@ export function parseLimited(rawText: string, dragonNames: Iterable<string>, now
   }
   if (!isObject(page)) return emptyOverlay();
 
-  const known = new Set(dragonNames);
+  const names = [...dragonNames];
+  const known = new Set(names);
+  const matcher = new NameMatcher(names);
   const today = localDay(now);
   const notRecognised = new Set<string>();
-  const recognised = (name: string): boolean => {
-    if (known.has(name)) return true;
-    notRecognised.add(name);
-    return false;
+  const corrected = new Map<string, string>();
+  /** The Dragon `name` stands for, or null (and noted) when it is none. */
+  const resolve = (name: string): string | null => {
+    if (known.has(name)) return name;
+    const fixed = matcher.typoOf(name);
+    if (fixed === null) {
+      notRecognised.add(name);
+      return null;
+    }
+    corrected.set(name, fixed);
+    return fixed;
   };
 
   const rotation: RotationEntry[] = [];
   for (const [name, entry] of entries(page.dragons)) {
     if (!isObject(entry)) continue;
     const ends = endDate(entry.countdown);
-    if (hasEnded(ends, today) || !recognised(name)) continue;
-    rotation.push({ dragon: name, ends });
+    if (hasEnded(ends, today)) continue;
+    const dragon = resolve(name);
+    // A mistyped copy of a Dragon the page also lists correctly adds nothing.
+    if (dragon !== null && !rotation.some((r) => r.dragon === dragon)) rotation.push({ dragon, ends });
   }
 
   const events: LimitedEvent[] = [];
@@ -55,17 +69,24 @@ export function parseLimited(rawText: string, dragonNames: Iterable<string>, now
 
     let currency = typeof event.Currency === 'string' ? event.Currency : null;
     const shop: ShopEntry[] = [];
-    for (const [dragon, entry] of entries(event.dragons)) {
+    for (const [listed, entry] of entries(event.dragons)) {
       if (!isObject(entry) || !('Cost' in entry)) continue;
       const ends = endDate(entry.countdown) ?? eventEnds;
-      if (hasEnded(ends, today) || !recognised(dragon)) continue;
+      if (hasEnded(ends, today)) continue;
+      const dragon = resolve(listed);
+      if (dragon === null || shop.some((s) => s.dragon === dragon)) continue;
       if (currency === null && typeof entry.Currency === 'string') currency = entry.Currency;
       shop.push({ dragon, cost: toCost(entry.Cost), breedable: entry.Breedable !== false, ends });
     }
     events.push({ name, ends: eventEnds, currency, shop });
   }
 
-  return { rotation, events, notRecognised: [...notRecognised] };
+  return {
+    rotation,
+    events,
+    notRecognised: [...notRecognised],
+    corrected: [...corrected].map(([listed, dragon]) => ({ listed, dragon })),
+  };
 }
 
 type Obj = Record<string, unknown>;

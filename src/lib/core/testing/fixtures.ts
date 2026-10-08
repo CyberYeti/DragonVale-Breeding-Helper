@@ -347,6 +347,7 @@ export function overlay(spec: OverlaySpec | Overlay = {}): Overlay {
     rotation: (spec.rotation ?? []).map((e) => (typeof e === 'string' ? { dragon: e, ends: null } : e)),
     events: (spec.events ?? []).map((e, i) => event(e, i)),
     notRecognised: spec.notRecognised ?? [],
+    corrected: [],
   };
 }
 

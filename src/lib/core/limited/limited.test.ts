@@ -115,8 +115,9 @@ describe('hand-built pages', () => {
     );
     expect(overlay.rotation).toEqual([{ dragon: 'Love', ends: null }]);
     expect(shopNames(overlay, 0)).toEqual(['Jasmine']);
-    expect(shopNames(overlay, 1)).toEqual([]);
-    expect(overlay.notRecognised).toEqual(['love', 'Love Dragon', 'Mystery', 'Rose ']);
+    // 'Rose ' differs from Rose only in spacing, so it is read as Rose; 'love' repeats Love.
+    expect(shopNames(overlay, 1)).toEqual(['Rose']);
+    expect(overlay.notRecognised).toEqual(['Love Dragon', 'Mystery']);
   });
 
   it("lets a Dragon's own countdown override its Event's", () => {
@@ -202,7 +203,7 @@ describe('hand-built pages', () => {
   });
 
   it('gives an empty overlay for invalid JSON or a page of the wrong shape', () => {
-    const empty = { rotation: [], events: [], notRecognised: [] };
+    const empty = { rotation: [], events: [], notRecognised: [], corrected: [] };
     for (const raw of ['', '{"dragons": {', 'not json', 'null', '[]', '42', '"text"']) {
       expect(parseLimited(raw, names, at(2026, 10, 5)), raw).toEqual(empty);
     }

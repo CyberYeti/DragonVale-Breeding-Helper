@@ -12,7 +12,7 @@ import { buildWorld } from '../src/lib/core/world';
 const raw = await fetchPages({ kind: 'offline', dir: join(import.meta.dirname, '..', RAW_DIR) });
 const { snapshot } = buildSnapshot(raw, null);
 const NOW = new Date(2026, 9, 5, 12);
-const noOverlay = { rotation: [], events: [], notRecognised: [] };
+const noOverlay = { rotation: [], events: [], notRecognised: [], corrected: [] };
 
 /** A World owning every `step`-th Dragon that can be a parent, in every form. */
 function worldOwningEvery(step: number) {

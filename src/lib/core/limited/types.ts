@@ -8,6 +8,8 @@ export type Overlay = {
   events: LimitedEvent[];
   /** Names that matched no snapshot Dragon, once each, in page order. */
   notRecognised: string[];
+  /** Mistyped names read as the one Dragon they are clearly a typo of, once each, in page order. */
+  corrected: { listed: string; dragon: string }[];
 };
 
 /**

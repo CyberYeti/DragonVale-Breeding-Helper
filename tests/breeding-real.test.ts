@@ -11,7 +11,7 @@ import { buildWorld } from '../src/lib/core/world';
 const raw = await fetchPages({ kind: 'offline', dir: join(import.meta.dirname, '..', RAW_DIR) });
 const { snapshot } = buildSnapshot(raw, null);
 const NOW = new Date(2026, 9, 5, 12);
-const noOverlay = { rotation: [], events: [], notRecognised: [] };
+const noOverlay = { rotation: [], events: [], notRecognised: [], corrected: [] };
 
 /** A World owning `count` Dragons that can be parents, spread across the snapshot, in every form. */
 function worldOwning(count: number) {
