@@ -112,10 +112,13 @@ export type DragonPanel = {
   readonly form: Form;
   readonly isTarget: boolean;
   readonly status: DragonStatus;
-  /** "Owned", "Owned (Rift form)", "Breedable now", "Can't breed now". */
+  /**
+   * "Owned", "Owned (Rift form)", "Breedable now", "Can't breed now", or for a
+   * Dragon no cave ever breeds, how it's obtained ("Evolution only", ...).
+   */
   readonly headline: string;
   readonly tone: Tone;
-  /** Why it can't be bred now (empty unless `not-breedable`). */
+  /** Why it can't be bred or obtained now (empty unless `not-breedable`). */
   readonly reasons: readonly string[];
   readonly ticks: Listed['ticks'];
   readonly routes: readonly RouteSummary[];

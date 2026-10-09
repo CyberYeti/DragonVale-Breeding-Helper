@@ -46,7 +46,7 @@ A time-limited game event with its own shop of **Dragons**, bought with the even
 _Avoid_: Limited rotation (for these)
 
 **Available**:
-A limited **Dragon** that can be obtained right now: it is in the **Limited rotation** or in a running **Event**'s shop. An Event Dragon stops being Available when the Event ends, or earlier if it has its own end date. A Dragon that is not limited is always Available.
+A limited **Dragon** that can be obtained right now: it is in the **Limited rotation** or in a running **Event**'s shop. An Event Dragon stops being Available when the Event ends, or earlier if it has its own end date. A Dragon that is not limited is always Available, and so is a Dragon obtained only by evolving: evolving isn't tied to a window (outside an Event it costs gems), so only its base Dragon and decorations can be out of reach.
 _Avoid_: in rotation (for event Dragons)
 
 **Dragonarium page**:

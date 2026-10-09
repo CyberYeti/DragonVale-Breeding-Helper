@@ -211,17 +211,14 @@ function dragonPanel(world: World, cave: Cave, target: Target, dragon: Dragon, a
   const owned = isOwned(world.collection, dragon, form);
   const breedable = !owned && breedableNow(world, making).has(dragon.name);
 
+  // A Dragon no cave ever breeds is headed by how it's obtained instead.
+  const only = noBreeding(dragon);
   const reasons: string[] = [];
   if (!owned && !breedable) {
-    const only = noBreeding(dragon);
-    if (only) {
-      reasons.push(noBreedingText(only));
-    } else if (!caveCanMake(dragon, making)) {
-      reasons.push(`The ${caveName(making)} cave can't make it`);
-    }
+    if (!only && !caveCanMake(dragon, making)) reasons.push(`The ${caveName(making)} cave can't make it`);
     if (!world.available.has(dragon.name)) reasons.push(`${NOT_AVAILABLE} right now`);
     if (world.purchaseOnly.has(dragon.name)) reasons.push('Purchase only right now');
-    if (reasons.length === 0) reasons.push('No Route is met yet');
+    if (!only && reasons.length === 0) reasons.push('No Route is met yet');
   }
 
   const riftForm = form === 'rift' && formsOf(dragon).length > 1;
@@ -231,8 +228,14 @@ function dragonPanel(world: World, cave: Cave, target: Target, dragon: Dragon, a
     form,
     isTarget: dragon.name === target.dragon && formFor(dragon, target.form) === form,
     status: owned ? 'owned' : breedable ? 'breedable-now' : 'not-breedable',
-    headline: owned ? `Owned${riftForm ? ' (Rift form)' : ''}` : breedable ? 'Breedable now' : "Can't breed now",
-    tone: owned || breedable ? 'ok' : 'bad',
+    headline: owned
+      ? `Owned${riftForm ? ' (Rift form)' : ''}`
+      : breedable
+        ? 'Breedable now'
+        : only
+          ? noBreedingText(only)
+          : "Can't breed now",
+    tone: owned || breedable ? 'ok' : only ? 'muted' : 'bad',
     reasons,
     ticks: ticks(world.collection, dragon),
     routes: dragon.routes.map((route, index) => {

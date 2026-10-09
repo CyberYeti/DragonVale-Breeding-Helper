@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bred, coop, dragon, limited, primaries, summoned, world } from '../testing/fixtures';
+import { bred, coop, dragon, evolved, limited, primaries, summoned, world } from '../testing/fixtures';
 import type { Cave } from '../breeding';
 import type { World } from '../world';
 import {
@@ -252,6 +252,21 @@ describe('Dragon panel', () => {
     const w = world({ dragons: [...primaries(), haze, kairos], owned: ['Fire', 'Earth'] });
 
     expect(dragonPanel(w, 'Haze').reasons).toEqual(['Not available right now']);
-    expect(dragonPanel(w, 'Kairos').reasons).toEqual(['Summoning only']);
+    expect(dragonPanel(w, 'Kairos').reasons).toEqual([]);
+  });
+
+  it('names how a Dragon that can never be bred is obtained, instead of “Can’t breed now”', () => {
+    const kairos = dragon({ name: 'Kairos', rarity: 'Legendary', traits: 'none', routes: [summoned()] });
+    const draco1 = limited({ name: 'Dracomancy 1', elements: ['Dark'] });
+    const draco2 = limited({ name: 'Dracomancy 2', elements: ['Dark'], routes: [evolved('Dracomancy 1', ['Ominous Digsite'])] });
+    const w = world({ dragons: [...primaries(), kairos, draco1, draco2] });
+
+    const kairosPanel = dragonPanel(w, 'Kairos');
+    expect([kairosPanel.status, kairosPanel.headline, kairosPanel.tone]).toEqual(['not-breedable', 'Summoning only', 'muted']);
+
+    // Limited, but evolving isn't tied to a window: no "Not available".
+    const dracoPanel = dragonPanel(w, 'Dracomancy 2');
+    expect([dracoPanel.headline, dracoPanel.tone]).toEqual(['Evolution only', 'muted']);
+    expect(dracoPanel.reasons).toEqual([]);
   });
 });

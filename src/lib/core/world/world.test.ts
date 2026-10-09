@@ -6,6 +6,7 @@ import {
   YESTERDAY,
   collection,
   dragon,
+  evolved,
   limited,
   overlay,
   primaries,
@@ -71,6 +72,17 @@ describe('Available', () => {
   it('treats no end date as running', () => {
     const w = world({ dragons: [love()], overlay: { rotation: ['Love'] } });
     expect(w.available.has('Love')).toBe(true);
+  });
+});
+
+describe('Available, for evolution-only Dragons', () => {
+  it('always holds a limited Dragon that is only evolved, since evolving is never time-limited', () => {
+    const bone = dragon({ name: 'Bone', elements: ['Dark'] });
+    const draco1 = limited({ name: 'Dracomancy 1', elements: ['Dark'] });
+    const draco2 = limited({ name: 'Dracomancy 2', elements: ['Dark'], routes: [evolved('Dracomancy 1', ['Ominous Digsite'])] });
+    const w = world({ dragons: [...primaries(), bone, draco1, draco2] });
+    expect(w.available.has('Dracomancy 1')).toBe(false);
+    expect(w.available.has('Dracomancy 2')).toBe(true);
   });
 });
 

@@ -78,9 +78,21 @@ function liveLimited(
     }
   }
 
-  const available = new Set(dragons.filter((d) => !d.isLimited || limitedLive.has(d.name)).map((d) => d.name));
+  const available = new Set(
+    dragons.filter((d) => !d.isLimited || evolutionOnly(d) || limitedLive.has(d.name)).map((d) => d.name),
+  );
   return { available, purchaseOnly };
 }
+
+/**
+ * A Dragon obtained only by evolving. Evolving isn't tied to a window (it
+ * costs gems outside events), so such a Dragon is always Available even when
+ * the wiki marks it limited. Matches `noBreeding`'s 'evolution-only'.
+ */
+const evolutionOnly = (dragon: Dragon) => {
+  const kinds = new Set(dragon.routes.map((route) => route.kind));
+  return kinds.has('evolved') && !kinds.has('bred') && !kinds.has('coop') && !kinds.has('summoned');
+};
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
