@@ -37,8 +37,9 @@
 </footer>
 
 <style>
+  /* auto: the page column (MenuShell) pushes it to the bottom of a short page. */
   .footer {
-    margin-top: 8px;
+    margin-top: auto;
     padding: 12px;
     border-top: 1px solid var(--line);
     font-size: 12px;

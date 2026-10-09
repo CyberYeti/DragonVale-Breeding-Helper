@@ -3,7 +3,8 @@
 
   Desktop (spec §8 Desktop layout): the sidebar on the left; on the right the
   header, the page header and the tile grid, with the footer at the end of
-  the scrolling page.
+  the scrolling page, kept at the bottom when the page is shorter than the
+  screen.
 
   Phone, ≤ 700px (spec §8 Phone layout): the sidebar becomes a drawer opened
   by ☰ in the header or Dragonarium in the bottom nav; picking a tab closes
@@ -131,11 +132,17 @@
     display: flex;
     flex-direction: column;
   }
+  /* A column, so the footer's margin-top: auto keeps it at the bottom of a short page. */
   .scroll {
     flex: 1;
     min-height: 0;
     overflow: auto;
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .scroll > :global(*) {
+    flex: none;
   }
   .floating {
     position: relative;
