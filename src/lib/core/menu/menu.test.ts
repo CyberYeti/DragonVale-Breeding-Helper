@@ -84,10 +84,13 @@ function menuWorld(owned: Owned = [], overlay: OverlaySpec = EVENT, now = NOW): 
 const names = (sections: readonly Section[]) => sections.map((s) => s.items.map((i) => i.dragon.name));
 const flat = (sections: readonly Section[]) => names(sections).flat();
 
-const filters = (f: Partial<Omit<Filters, 'rarities'>> & { rarities?: Rarity[] } = {}): Filters => ({
+const filters = (
+  f: Partial<Omit<Filters, 'rarities' | 'elements'>> & { rarities?: Rarity[]; elements?: string[] } = {},
+): Filters => ({
   ...NO_FILTERS,
   ...f,
   rarities: new Set(f.rarities ?? []),
+  elements: new Set(f.elements ?? []),
 });
 
 const either = { ownedForms: 'either' as OwnedForms };
@@ -248,6 +251,23 @@ describe('applyView filters', () => {
     expect(flat(view(w, PLANT, filters({ rarities: [] })).sections)).toHaveLength(5);
   });
 
+  it('Element alone: a Dragon must display every ticked Element; none ticked means all', () => {
+    const w = menuWorld(owned);
+    expect(flat(view(w, FIRE, filters({ elements: ['Plant'] })).sections)).toEqual(['Flower']);
+    expect(flat(view(w, PLANT, filters({ elements: ['Plant', 'Fire'] })).sections)).toEqual(['Flower']);
+    expect(flat(view(w, FIRE, filters({ elements: ['Plant', 'Earth'] })).sections)).toEqual([]);
+    expect(flat(view(w, PLANT, filters({ elements: [] })).sections)).toHaveLength(5);
+  });
+
+  it('Element Match exact: the Dragon displays the ticked Elements and no other', () => {
+    const w = menuWorld(owned);
+    expect(flat(view(w, PLANT, filters({ elements: ['Plant'], elementMatch: 'exact' })).sections)).toEqual(['Plant']);
+    expect(flat(view(w, FIRE, filters({ elements: ['Fire', 'Plant'], elementMatch: 'exact' })).sections)).toEqual([
+      'Flower',
+    ]);
+    expect(flat(view(w, PLANT, filters({ elementMatch: 'exact' })).sections)).toHaveLength(5);
+  });
+
   it('filters combine', () => {
     const w = menuWorld(owned);
     expect(flat(view(w, PLANT, filters({ show: 'not-owned', rarities: ['Hybrid'] })).sections)).toEqual([
@@ -338,6 +358,32 @@ describe('applyView search', () => {
     expect(flat(view(w, PLANT, filters({ show: 'owned' }), 'either', 'normal', 'fire').sections)).toEqual(['Lava']);
     expect(flat(view(w, PLANT, NO_FILTERS, 'rift', 'normal', 'water').sections)).toEqual(['Kampos']);
     expect(flat(view(w, PLANT, NO_FILTERS, 'normal', 'normal', 'water').sections)).toEqual(['Water']);
+  });
+});
+
+// ---- applyView: find on this page ---------------------------------------------------
+
+describe('applyView find on this page', () => {
+  const find = (w: World, tab: Tab, text: string, f: Filters = NO_FILTERS) =>
+    applyView(tabContents(w, tab, 'normal').sections, '', f, either, w, 'normal', text);
+
+  it('keeps the tab’s Dragons matching by name or Element, in the tab’s order', () => {
+    const w = menuWorld();
+    expect(find(w, FIRE, 'FLO').sections).toMatchObject([{ kind: 'page', page: { name: 'Fire' } }]);
+    expect(flat(find(w, FIRE, ' flo ').sections)).toEqual(['Flower']);
+    expect(flat(find(w, FIRE, 'plant').sections)).toEqual(['Flower']);
+    expect(flat(find(w, FIRE, 'kampos').sections)).toEqual([]);
+    expect(names(find(w, FIRE, '  ').sections)).toEqual([['Lava', 'Fire', 'Flower']]);
+  });
+
+  it('narrows like a filter: the counts stay the tab’s', () => {
+    const w = menuWorld({ Lava: true });
+    expect(find(w, FIRE, 'flower')).toMatchObject({ owned: 1, total: 3 });
+  });
+
+  it('works with the filters', () => {
+    const w = menuWorld({ Lava: true });
+    expect(flat(find(w, FIRE, 'fire', filters({ show: 'not-owned' })).sections)).toEqual(['Fire', 'Flower']);
   });
 });
 

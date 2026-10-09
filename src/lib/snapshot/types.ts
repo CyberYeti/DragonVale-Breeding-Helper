@@ -3,7 +3,7 @@
 
 export type Snapshot = {
   meta: SnapshotMeta;
-  /** Only Elements used by at least one Route. */
+  /** Only Elements used by at least one Route or displayed by at least one Dragon. */
   elements: Element[];
   /** The 5 opposite-Element pairs, hard-coded in the scraper. */
   opposites: [string, string][];

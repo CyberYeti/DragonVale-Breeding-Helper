@@ -6,11 +6,23 @@
 <script lang="ts">
   import { NO_FILTERS } from '../../lib/core/menu';
   import { useNav } from '../nav.svelte';
-  import { RARITIES, raritySymbol, showLabel, toggleRarity } from './filterLabels';
+  import { useStore } from '../store.svelte';
+  import {
+    RARITIES,
+    elementChoices,
+    elementMatchLabel,
+    raritySymbol,
+    showLabel,
+    toggleElement,
+    toggleRarity,
+  } from './filterLabels';
   import { filtersOn } from './sections';
 
   const nav = useNav();
+  const store = useStore();
   const filters = $derived(nav.filters);
+  /** The ticked Elements, in the Filters popover's order. */
+  const elements = $derived(elementChoices(store.snapshot).filter((e) => filters.elements.has(e.name)));
 </script>
 
 {#if filtersOn(filters)}
@@ -40,6 +52,23 @@
         onclick={() => (nav.filters = toggleRarity(filters, rarity))}>{raritySymbol(rarity)} {rarity} ✕</button
       >
     {/each}
+    {#each elements as element (element.name)}
+      <button
+        type="button"
+        class="chip"
+        aria-label="Remove filter {element.name}"
+        onclick={() => (nav.filters = toggleElement(filters, element.name))}
+        >{#if element.icon}<img src={element.icon} alt="" draggable="false" />{/if}{element.name} ✕</button
+      >
+    {/each}
+    {#if elements.length > 0 && filters.elementMatch === 'exact'}
+      <button
+        type="button"
+        class="chip"
+        aria-label="Remove {elementMatchLabel('exact')}"
+        onclick={() => (nav.filters = { ...filters, elementMatch: 'contains' })}>{elementMatchLabel('exact')} ✕</button
+      >
+    {/if}
     <button type="button" class="clear" onclick={() => (nav.filters = NO_FILTERS)}>Clear all</button>
   </div>
 {/if}
@@ -66,6 +95,12 @@
     background: var(--card);
     font-size: 12px;
     cursor: pointer;
+  }
+  .chip img {
+    width: 14px;
+    height: 14px;
+    margin-right: 3px;
+    vertical-align: -2px;
   }
   .chip {
     background: var(--accent);

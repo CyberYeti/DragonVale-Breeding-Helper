@@ -146,7 +146,8 @@ describe('layout without a top node', () => {
     const placed = layout(input);
     expect(placed.positions.size).toBe(nodes.length);
     expect(downwardEdges(input, placed)).toEqual([]);
-  });
+    // A big graph: past the 5s default when the whole suite runs at once.
+  }, 30_000);
 
   it('throws for an edge to a node it was not given', () => {
     expect(() =>

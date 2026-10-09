@@ -4,11 +4,12 @@
   from core/tile and applies no breeding rules of its own.
 
   Width comes from the parent through `--tile-width` (default 96px). Lite
-  tiles are square; full tiles add the name, an optional note and the ticks.
+  tiles are square; full tiles add the displayed Elements' icons along the
+  bottom of the art, the name, an optional note and the ticks.
 -->
 <script lang="ts">
   import type { Tick, TileView } from '../../lib/core/tile';
-  import { assetUrl, bannerBlocks, bannerText, rarityBorder, rarityFill, tickName, tickText } from './labels';
+  import { assetUrl, bannerBlocks, type ElementIcon, bannerText, rarityBorder, rarityFill, tickName, tickText } from './labels';
 
   type Props = {
     view: TileView;
@@ -20,6 +21,8 @@
     far?: boolean;
     /** A Rift Dragon's Rift Element icon URL (labels' `riftIcon`), drawn as a badge top-left. */
     riftIcon?: string | null;
+    /** The displayed Elements' icons (labels' `elementIcons`), drawn along the bottom of the art. */
+    elements?: readonly ElementIcon[];
     /** Show the ownership ticks (select mode hides them). */
     showTicks?: boolean;
     /** A short line under the name, e.g. "ends in 3 days" or a shop cost. */
@@ -41,6 +44,7 @@
     faded = false,
     far = false,
     riftIcon = null,
+    elements = [],
     showTicks = true,
     note,
     ownedBanner = false,
@@ -55,7 +59,11 @@
   let failedSrc = $state<string | null>(null);
   const showArt = $derived(src !== null && src !== failedSrc);
   const sheen = $derived(view.sheen && !lite);
-  const title = $derived(`${dragon.name} · ${dragon.rarity}${sheen ? ' · Breedable now' : ''}`);
+  const title = $derived(
+    [dragon.name, dragon.rarity, elements.map((e) => e.name).join(', '), sheen ? 'Breedable now' : '']
+      .filter(Boolean)
+      .join(' · '),
+  );
 
   function open() {
     onopen?.(view);
@@ -81,15 +89,32 @@
   {title}
 >
   {#if !square}
-    {#if showArt}
-      <img src={src} alt="" loading="lazy" decoding="async" draggable="false" onerror={() => (failedSrc = src)} />
-    {:else}
-      <svg class="art silhouette" viewBox="0 0 64 64" aria-hidden="true">
-        <path
-          d="M8 46c7-2 11-9 13-15 2-7 9-13 17-13 6 0 10 4 12 8l7-2-3 8c2 4 1 10-3 13-5 4-13 3-17 1l-4 7h-6l3-8c-6 0-12 1-19 1z"
+    <div class="art-box">
+      {#if showArt}
+        <img
+          class="art"
+          src={src}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          draggable="false"
+          onerror={() => (failedSrc = src)}
         />
-      </svg>
-    {/if}
+      {:else}
+        <svg class="art silhouette" viewBox="0 0 64 64" aria-hidden="true">
+          <path
+            d="M8 46c7-2 11-9 13-15 2-7 9-13 17-13 6 0 10 4 12 8l7-2-3 8c2 4 1 10-3 13-5 4-13 3-17 1l-4 7h-6l3-8c-6 0-12 1-19 1z"
+          />
+        </svg>
+      {/if}
+      {#if !lite && elements.length > 0}
+        <div class="elements">
+          {#each elements as element (element.name)}
+            <img src={element.icon} alt="" draggable="false" />
+          {/each}
+        </div>
+      {/if}
+    </div>
   {/if}
 
   {#if !lite}
@@ -138,7 +163,9 @@
     -webkit-touch-callout: none;
   }
 
-  img,
+  .art-box {
+    position: relative;
+  }
   .art {
     width: 100%;
     aspect-ratio: 1;
@@ -150,8 +177,28 @@
     fill: var(--muted);
     opacity: 0.6;
   }
-  .grey img {
+  .grey img.art {
     filter: grayscale(1) opacity(0.5);
+  }
+
+  /* The displayed Elements, along the bottom of the art, under the banner and ticks. */
+  .elements {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    gap: 1px;
+    pointer-events: none;
+  }
+  /* Up to five fit; they shrink on narrow phone tiles. */
+  .elements img {
+    flex: 0 1 16px;
+    min-width: 0;
+    aspect-ratio: 1;
+    filter: drop-shadow(0 0 1px #000a);
   }
 
   /* Breedable now: a soft white sheen drifting across the card. */

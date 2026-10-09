@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { editDistance, NameMatcher } from './fuzzy';
-import { parseLimited } from './index';
+import { parseLimited, stageAliases } from './index';
 
 describe('editDistance', () => {
   it('counts insertions, deletions, substitutions and neighbour swaps as one edit', () => {
@@ -67,5 +67,44 @@ describe('parseLimited with mistyped names', () => {
 
   it('still reports a name that matches nothing', () => {
     expect(overlay.notRecognised).toEqual(['Mystery']);
+  });
+});
+
+describe('stageAliases and shared names in parseLimited', () => {
+  const dracomancy = (n: number, from?: number) => ({
+    name: `Dracomancy ${n}`,
+    wikiPage: 'Dracomancy Dragon',
+    routes: from
+      ? [{ kind: 'evolved' as const, from: `Dracomancy ${from}`, decorations: ['Ominous Digsite'] }]
+      : [{ kind: 'bred' as const, requirement: { parents: ['Bone', 'Scourge'] } }],
+  });
+  const snowflake = (n: number) => ({
+    name: `Snowflake ${n}`,
+    wikiPage: 'Snowflake Dragon',
+    routes: [{ kind: 'bred' as const, requirement: { elements: ['Snowflake'] } }],
+  });
+  const dragons = [dracomancy(1), dracomancy(2, 1), dracomancy(3, 2), dracomancy(4, 3), snowflake(1), snowflake(2)];
+  const lone = { name: 'Fire', wikiPage: 'Fire Dragon', routes: [] };
+
+  it('maps a staged Dragon’s shared name to the stage the others evolve from', () => {
+    expect(stageAliases([...dragons, lone])).toEqual(new Map([['Dracomancy', 'Dracomancy 1']]));
+  });
+
+  it('gives no shared name when every stage is bred alike, or the name is a Dragon’s own', () => {
+    expect(stageAliases([snowflake(1), snowflake(2)]).size).toBe(0);
+    expect(stageAliases([...dragons, { name: 'Dracomancy', wikiPage: 'Other Dragon', routes: [] }]).size).toBe(0);
+  });
+
+  it('reads the shared name as the first stage in a shop, and reports it', () => {
+    const names = dragons.map((d) => d.name);
+    const raw = JSON.stringify({
+      events: {
+        Bash: { countdown: '2026-12-01', dragons: { Dracomancy: { Cost: 1000 }, Snowflake: { Cost: 5 } } },
+      },
+    });
+    const overlay = parseLimited(raw, names, new Date(2026, 9, 7), stageAliases(dragons));
+    expect(overlay.events[0]!.shop.map((s) => s.dragon)).toEqual(['Dracomancy 1']);
+    expect(overlay.corrected).toEqual([{ listed: 'Dracomancy', dragon: 'Dracomancy 1' }]);
+    expect(overlay.notRecognised).toEqual(['Snowflake']);
   });
 });

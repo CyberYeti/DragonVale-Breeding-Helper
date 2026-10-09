@@ -15,16 +15,23 @@ export const emptyOverlay = (): Overlay => ({ rotation: [], events: [], notRecog
  *   shop. Other top-level keys (`decorations`, `islandThemes`, …) are ignored.
  * - Shop entries that aren't objects or have no `Cost` are skipped (today
  *   `islands`, `islandThemes`).
- * - Names match `dragonNames` exactly. A name that is clearly a typo of exactly
- *   one Dragon (see `NameMatcher`) counts as that Dragon and is listed in
- *   `corrected`; the rest go in `notRecognised`.
+ * - Names match `dragonNames` exactly. Then a shared name in `aliases` (see
+ *   `stageAliases`: "Dracomancy" for Dracomancy 1) counts as its Dragon, and
+ *   a name that is clearly a typo of exactly one Dragon (see `NameMatcher`)
+ *   counts as that Dragon. Both are listed in `corrected`; the rest go in
+ *   `notRecognised`.
  * - A Dragon's own `countdown` overrides its Event's. Anything whose end date
  *   is before `now`'s local day is absent; an Event that has ended takes its
  *   whole shop with it.
  * - An unparseable countdown means no end date. For a shop entry that means
  *   it has no end of its own, so the Event's end applies.
  */
-export function parseLimited(rawText: string, dragonNames: Iterable<string>, now: Date): Overlay {
+export function parseLimited(
+  rawText: string,
+  dragonNames: Iterable<string>,
+  now: Date,
+  aliases: ReadonlyMap<string, string> = new Map(),
+): Overlay {
   let page: unknown;
   try {
     page = JSON.parse(rawText);
@@ -42,7 +49,7 @@ export function parseLimited(rawText: string, dragonNames: Iterable<string>, now
   /** The Dragon `name` stands for, or null (and noted) when it is none. */
   const resolve = (name: string): string | null => {
     if (known.has(name)) return name;
-    const fixed = matcher.typoOf(name);
+    const fixed = aliases.get(name) ?? matcher.typoOf(name);
     if (fixed === null) {
       notRecognised.add(name);
       return null;

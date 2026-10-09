@@ -3,8 +3,8 @@
   filters), each a grid of MenuTiles, with a heading when there is more than
   one section. Event sections always get a header (icon, name, end date,
   currency); Limited rotation and Event tiles carry a note ("ends in N days",
-  shop cost). The Event tab says when no Event is running and lists the
-  overlay's unrecognised names at the bottom.
+  shop cost). The Event tab says when no Event is running and, at the top,
+  names the Dragons the Limited data lists but the snapshot doesn't have yet.
 -->
 <script lang="ts">
   import { useNav } from '../nav.svelte';
@@ -13,7 +13,16 @@
   import MenuTile from './MenuTile.svelte';
   import { useMenuView } from './menuView.svelte';
   import MenuIcon from './MenuIcon.svelte';
-  import { emptyText, eventSubtitle, filtersOn, itemNote, limitedGap, noEventText, sectionHeading } from './sections';
+  import {
+    emptyText,
+    eventSubtitle,
+    filtersOn,
+    itemNote,
+    limitedGap,
+    noEventText,
+    notRecognisedText,
+    sectionHeading,
+  } from './sections';
   import { eventIcon } from './tabInfo';
 
   const store = useStore();
@@ -31,6 +40,9 @@
 <div class="grid-area">
   {#if noEvent}
     <p class="empty">{noEventText(gap)}</p>
+  {/if}
+  {#if notRecognised.length}
+    <p class="not-recognised" role="note">{notRecognisedText(notRecognised)}</p>
   {/if}
   {#each sections as section, i (i)}
     {@const heading = sectionHeading(section, sections.length)}
@@ -50,13 +62,10 @@
           {/each}
         </div>
       {:else}
-        <p class="empty">{emptyText(section, filtersOn(nav.filters), caveName(store.cave), gap)}</p>
+        <p class="empty">{emptyText(section, filtersOn(nav.filters), caveName(store.cave), gap, nav.searching ? '' : nav.find)}</p>
       {/if}
     </section>
   {/each}
-  {#if notRecognised.length}
-    <p class="not-recognised">Not recognised: {notRecognised.join(', ')}</p>
-  {/if}
 </div>
 
 <style>
@@ -84,8 +93,11 @@
     color: var(--muted);
   }
   .not-recognised {
-    margin: 8px 12px;
-    font-size: 12px;
+    margin: 10px 12px 0;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 13px;
     color: var(--muted);
   }
   .grid {
@@ -116,9 +128,11 @@
     .sub {
       font-size: 12px;
     }
-    .empty,
-    .not-recognised {
+    .empty {
       margin: 8px;
+    }
+    .not-recognised {
+      margin: 8px 8px 0;
     }
   }
 </style>

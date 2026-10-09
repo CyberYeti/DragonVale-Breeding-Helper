@@ -3,7 +3,7 @@
 // fail-level problems and returns everything else in `report`.
 //
 // Routes come from Data:BreedingHints.json through routesFor (routes.ts), and
-// `elements` keeps only the Elements some Route uses. A "hint" is one Dragon's
+// `elements` keeps only the Elements some Route uses or some Dragon displays. A "hint" is one Dragon's
 // raw record in that page, not a Route: the scraper maps hints to Routes.
 //
 // Seams for later tickets:
@@ -321,9 +321,14 @@ function addRoutes(
   }
 }
 
-/** Spec §4: the snapshot keeps only Elements used by at least one Route, in Data:Game.json order. */
+/**
+ * Spec §4: the snapshot keeps only Elements used by at least one Route or
+ * displayed by at least one Dragon (the tiles and the Element filter show
+ * them), in Data:Game.json order.
+ */
 function usedElements(elements: Element[], dragons: Dragon[]): Element[] {
   const used = elementsUsedBy(dragons);
+  for (const dragon of dragons) for (const e of dragon.elements) used.add(e);
   return elements.filter((e) => used.has(e.name));
 }
 

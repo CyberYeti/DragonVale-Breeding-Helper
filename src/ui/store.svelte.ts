@@ -31,7 +31,7 @@ import {
   type LoadNotice,
   type MarkChoice,
 } from '../lib/core/collection';
-import { emptyOverlay, parseLimited, type Overlay } from '../lib/core/limited';
+import { emptyOverlay, parseLimited, stageAliases, type Overlay } from '../lib/core/limited';
 import { buildWorld, type World } from '../lib/core/world';
 import type { Cave } from '../lib/core/breeding';
 import type { Display } from '../lib/core/tile';
@@ -114,12 +114,14 @@ export class AppStore {
   #now: Date = $state.raw(new Date());
 
   #names: readonly string[];
+  /** Shared names of staged Dragons ("Dracomancy" -> Dracomancy 1), for the Limited page. */
+  #aliases: ReadonlyMap<string, string>;
   #timer: ReturnType<typeof setInterval> | undefined;
   #onVisible = () => this.#checkDay();
 
   /** The Limited overlay, parsed from the raw page on every load and again each new local day. */
   readonly overlay: Overlay = $derived.by(() =>
-    this.#limited ? parseLimited(this.#limited.raw, this.#names, this.#now) : emptyOverlay(),
+    this.#limited ? parseLimited(this.#limited.raw, this.#names, this.#now, this.#aliases) : emptyOverlay(),
   );
 
   /** Everything core reads. Rebuilt whenever the Collection, overlay or day changes. */
@@ -133,6 +135,7 @@ export class AppStore {
   constructor(snapshot: Snapshot) {
     this.snapshot = snapshot;
     this.#names = snapshot.dragons.map((d) => d.name);
+    this.#aliases = stageAliases(snapshot.dragons);
     this.#loadCollection();
     this.#loadSettings();
     this.#limited = readCachedLimited();

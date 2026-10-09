@@ -16,7 +16,11 @@ export class MenuView {
   /** The current tab's sections before search and filters. */
   readonly contents: TabContents = $derived.by(() => tabContents(this.#store.world, this.#nav.tab, this.#store.cave));
 
-  /** The sections to draw and the page header's owned/total. Search results replace the tab's sections. */
+  /**
+   * The sections to draw and the page header's owned/total. Search results
+   * replace the tab's sections; find narrows the tab, and waits while a
+   * search is showing.
+   */
   readonly view: View = $derived.by(() =>
     applyView(
       this.contents.sections,
@@ -25,6 +29,7 @@ export class MenuView {
       this.#store.display,
       this.#store.world,
       this.#store.cave,
+      this.#nav.searching ? '' : this.#nav.find,
     ),
   );
 

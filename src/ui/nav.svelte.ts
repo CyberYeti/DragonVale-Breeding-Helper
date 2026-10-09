@@ -1,10 +1,11 @@
 // ui/nav: where the player is in the app. It holds the current tab, the
-// search text, the filters, select mode and its selection, and the graph
-// level stack (tiles → tab graph → pulled tree, or a tile's Focus view).
+// search text, the page header's find text, the filters, select mode and its
+// selection, and the graph level stack (tiles → tab graph → pulled tree, or a
+// tile's Focus view).
 //
-// Search, filters, select mode and graphs reset on reload. The tab is kept
-// (a per-browser convenience, like the cave), so a reload lands on the same
-// page.
+// Search, find, filters, select mode and graphs reset on reload. The tab is
+// kept (a per-browser convenience, like the cave), so a reload lands on the
+// same page.
 //
 // Browser history: once `connectHistory` runs, every tab change and every
 // graph level opened pushes a history entry holding the tab and the level
@@ -56,6 +57,8 @@ export class Nav {
   tab: Tab = $state.raw({ kind: 'breedable' });
   /** The header search. Non-blank: results over every Dragon replace the tab's tiles. */
   query = $state('');
+  /** The page header's "Find on this page": narrows the tab's tiles. Cleared on a tab change. */
+  find = $state('');
   /** The Filters popover's settings. Assign a whole new object. */
   filters: Filters = $state.raw(NO_FILTERS);
   /** Select mode is on. */
@@ -87,7 +90,7 @@ export class Nav {
     return this.levels.at(-1) ?? null;
   }
 
-  /** Shows `tab`: clears search, leaves select mode and closes any graph. A new tab is a history step. */
+  /** Shows `tab`: clears search and find, leaves select mode and closes any graph. A new tab is a history step. */
   goTo(tab: Tab): void {
     const step = tabKey(tab) !== tabKey(this.tab) || this.levels.length > 0;
     this.#showTab(tab);
@@ -231,6 +234,7 @@ export class Nav {
   #showTab(tab: Tab): void {
     this.tab = tab;
     this.query = '';
+    this.find = '';
     this.exitSelect();
     writeStored(TAB_KEY, JSON.stringify({ tab }));
   }

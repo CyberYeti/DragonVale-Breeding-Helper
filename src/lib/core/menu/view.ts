@@ -17,8 +17,14 @@ import type {
   View,
 } from './types';
 
-/** No filter on: Breedable now off, Show All, no rarity ticked. */
-export const NO_FILTERS: Filters = Object.freeze({ breedableNow: false, show: 'all', rarities: new Set<Rarity>() });
+/** No filter on: Breedable now off, Show All, no rarity or Element ticked. */
+export const NO_FILTERS: Filters = Object.freeze({
+  breedableNow: false,
+  show: 'all',
+  rarities: new Set<Rarity>(),
+  elements: new Set<string>(),
+  elementMatch: 'contains',
+});
 
 /**
  * Whether Owned forms shows `dragon`: Either shows every Dragon, Normal hides
@@ -35,10 +41,15 @@ export function isShown(dragon: Dragon, ownedForms: OwnedForms): boolean {
  *   one `search` section, whatever the tab.
  * - Owned forms hides the Dragons it doesn't show.
  * - Filters: Breedable now (in `cave`), Show All/Owned/Not owned (owned per
- *   Owned forms), Rarity (none ticked = all).
+ *   Owned forms), Rarity (none ticked = all), Element (none ticked = all;
+ *   else displays every ticked Element, and with `exact` no other).
+ * - A non-blank `find` (the page header's "Find on this page") keeps the
+ *   items matching it, by the same rules as search, in the tab's own order
+ *   and sections. It narrows like a filter, so it never changes the counts.
  *
  * `owned`/`total` count each shown Dragon once, after search and Owned forms
- * but before the filters. "Select all shown" takes `shownNames(view.sections)`.
+ * but before the filters and `find`. "Select all shown" takes
+ * `shownNames(view.sections)`.
  */
 export function applyView(
   sections: readonly Section[],
@@ -47,9 +58,11 @@ export function applyView(
   display: MenuDisplay,
   world: World,
   cave: Cave,
+  find = '',
 ): View {
   const { ownedForms } = display;
   const q = normalise(query);
+  const f = normalise(find);
   const base: readonly Section[] = q === '' ? sections : [{ kind: 'search', query: query.trim(), items: search(world, q) }];
 
   const owned = (d: Dragon) => ownedPerSetting(world.collection, d, cave, ownedForms);
@@ -60,7 +73,9 @@ export function applyView(
   const keep = (d: Dragon) =>
     (breedable === null || breedable.has(d.name)) &&
     (filters.show === 'all' || owned(d) === (filters.show === 'owned')) &&
-    (filters.rarities.size === 0 || filters.rarities.has(d.rarity));
+    (filters.rarities.size === 0 || filters.rarities.has(d.rarity)) &&
+    elementsMatch(d, filters) &&
+    (f === '' || searchRank(d, f) !== null);
 
   return {
     sections: visible.map((s) => withItems(s, s.items.filter((i) => keep(i.dragon)))),
@@ -125,6 +140,12 @@ function countOf(dragons: readonly Dragon[], owned: (d: Dragon) => boolean): Cou
   let n = 0;
   for (const d of unique.values()) if (owned(d)) n++;
   return { owned: n, total: unique.size };
+}
+
+function elementsMatch(dragon: Dragon, { elements, elementMatch }: Filters): boolean {
+  if (elements.size === 0) return true;
+  if (![...elements].every((e) => dragon.elements.includes(e))) return false;
+  return elementMatch === 'contains' || new Set(dragon.elements).size === elements.size;
 }
 
 const withItems = (section: Section, items: readonly MenuItem[]): Section => ({ ...section, items });

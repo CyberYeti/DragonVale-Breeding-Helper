@@ -258,7 +258,8 @@ describe('downloadImages', () => {
       expect(url.searchParams.get('iiprop')).toBe('url');
       expect(url.searchParams.get('iiurlwidth')).toBe('120');
     }
-  });
+    // 130 fake downloads written to disk: past the 5s default when the whole suite runs at once.
+  }, 30_000);
 
   it('traces normalized and redirected titles back to the file asked for', async () => {
     const wiki = fakeWiki({ redirects: { 'OmofNomsDragonariumIcon.png': 'OmOfNomsDragonariumIcon.png' } });

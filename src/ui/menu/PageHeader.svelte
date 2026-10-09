@@ -1,6 +1,8 @@
 <!--
   The page header (spec §8 Desktop layout): the tab's icon and title, a
-  progress bar and owned/total, then Select, ▸ Filters, ▸ Display and Graph.
+  progress bar and owned/total, then Find on this page, Select, ▸ Filters,
+  ▸ Display and Graph. Find narrows the tab's tiles (Escape clears it) and
+  hides while a header search is showing.
   The filter chips row sits under it. Each button is its own component so the
   tickets that wire them up don't edit this file.
 -->
@@ -28,6 +30,13 @@
   const owned = $derived(menu.view.owned);
   const total = $derived(menu.view.total);
   const percent = $derived(total ? (100 * owned) / total : 0);
+
+  function onFindKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape' && nav.find !== '') {
+      event.stopPropagation();
+      nav.find = '';
+    }
+  }
 </script>
 
 <div class="page-header">
@@ -46,6 +55,18 @@
   <span class="counts">{owned}/{total} owned</span>
 
   <span class="spacer"></span>
+  {#if !nav.searching}
+    <input
+      class="find"
+      type="search"
+      placeholder="Find on this page…"
+      aria-label="Find on this page"
+      autocomplete="off"
+      spellcheck="false"
+      bind:value={nav.find}
+      onkeydown={onFindKeydown}
+    />
+  {/if}
   <SelectButton />
   <FiltersButton />
   <DisplayButton />
@@ -89,6 +110,14 @@
   .spacer {
     flex: 1;
   }
+  .find {
+    width: 180px;
+    min-width: 0;
+    padding: 5px 9px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--card);
+  }
 
   /* Phone (spec §8 Phone layout): a smaller title, and the buttons on a row of their own. */
   @media (max-width: 700px) {
@@ -105,6 +134,12 @@
     }
     .spacer {
       flex-basis: 100%;
+    }
+    /* Its own row under the buttons. */
+    .find {
+      order: 1;
+      flex-basis: 100%;
+      width: auto;
     }
   }
 </style>

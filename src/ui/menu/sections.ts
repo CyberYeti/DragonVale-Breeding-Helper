@@ -29,7 +29,7 @@ export function sectionHeading(section: Section, count: number): string | null {
 
 /** Whether any filter is on (Breedable now, Show other than All, a ticked rarity). */
 export function filtersOn(filters: Filters): boolean {
-  return filters.breedableNow || filters.show !== 'all' || filters.rarities.size > 0;
+  return filters.breedableNow || filters.show !== 'all' || filters.rarities.size > 0 || filters.elements.size > 0;
 }
 
 /** Why the Limited data may be missing: still loading, or neither the wiki nor a cache had it. null = we have it. */
@@ -46,10 +46,20 @@ const GAP_TEXT: Record<'loading' | 'none', string> = {
 
 /**
  * What an empty section says. `hiddenByFilters`: filters are on, so they may
- * be what emptied it. `gap`: the Limited data is missing, which explains an
- * empty Limited rotation.
+ * be what emptied it. `find`: the page header's find text, which may have
+ * too. `gap`: the Limited data is missing, which explains an empty Limited
+ * rotation.
  */
-export function emptyText(section: Section, hiddenByFilters: boolean, caveTitle: string, gap: LimitedGap = null): string {
+export function emptyText(
+  section: Section,
+  hiddenByFilters: boolean,
+  caveTitle: string,
+  gap: LimitedGap = null,
+  find = '',
+): string {
+  const found = find.trim();
+  if (found && hiddenByFilters) return `Nothing here matches “${found}” and the filters.`;
+  if (found) return `Nothing here matches “${found}”.`;
   if (hiddenByFilters) return 'Nothing here matches the filters.';
   switch (section.kind) {
     case 'search':
@@ -64,6 +74,15 @@ export function emptyText(section: Section, hiddenByFilters: boolean, caveTitle:
     case 'all':
       return 'Nothing here with this Owned forms setting.';
   }
+}
+
+/**
+ * The Event tab's note for the Dragons it lists that the snapshot doesn't
+ * have: usually new ones, which arrive with the next snapshot refresh.
+ */
+export function notRecognisedText(names: readonly string[]): string {
+  const subject = names.length === 1 ? `${names[0]} isn’t` : `${names.join(', ')} aren’t`;
+  return `${subject} in this app’s data yet, so ${names.length === 1 ? 'it isn’t' : 'they aren’t'} shown. New Dragons appear after the next data update, once the wiki has them.`;
 }
 
 /** The Event tab's text when no Event is running (it reads "No event"). */

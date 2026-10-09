@@ -178,7 +178,7 @@ describe('tabGraph', () => {
     const filtered = applyView(
       sections,
       '',
-      { breedableNow: true, show: 'not-owned', rarities: new Set<Rarity>(['Hybrid']) },
+      { breedableNow: true, show: 'not-owned', rarities: new Set<Rarity>(['Hybrid']), elements: new Set(), elementMatch: 'contains' },
       { ownedForms: 'either' },
       w,
       'normal',

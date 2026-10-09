@@ -59,6 +59,21 @@ export function riftIcon(snapshot: Pick<Snapshot, 'elements'>, dragon: Pick<Drag
   return icon ? assetUrl(icon) : null;
 }
 
+/** A displayed Element's name and icon URL, for the row on a tile's art. */
+export type ElementIcon = { readonly name: string; readonly icon: string };
+
+/**
+ * The icons of the Elements `dragon` displays, in its own order. Rift is left
+ * out (the Rift icon badge shows it), and so is any Element without an icon.
+ */
+export function elementIcons(snapshot: Pick<Snapshot, 'elements'>, dragon: Pick<Dragon, 'elements'>): ElementIcon[] {
+  return dragon.elements.flatMap((name) => {
+    if (name === 'Rift') return [];
+    const icon = snapshot.elements.find((e) => e.name === name)?.icon;
+    return icon ? [{ name, icon: assetUrl(icon) }] : [];
+  });
+}
+
 /**
  * A snapshot image path (relative, under public/) as a URL that works under
  * Vite's `base`. Paths that already carry a scheme (data:, https:) pass through.

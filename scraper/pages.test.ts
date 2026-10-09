@@ -2,7 +2,16 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { fetchPages, PAGE_TITLES, RAW_DIR, writeRawPages, type RawPages } from './pages';
+import {
+  changedPages,
+  fetchPages,
+  fetchRevisions,
+  PAGE_TITLES,
+  RAW_DIR,
+  readManifestRevisions,
+  writeRawPages,
+  type RawPages,
+} from './pages';
 
 const rawDir = join(import.meta.dirname, '..', RAW_DIR);
 
@@ -111,5 +120,45 @@ describe('fetchPages, offline', () => {
       expect(() => JSON.parse(raw.pages[title].content)).not.toThrow();
     }
     expect(JSON.parse(raw.pages['Data:Dragons.json'].content).dragons.length).toBeGreaterThan(900);
+  });
+});
+
+describe('the revision check', () => {
+  it('fetchRevisions asks for revision IDs only, in one request', async () => {
+    const fetchFn = stubFetch(apiBody());
+    expect(await fetchRevisions(fetchFn)).toEqual({
+      'Data:Dragons.json': 1000,
+      'Data:BreedingHints.json': 1001,
+      'Data:Game.json': 1002,
+      'Data:Dragonarium.json': 1003,
+      'Data:Limited.json': 1004,
+    });
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+    const [url] = fetchFn.mock.calls[0] as unknown as [string];
+    const params = new URL(url).searchParams;
+    expect(params.get('rvprop')).toBe('ids');
+    expect(params.has('rvslots')).toBe(false);
+    expect(params.get('titles')?.split('|')).toEqual(PAGE_TITLES);
+  });
+
+  it('fetchRevisions fails on a missing page or revision ID', async () => {
+    const body = apiBody(PAGE_TITLES.slice(0, 4));
+    await expect(fetchRevisions(stubFetch(body))).rejects.toThrow(/Data:Limited.json/);
+    body.query.pages.push({ title: 'Data:Limited.json', missing: true } as never);
+    await expect(fetchRevisions(stubFetch(body))).rejects.toThrow(/Data:Limited.json is missing/);
+  });
+
+  it('changedPages lists the pages whose revision differs or is unknown', async () => {
+    const current = await fetchRevisions(stubFetch(apiBody()));
+    expect(changedPages(current, { ...current })).toEqual([]);
+    expect(changedPages(current, { ...current, 'Data:Limited.json': 1 })).toEqual(['Data:Limited.json']);
+    const noGame = Object.fromEntries(Object.entries(current).filter(([title]) => title !== 'Data:Game.json'));
+    expect(changedPages(current, noGame)).toEqual(['Data:Game.json']);
+  });
+
+  it('readManifestRevisions reads the committed pages.json', async () => {
+    const committed = await readManifestRevisions(join(rawDir, 'pages.json'));
+    const raw = await fetchPages({ kind: 'offline', dir: rawDir });
+    for (const title of PAGE_TITLES) expect(committed[title]).toBe(raw.pages[title].revision);
   });
 });

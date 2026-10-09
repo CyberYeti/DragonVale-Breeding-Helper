@@ -4,6 +4,14 @@
 //   npm run snapshot -- --offline      read the committed raw pages, no network
 //   add --fixture to (re)cut fixtures/real-records.json from the pages read
 //   add --no-download to use only the images already under public/images/
+//   add --ci to never prompt: rename candidates are left unapplied and listed
+//   add --report <file> to write the run's Markdown report (the refresh PR's body)
+//
+//   npm run snapshot -- --check [--baseline <pages.json>]...
+//       one small request for the pages' revision IDs. "Changed" unless they
+//       match the committed public/data/raw/pages.json or a --baseline one
+//       (the open refresh PR's), so an unchanged wiki is never scraped again.
+//       Prints the result and writes changed=true|false to $GITHUB_OUTPUT.
 //
 // The snapshot is built against the committed public/data/snapshot.json (if
 // any), the person running it confirms or rejects each rename candidate, the
@@ -13,26 +21,43 @@
 
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createInterface } from 'node:readline';
 import { SCHEMA_VERSION, isRecord, loadSnapshot, type Snapshot } from '../src/lib/snapshot';
 import { buildSnapshot, type BuildReport } from './build';
 import { applyRenames, confirmRenames, type AskRename, type RenameCandidate } from './renames';
-import { fetchPages, writeRawPages, PAGE_TITLES, RAW_DIR, type RawPages } from './pages';
+import {
+  changedPages,
+  fetchPages,
+  fetchRevisions,
+  readManifestRevisions,
+  writeRawPages,
+  PAGE_TITLES,
+  RAW_DIR,
+  type PageTitle,
+  type RawPages,
+} from './pages';
 import { cutRealRecords, REAL_RECORDS_FILE } from './fixture';
 import { currentEventNames, downloadImages, type ImageReport } from './images';
+import { refreshReportMarkdown } from './report';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const rawDir = join(root, RAW_DIR);
 const SNAPSHOT_FILE = 'public/data/snapshot.json';
+const MANIFEST_FILE = join(rawDir, 'pages.json');
 
 async function main(args: string[]): Promise<void> {
+  if (args.includes('--check')) return check(valuesOf(args, '--baseline'));
+
   const offline = args.includes('--offline');
   const fetchOnly = args.includes('--fetch-only');
   const fixture = args.includes('--fixture');
   const download = !args.includes('--no-download');
+  const ci = args.includes('--ci');
+  const reportFile = valuesOf(args, '--report').at(-1);
   if (offline && fetchOnly) throw new Error('--offline and --fetch-only exclude each other');
 
+  const committed = await readManifestRevisions(MANIFEST_FILE).catch(() => ({}));
   let raw: RawPages;
   if (offline) {
     raw = await fetchPages({ kind: 'offline', dir: rawDir });
@@ -60,7 +85,9 @@ async function main(args: string[]): Promise<void> {
   printReport(report);
 
   let snapshot = built.snapshot;
-  if (report.renameCandidates.length > 0) {
+  if (report.renameCandidates.length > 0 && ci) {
+    console.log('--ci: rename candidates left unapplied (listed in the report).');
+  } else if (report.renameCandidates.length > 0) {
     const confirmed = await withTerminalPrompt((ask) => confirmRenames(report.renameCandidates, ask));
     snapshot = applyRenames(snapshot, confirmed);
     for (const { from, to } of confirmed) console.log(`Renamed: ${from} -> ${to}`);
@@ -81,6 +108,39 @@ async function main(args: string[]): Promise<void> {
   await mkdir(dirname(join(root, SNAPSHOT_FILE)), { recursive: true });
   await writeFile(join(root, SNAPSHOT_FILE), json, 'utf8');
   console.log(`Wrote ${SNAPSHOT_FILE}.`);
+
+  if (reportFile) {
+    const current = Object.fromEntries(PAGE_TITLES.map((t) => [t, raw.pages[t].revision])) as Record<PageTitle, number>;
+    const markdown = refreshReportMarkdown({ changed: changedPages(current, committed), build: report, images: images.report });
+    await writeFile(reportFile, markdown, 'utf8');
+    console.log(`Wrote the report to ${reportFile}.`);
+  }
+}
+
+/** `--check`: whether any page changed since the committed snapshot and every --baseline (see the file comment). */
+async function check(baselineFiles: string[]): Promise<void> {
+  const current = await fetchRevisions();
+  const committed = await readManifestRevisions(MANIFEST_FILE);
+  const changed = changedPages(current, committed);
+  const baselines = await Promise.all(baselineFiles.map((f) => readManifestRevisions(f)));
+  const caughtUp = baselines.some((b) => changedPages(current, b).length === 0);
+  const result = changed.length > 0 && !caughtUp;
+
+  if (changed.length === 0) console.log('No wiki page changed since the committed snapshot.');
+  else console.log(`Changed since the committed snapshot: ${changed.join(', ')}`);
+  if (changed.length > 0 && caughtUp) console.log('A --baseline already has these revisions (the open refresh PR).');
+  console.log(result ? 'changed=true' : 'changed=false');
+  if (process.env.GITHUB_OUTPUT) await appendFile(process.env.GITHUB_OUTPUT, `changed=${result}\n`, 'utf8');
+}
+
+/** Every value given after `flag` (`--flag value`, repeatable). */
+function valuesOf(args: string[], flag: string): string[] {
+  const values: string[] = [];
+  args.forEach((arg, i) => {
+    const next = args[i + 1];
+    if (arg === flag && next !== undefined) values.push(next);
+  });
+  return values;
 }
 
 /**

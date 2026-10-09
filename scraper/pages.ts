@@ -4,6 +4,10 @@
 //   live    one api.php request to the DragonVale wiki (`npm run snapshot`)
 //   offline the raw pages committed under public/data/raw/ (`--offline`)
 //
+// fetchRevisions() asks the wiki for the revision IDs alone (`--check`), and
+// changedPages() compares them with a pages.json manifest's, so the scheduled
+// refresh scrapes only when a page changed.
+//
 // Page content is kept as the exact text the wiki returned, so the committed
 // files are byte-for-byte what was fetched. Callers parse it themselves.
 
@@ -14,7 +18,7 @@ const WIKI = 'https://dragonvale.fandom.com';
 export const API_URL = `${WIKI}/api.php`;
 export const USER_AGENT =
   'DragonValeBreedingHelper/0.1 (https://github.com/CyberYeti/DragonVale-Breeding-Helper; ' +
-  'snapshot scraper, run by hand once per game release)';
+  'snapshot scraper: a revision check every few hours, a full fetch only when a page changed)';
 
 /** The pages the scraper needs, by wiki title, with the file each is saved to. */
 const PAGES = {
@@ -58,12 +62,12 @@ export async function fetchPages(source: PageSource): Promise<RawPages> {
 
 // ---- live --------------------------------------------------------------------
 
-function liveRequestUrl(): string {
+function liveRequestUrl(rvprop: 'content|ids' | 'ids'): string {
   const params = new URLSearchParams({
     action: 'query',
     prop: 'revisions',
-    rvprop: 'content|ids',
-    rvslots: 'main',
+    rvprop,
+    ...(rvprop === 'ids' ? {} : { rvslots: 'main' }),
     titles: PAGE_TITLES.join('|'),
     format: 'json',
     formatversion: '2',
@@ -71,31 +75,75 @@ function liveRequestUrl(): string {
   return `${API_URL}?${params}`;
 }
 
-async function fetchLive(fetchFn: typeof fetch, now: () => Date): Promise<RawPages> {
-  // One request for all five pages. No retries: this runs by hand.
-  const response = await fetchFn(liveRequestUrl(), {
+/** One request to the wiki API. No retries: a failed run is simply tried again at the next one. */
+async function requestJson(fetchFn: typeof fetch, url: string): Promise<unknown> {
+  const response = await fetchFn(url, {
     headers: { 'User-Agent': USER_AGENT, 'Api-User-Agent': USER_AGENT },
   });
   if (!response.ok) {
     throw new Error(`Wiki API answered ${response.status} ${response.statusText}`);
   }
-  return parseApiResponse(await response.json(), now().toISOString());
+  return response.json();
 }
 
-/** Turns an `action=query&prop=revisions` response (formatversion=2) into RawPages. */
-function parseApiResponse(body: unknown, fetchedAt: string): RawPages {
+async function fetchLive(fetchFn: typeof fetch, now: () => Date): Promise<RawPages> {
+  // One request for all five pages.
+  return parseApiResponse(await requestJson(fetchFn, liveRequestUrl('content|ids')), now().toISOString());
+}
+
+/** Each page's current revision ID, in one small request (no page content). */
+export async function fetchRevisions(fetchFn: typeof fetch = fetch): Promise<Record<PageTitle, number>> {
+  const pages = queryPages(await requestJson(fetchFn, liveRequestUrl('ids')));
+  const revisions = {} as Record<PageTitle, number>;
+  for (const title of PAGE_TITLES) {
+    const revid = pages.get(title)?.revisions?.[0]?.revid;
+    if (typeof revid !== 'number') throw new Error(`Wiki API response lacks a revision ID for ${title}`);
+    revisions[title] = revid;
+  }
+  return revisions;
+}
+
+/** A pages.json manifest's revision IDs (the committed one, or another branch's copy). */
+export async function readManifestRevisions(file: string): Promise<Partial<Record<PageTitle, number>>> {
+  const manifest = JSON.parse(await readFile(file, 'utf8')) as Manifest;
+  const revisions: Partial<Record<PageTitle, number>> = {};
+  for (const title of PAGE_TITLES) {
+    const revision = manifest.pages[title]?.revision;
+    if (typeof revision === 'number') revisions[title] = revision;
+  }
+  return revisions;
+}
+
+/** The pages whose revision in `current` differs from (or is missing in) `baseline`. */
+export function changedPages(
+  current: Record<PageTitle, number>,
+  baseline: Partial<Record<PageTitle, number>>,
+): PageTitle[] {
+  return PAGE_TITLES.filter((title) => baseline[title] !== current[title]);
+}
+
+/** The pages of an `action=query` response (formatversion=2) by title. Throws on an API error or a missing page. */
+function queryPages(body: unknown): Map<string, ApiPage> {
   const query = (body as { query?: { pages?: unknown } } | null)?.query;
   const error = (body as { error?: { info?: string } } | null)?.error;
   if (error) throw new Error(`Wiki API error: ${error.info ?? JSON.stringify(error)}`);
   if (!query || !Array.isArray(query.pages)) {
     throw new Error('Wiki API response has no query.pages array');
   }
-
-  const found = new Map<string, RawPage>();
+  const pages = new Map<string, ApiPage>();
   for (const page of query.pages as ApiPage[]) {
     if (page.missing || page.invalid) {
       throw new Error(`Wiki page ${page.title} is missing`);
     }
+    pages.set(page.title, page);
+  }
+  return pages;
+}
+
+/** Turns an `action=query&prop=revisions` response (formatversion=2) into RawPages. */
+function parseApiResponse(body: unknown, fetchedAt: string): RawPages {
+  const found = new Map<string, RawPage>();
+  for (const page of queryPages(body).values()) {
     const revision = page.revisions?.[0];
     const content = revision?.slots?.main?.content;
     if (!revision || typeof revision.revid !== 'number' || typeof content !== 'string') {

@@ -45,9 +45,12 @@ export type TabContents = {
   readonly sections: readonly Section[];
   /** Event tab only: true when no Event is running, so the tab reads "No event". */
   readonly noEvent: boolean;
-  /** Event tab only: the "Not recognised: …" names. Empty on other tabs. */
+  /** Event tab only: the names the Limited data lists but the snapshot lacks. Empty on other tabs. */
   readonly notRecognised: readonly string[];
 };
+
+/** The Element filter's switch: Any containing or Match exact. */
+export type ElementMatch = 'contains' | 'exact';
 
 /** The Show filter. */
 export type Show = 'all' | 'owned' | 'not-owned';
@@ -58,6 +61,13 @@ export type Filters = {
   readonly show: Show;
   /** Ticked rarities. None ticked = every rarity. */
   readonly rarities: ReadonlySet<Rarity>;
+  /** Ticked displayed Elements. None ticked = every Dragon. */
+  readonly elements: ReadonlySet<string>;
+  /**
+   * How `elements` match: `contains` keeps Dragons displaying every ticked
+   * Element (and maybe more), `exact` those displaying exactly the ticked ones.
+   */
+  readonly elementMatch: ElementMatch;
 };
 
 /** The Display settings menu reads. core/tile's `Display` fits this. */
