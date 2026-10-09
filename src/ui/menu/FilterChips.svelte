@@ -11,12 +11,12 @@
     RARITIES,
     elementChoices,
     elementMatchLabel,
+    filtersOn,
     raritySymbol,
     showLabel,
     toggleElement,
     toggleRarity,
   } from './filterLabels';
-  import { filtersOn } from './sections';
 
   const nav = useNav();
   const store = useStore();

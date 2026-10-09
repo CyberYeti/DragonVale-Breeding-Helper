@@ -2,7 +2,7 @@
 // merging the moves over the layout, and the store over a fake localStorage.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Position } from '../../lib/core/layout';
-import { addMoves, arrangementKey, parseMoves, serializeMoves, tabGraphName, withMoves } from './arrangement';
+import { addMoves, arrangementKey, parseMoves, serializeMoves, withMoves } from './arrangement';
 import { SavedArrangements } from './arrangement.svelte';
 
 const at = (x: number, y: number): Position => ({ x, y });
@@ -13,7 +13,7 @@ describe('arrangementKey', () => {
     expect(arrangementKey({ kind: 'event' }, 'rift')).toBe('arrangement:v1:event:rift');
     expect(arrangementKey({ kind: 'breedable' }, 'coop')).toBe('arrangement:v1:breedable:coop');
     expect(arrangementKey({ kind: 'all' }, 'normal')).toBe('arrangement:v1:all:normal');
-    expect(tabGraphName({ kind: 'limited' })).toBe('limited');
+    expect(arrangementKey({ kind: 'limited' }, 'normal')).toBe('arrangement:v1:limited:normal');
   });
 
   it('differs per cave', () => {

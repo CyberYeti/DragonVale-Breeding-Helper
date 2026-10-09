@@ -4,11 +4,7 @@
 import type { Listed, PairGroup, PanelData } from '../../../lib/core/panel';
 import { routeKindName } from '../../../lib/core/breeding';
 import { formsOf, type Form } from '../../../lib/core/collection';
-import type { Dragon, Route } from '../../../lib/snapshot';
-
-export function routeKindText(route: Route): string {
-  return routeKindName(route.kind);
-}
+import type { Dragon } from '../../../lib/snapshot';
 
 /** " (Rift form)" for a Dragon with both forms listed in its Rift form. */
 export function formSuffix(listed: Pick<Listed, 'dragon' | 'form'>): string {
@@ -20,7 +16,7 @@ export function panelTitle(data: PanelData): string {
   switch (data.kind) {
     case 'route': {
       const index = data.dragon.routes.indexOf(data.route);
-      return `${routeKindText(data.route)} Route ${index + 1} → ${data.dragon.name}${riftForm(data.dragon, data.form)}`;
+      return `${routeKindName(data.route.kind)} Route ${index + 1} → ${data.dragon.name}${riftForm(data.dragon, data.form)}`;
     }
     case 'element':
       return `${data.element} element${data.breeding === 'rift' ? ' (Rift breeding)' : ''}`;

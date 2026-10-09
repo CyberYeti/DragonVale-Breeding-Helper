@@ -22,9 +22,6 @@
   const arrangements = new SavedArrangements();
   provideArrangements(arrangements);
 
-  /** Whether the tab graph draws only the shown Dragons (its arrangement is then neither used nor saved). */
-  const filtered = $derived(menu.graphRoots.narrowed && !menu.showAllInGraph);
-
   // Show all is for the graph that's open: the next one starts filtered again.
   $effect(() => {
     if (!nav.level) menu.showAllInGraph = false;
@@ -73,7 +70,7 @@
             : `Showing ${menu.graphRoots.names.length} of ${menu.graphRoots.tabCount} · Show all`}</button
         >
       {/if}
-      {#if level.kind === 'tab-graph' && !filtered && arrangements.has(level.tab, store.cave)}
+      {#if level.kind === 'tab-graph' && !menu.graphFiltered && arrangements.has(level.tab, store.cave)}
         <button
           type="button"
           class="reset"

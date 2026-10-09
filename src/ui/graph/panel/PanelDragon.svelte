@@ -6,7 +6,8 @@
 <script lang="ts">
   import type { Listed } from '../../../lib/core/panel';
   import { useStore } from '../../store.svelte';
-  import { assetUrl, rarityBorder } from '../../tile/labels';
+  import { assetUrl } from '../../assets';
+  import { rarityBorder } from '../../tile/labels';
   import type { ClickPanel } from './clickPanel.svelte';
   import { formSuffix } from './panelText';
 

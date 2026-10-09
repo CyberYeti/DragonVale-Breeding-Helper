@@ -7,6 +7,15 @@ import type { World } from '../world';
 import type { MenuItem, Section, Tab, TabContents } from './types';
 
 /**
+ * Names a tab: `page:<page>`, `all`, `breedable`, `limited` or `event`. Equal
+ * for the same tab. Saved arrangements use it in their storage keys, so keep
+ * the spelling stable.
+ */
+export function tabKey(tab: Tab): string {
+  return tab.kind === 'page' ? `page:${tab.page}` : tab.kind;
+}
+
+/**
  * The sections of `tab`:
  *
  * - Dragonarium page: one section, the page's Dragons in the game's order.

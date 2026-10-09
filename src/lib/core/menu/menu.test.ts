@@ -24,6 +24,7 @@ import {
   shownNames,
   sidebarCounts,
   tabContents,
+  tabKey,
   type Filters,
   type OwnedForms,
   type Section,
@@ -104,6 +105,20 @@ const FIRE: Tab = { kind: 'page', page: 'Fire' };
 const PLANT: Tab = { kind: 'page', page: 'Plant' };
 
 // ---- tabContents ----------------------------------------------------------------
+
+describe('tabKey', () => {
+  it('names each tab, a page by its name', () => {
+    expect(tabKey({ kind: 'page', page: 'Spooky' })).toBe('page:Spooky');
+    expect(tabKey({ kind: 'all' })).toBe('all');
+    expect(tabKey({ kind: 'breedable' })).toBe('breedable');
+    expect(tabKey({ kind: 'limited' })).toBe('limited');
+    expect(tabKey({ kind: 'event' })).toBe('event');
+  });
+
+  it('tells pages apart', () => {
+    expect(tabKey({ kind: 'page', page: 'Fire' })).not.toBe(tabKey({ kind: 'page', page: 'Rift' }));
+  });
+});
 
 describe('tabContents', () => {
   it('a Dragonarium page holds its Dragons in the game order', () => {

@@ -3,6 +3,7 @@
 import { caveName, noBreedingText, NOT_AVAILABLE } from '../../lib/core/breeding';
 import type { Banner, Tick } from '../../lib/core/tile';
 import type { Dragon, Rarity, Snapshot } from '../../lib/snapshot';
+import { assetUrl } from '../assets';
 
 export function bannerText(banner: Banner): string {
   switch (banner.kind) {
@@ -72,12 +73,4 @@ export function elementIcons(snapshot: Pick<Snapshot, 'elements'>, dragon: Pick<
     const icon = snapshot.elements.find((e) => e.name === name)?.icon;
     return icon ? [{ name, icon: assetUrl(icon) }] : [];
   });
-}
-
-/**
- * A snapshot image path (relative, under public/) as a URL that works under
- * Vite's `base`. Paths that already carry a scheme (data:, https:) pass through.
- */
-export function assetUrl(path: string): string {
-  return /^[a-z][a-z0-9+.-]*:/i.test(path) ? path : import.meta.env.BASE_URL + path.replace(/^\/+/, '');
 }

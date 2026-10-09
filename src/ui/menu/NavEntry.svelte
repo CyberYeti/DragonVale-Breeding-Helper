@@ -3,15 +3,15 @@
   is on show (and no search is replacing it).
 -->
 <script lang="ts">
-  import type { Count, Tab } from '../../lib/core/menu';
+  import { tabKey, type Count, type Tab } from '../../lib/core/menu';
   import { useNav } from '../nav.svelte';
   import MenuIcon from './MenuIcon.svelte';
-  import { sameTab, type IconSpec } from './tabInfo';
+  import type { IconSpec } from './tabInfo';
 
   let { tab, label, icon, count }: { tab: Tab; label: string; icon: IconSpec | null; count: Count } = $props();
 
   const nav = useNav();
-  const on = $derived(!nav.searching && sameTab(nav.tab, tab));
+  const on = $derived(!nav.searching && tabKey(nav.tab) === tabKey(tab));
 </script>
 
 <button type="button" class="entry" class:on aria-current={on ? 'page' : undefined} onclick={() => nav.goTo(tab)}>

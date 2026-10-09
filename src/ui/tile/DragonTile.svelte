@@ -9,7 +9,8 @@
 -->
 <script lang="ts">
   import type { Tick, TileView } from '../../lib/core/tile';
-  import { assetUrl, bannerBlocks, type ElementIcon, bannerText, rarityBorder, rarityFill, tickName, tickText } from './labels';
+  import { assetUrl } from '../assets';
+  import { bannerBlocks, type ElementIcon, bannerText, rarityBorder, rarityFill, tickName, tickText } from './labels';
 
   type Props = {
     view: TileView;

@@ -7,7 +7,7 @@
   import type { NodeProps } from '@xyflow/svelte';
   import type { ElementNode } from '../../../lib/core/graph';
   import { useStore } from '../../store.svelte';
-  import { assetUrl } from '../../tile/labels';
+  import { assetUrl } from '../../assets';
   import type { FlowNode } from '../flow';
   import NodePopover from '../panel/NodePopover.svelte';
   import Ends from './Ends.svelte';

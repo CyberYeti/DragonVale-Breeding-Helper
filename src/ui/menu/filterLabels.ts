@@ -2,7 +2,7 @@
 // Display). The filtering itself is core/menu's applyView.
 import type { ElementMatch, Filters, Show } from '../../lib/core/menu';
 import type { ElementKind, Rarity, Snapshot } from '../../lib/snapshot';
-import { assetUrl } from '../tile/labels';
+import { assetUrl } from '../assets';
 
 /** Every rarity, in the wiki's order. */
 export const RARITIES: readonly Rarity[] = [
@@ -45,6 +45,11 @@ export function filterCount(filters: Filters): number {
   return (
     (filters.breedableNow ? 1 : 0) + (filters.show !== 'all' ? 1 : 0) + filters.rarities.size + filters.elements.size
   );
+}
+
+/** Whether any filter is on. */
+export function filtersOn(filters: Filters): boolean {
+  return filterCount(filters) > 0;
 }
 
 /** An Element the Element filter offers: its name and icon URL (null = no icon). */

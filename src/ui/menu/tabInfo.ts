@@ -70,8 +70,3 @@ export function tabHeading(
     }
   }
 }
-
-/** Whether two tabs are the same entry. */
-export function sameTab(a: Tab, b: Tab): boolean {
-  return a.kind === b.kind && (a.kind !== 'page' || (b.kind === 'page' && a.page === b.page));
-}

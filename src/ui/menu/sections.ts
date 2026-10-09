@@ -1,7 +1,7 @@
 // Wording for the menu grid's sections: headings, empty states and tile notes
 // ("ends in N days", Event shop costs).
 
-import { daysLeft, type EventInfo, type Filters, type MenuItem, type Section } from '../../lib/core/menu';
+import { daysLeft, type EventInfo, type MenuItem, type Section } from '../../lib/core/menu';
 import type { EndDate } from '../../lib/core/limited';
 import type { LimitedStatus } from '../store.svelte';
 
@@ -25,11 +25,6 @@ export function sectionHeading(section: Section, count: number): string | null {
     case 'search':
       return `Search: “${section.query}”`;
   }
-}
-
-/** Whether any filter is on (Breedable now, Show other than All, a ticked rarity). */
-export function filtersOn(filters: Filters): boolean {
-  return filters.breedableNow || filters.show !== 'all' || filters.rarities.size > 0 || filters.elements.size > 0;
 }
 
 /** Why the Limited data may be missing: still loading, or neither the wiki nor a cache had it. null = we have it. */

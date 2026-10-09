@@ -7,11 +7,11 @@
 -->
 <script lang="ts">
   import { SvelteSet } from 'svelte/reactivity';
-  import { NOT_AVAILABLE } from '../../../lib/core/breeding';
+  import { NOT_AVAILABLE, routeKindName } from '../../../lib/core/breeding';
   import type { Candidate, PanelData } from '../../../lib/core/panel';
   import type { ClickPanel } from './clickPanel.svelte';
   import PanelDragon from './PanelDragon.svelte';
-  import { matcher, pairCount, panelTitle, routeKindText } from './panelText';
+  import { matcher, pairCount, panelTitle } from './panelText';
 
   let { panel, data }: { panel: ClickPanel; data: PanelData } = $props();
 
@@ -70,7 +70,7 @@
       >
       <button type="button" class="x" aria-label="Close" onclick={() => panel.close()}>✕</button>
     </div>
-    {#if data.kind === 'route'}<div class="kind muted">{routeKindText(data.route)} Route</div>{/if}
+    {#if data.kind === 'route'}<div class="kind muted">{routeKindName(data.route.kind)} Route</div>{/if}
     <div class="headline t-{data.tone}" aria-live="polite">{data.headline}</div>
     {#if data.kind === 'route' && data.reason}<p class="reason">{data.reason}</p>{/if}
     {#if data.kind === 'dragon'}{#each data.reasons as r (r)}<p class="reason">{r}</p>{/each}{/if}
@@ -170,7 +170,7 @@
         {#each data.routes as r (r.index)}
           <li class="route">
             <button type="button" class="link" onclick={() => panel.pickRoute(data.dragon.name, data.form, r.index)}
-              >{routeKindText(r.route)} Route {r.index + 1}</button
+              >{routeKindName(r.route.kind)} Route {r.index + 1}</button
             >
             <span class="t-{r.tone}">{r.headline}</span>
           </li>

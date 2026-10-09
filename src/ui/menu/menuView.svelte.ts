@@ -41,6 +41,9 @@ export class MenuView {
     graphRoots(this.contents.sections, this.view.sections, this.showAllInGraph),
   );
 
+  /** The tab graph draws only the shown Dragons (not Show all). Such a graph neither uses nor saves an arrangement. */
+  readonly graphFiltered = $derived(this.graphRoots.narrowed && !this.showAllInGraph);
+
   /** Owned/total for every sidebar entry. */
   readonly counts: SidebarCounts = $derived.by(() =>
     sidebarCounts(this.#store.world, this.#store.cave, this.#store.display),

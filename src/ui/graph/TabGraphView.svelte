@@ -34,11 +34,11 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import { pullTree, tabGraph, type GraphModel, type GraphNode, type Target } from '../../lib/core/graph';
-  import type { Tab } from '../../lib/core/menu';
+  import { tabKey, type Tab } from '../../lib/core/menu';
   import { useMenuView } from '../menu/menuView.svelte';
   import { useNav } from '../nav.svelte';
   import { useStore } from '../store.svelte';
-  import { tabGraphName, withMoves } from './arrangement';
+  import { withMoves } from './arrangement';
   import { useArrangements } from './arrangement.svelte';
   import { place } from './flow';
   import GraphView from './GraphView.svelte';
@@ -55,7 +55,7 @@
 
   /** The Dragons drawn as roots: the ones shown now, or the whole tab. A narrowed graph keeps no arrangement. */
   const roots = $derived(menu.graphRoots);
-  const filtered = $derived(roots.narrowed && !menu.showAllInGraph);
+  const filtered = $derived(menu.graphFiltered);
 
   type Graph = { graph: TabGraph; positions: ReadonlyMap<NodeId, Position> } | { error: string };
   type Built = { model: GraphModel; positions: ReadonlyMap<NodeId, Position> } | { error: string };
@@ -67,7 +67,7 @@
    */
   const graph = $derived.by((): Graph => {
     const world = store.world;
-    const key = `${tabGraphName(tab)}:${store.cave}`;
+    const key = `${tabKey(tab)}:${store.cave}`;
     const cached = filtered ? undefined : laidOut.get(world)?.get(key);
     if (cached) return cached;
     try {
@@ -101,7 +101,7 @@
   });
 
   const fitKey = $derived(
-    `${tabGraphName(tab)}:${store.cave}${filtered ? `:${roots.names.join('|')}` : ''}${tree ? `:${tree.dragon}:${tree.form}` : ''}`,
+    `${tabKey(tab)}:${store.cave}${filtered ? `:${roots.names.join('|')}` : ''}${tree ? `:${tree.dragon}:${tree.form}` : ''}`,
   );
 
   /** The click panel works on the pulled tree; a plain tab graph has none to open. */

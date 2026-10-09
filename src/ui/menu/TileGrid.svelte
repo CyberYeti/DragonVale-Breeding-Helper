@@ -16,13 +16,13 @@
   import {
     emptyText,
     eventSubtitle,
-    filtersOn,
     itemNote,
     limitedGap,
     noEventText,
     notRecognisedText,
     sectionHeading,
   } from './sections';
+  import { filtersOn } from './filterLabels';
   import { eventIcon } from './tabInfo';
 
   const store = useStore();

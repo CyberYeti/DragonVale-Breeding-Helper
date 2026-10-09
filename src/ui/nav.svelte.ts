@@ -18,7 +18,7 @@
 
 import { getContext, setContext } from 'svelte';
 import type { Form } from '../lib/core/collection';
-import { NO_FILTERS, type Filters, type Tab } from '../lib/core/menu';
+import { NO_FILTERS, tabKey, type Filters, type Tab } from '../lib/core/menu';
 import { isRecord, type Snapshot } from '../lib/snapshot';
 import { readStoredJson, writeStored } from './storage';
 
@@ -254,11 +254,6 @@ export class Nav {
     if (tab.kind === 'all' || tab.kind === 'breedable' || tab.kind === 'limited' || tab.kind === 'event') return true;
     return tab.kind === 'page' && this.#snapshot.pages.some((p) => p.name === tab.page);
   }
-}
-
-/** Equal for the same tab. */
-function tabKey(tab: Tab): string {
-  return tab.kind === 'page' ? `page:${tab.page}` : tab.kind;
 }
 
 // ---- Context ----------------------------------------------------------------

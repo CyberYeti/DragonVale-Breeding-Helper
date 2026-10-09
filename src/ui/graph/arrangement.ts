@@ -6,7 +6,7 @@
 import type { Cave } from '../../lib/core/breeding';
 import type { NodeId } from '../../lib/core/graph';
 import type { Position } from '../../lib/core/layout';
-import type { Tab } from '../../lib/core/menu';
+import { tabKey, type Tab } from '../../lib/core/menu';
 
 /** Bumped when the stored form or the node ids change meaning; older arrangements are then ignored. */
 export const ARRANGEMENT_VERSION = 1;
@@ -14,18 +14,13 @@ export const ARRANGEMENT_VERSION = 1;
 /** Moved nodes: where the player left each one. */
 export type Moves = ReadonlyMap<NodeId, Position>;
 
-/** Names a tab's graph: `page:<page>`, `all`, `breedable`, `limited` or `event`. */
-export function tabGraphName(tab: Tab): string {
-  return tab.kind === 'page' ? `page:${tab.page}` : tab.kind;
-}
-
 /**
  * The storage key (after the app's `dvbh:` prefix) for one tab graph in one
  * cave: `arrangement:v1:<tab graph>:<cave>`. The cave is part of it because
  * the cave changes which forms and nodes are drawn.
  */
 export function arrangementKey(tab: Tab, cave: Cave): string {
-  return `arrangement:v${ARRANGEMENT_VERSION}:${tabGraphName(tab)}:${cave}`;
+  return `arrangement:v${ARRANGEMENT_VERSION}:${tabKey(tab)}:${cave}`;
 }
 
 /** The stored form: `{ "<node id>": [x, y] }`, whole px. */

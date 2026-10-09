@@ -4,7 +4,7 @@
   nothing if they all fail. Size comes from `--icon-size` (default 20px).
 -->
 <script lang="ts">
-  import { assetUrl } from '../tile/labels';
+  import { assetUrl } from '../assets';
   import type { IconSpec } from './tabInfo';
 
   let { icon }: { icon: IconSpec } = $props();
