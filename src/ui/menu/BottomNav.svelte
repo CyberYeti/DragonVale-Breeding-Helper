@@ -24,7 +24,7 @@
     {
       tab: { kind: 'event' },
       label: eventLabel(menu.events),
-      icon: eventIcon(firstEvent?.kind === 'event' ? firstEvent.event.name : undefined),
+      icon: eventIcon(firstEvent?.kind === 'event' ? firstEvent.event : undefined),
     },
   ]);
 

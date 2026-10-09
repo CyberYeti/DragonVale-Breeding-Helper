@@ -36,12 +36,14 @@ export function refreshReportMarkdown({ changed, build, images }: RefreshReport)
     out.push('');
   }
 
-  const eventIcons = images.missing.filter((t) => t.kind === 'event');
-  const otherImages = images.missing.filter((t) => t.kind !== 'event');
-  if (eventIcons.length > 0 || otherImages.length > 0) {
+  const currencyIcons = images.missing.filter((t) => t.kind === 'currency');
+  const otherImages = images.missing.filter((t) => t.kind !== 'currency');
+  if (currencyIcons.length > 0 || otherImages.length > 0) {
     out.push('### Still missing', '');
     out.push('The wiki may not have these yet. A later refresh picks them up once the wiki changes.', '');
-    for (const t of eventIcons) out.push(`- Event icon for ${t.key} (File:${t.file}); the app shows the generic one`);
+    for (const t of currencyIcons) {
+      out.push(`- Currency icon for ${t.key} (File:${t.file}); an Event paying in it shows the generic one`);
+    }
     for (const t of otherImages) out.push(`- ${t.kind} image for ${t.key} (File:${t.file})`);
     out.push('');
   }

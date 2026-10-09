@@ -38,7 +38,7 @@ import {
   type RawPages,
 } from './pages';
 import { cutRealRecords, REAL_RECORDS_FILE } from './fixture';
-import { currentEventNames, downloadImages, type ImageReport } from './images';
+import { downloadImages, eventCurrencies, type ImageReport } from './images';
 import { refreshReportMarkdown } from './report';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -96,7 +96,7 @@ async function main(args: string[]): Promise<void> {
 
   const images = await downloadImages(snapshot, {
     root,
-    eventNames: currentEventNames(raw),
+    currencies: eventCurrencies(raw),
     download,
     log: (line) => console.log(line),
   });
@@ -184,8 +184,8 @@ function printReport({ counts, warnings, added, removed, renameCandidates }: Bui
 function printImageReport({ requests, existing, downloaded, missing, warnings }: ImageReport): void {
   console.log(`Images: ${existing} already on disk, ${downloaded.length} downloaded, ${missing.length} missing, ` +
     `${requests} requests.`);
-  for (const t of missing.filter((m) => m.kind === 'event')) {
-    console.log(`  no icon for Event ${t.key} (File:${t.file}); the app shows the generic one`);
+  for (const t of missing.filter((m) => m.kind === 'currency')) {
+    console.log(`  no icon for the ${t.key} currency (File:${t.file}); an Event paying in it shows the generic one`);
   }
   for (const warning of warnings) console.log(`warning: ${warning}`);
 }

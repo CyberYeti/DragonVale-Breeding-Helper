@@ -4,7 +4,7 @@
 // it with import.meta.env.BASE_URL.
 //
 // Dragon images and Element and page icons are stored in the snapshot
-// (`image` / `icon`). The menu and event icons aren't, so their paths are
+// (`image` / `icon`). The menu and currency icons aren't, so their paths are
 // fixed here for both sides to share.
 
 /** The folder under public/ that holds every downloaded image. */
@@ -30,30 +30,15 @@ export const MENU_ICONS = {
 
 export type MenuIcon = keyof typeof MENU_ICONS;
 
-/** Shipped with the app (not downloaded); used for any Event without its own icon. */
+/** Shipped with the app (not downloaded); used for an Event whose currency has no icon. */
 export const GENERIC_EVENT_ICON = `${IMAGES_DIR}/events/generic.svg`;
 
 /**
- * An Event's series: the part of its name before the first ":" ("Om of Noms:
- * Country Roads II" -> "Om of Noms"), or the whole name when it has no ":".
+ * Where an Event currency's icon is saved: the name squashed and lower-cased
+ * ("Candy" -> images/currencies/candy.png, "Pine Cone" -> .../pinecone.png).
+ * The app shows the running Event's currency icon, and GENERIC_EVENT_ICON
+ * when there is none on disk.
  */
-export function eventSeries(eventName: string): string {
-  const colon = eventName.indexOf(':');
-  return (colon < 0 ? eventName : eventName.slice(0, colon)).trim();
-}
-
-/** The key an Event icon is saved under: the name squashed and lower-cased ("Om of Noms" -> "omofnoms"). */
-export function eventIconKey(name: string): string {
-  return squash(name).toLowerCase();
-}
-
-/**
- * Where an Event's icon may be saved, in the order to try: its own (full
- * name), then its series'. The wiki names most Event icons after the series,
- * so usually only the second exists; neither may (a newer Event, or none on
- * the wiki), so the app falls back to GENERIC_EVENT_ICON after both.
- */
-export function eventIconPaths(eventName: string): string[] {
-  const keys = [eventIconKey(eventName), eventIconKey(eventSeries(eventName))].filter((k) => k !== '');
-  return [...new Set(keys)].map((key) => `${IMAGES_DIR}/events/${key}.png`);
+export function currencyIconPath(currency: string): string {
+  return `${IMAGES_DIR}/currencies/${squash(currency).toLowerCase()}.png`;
 }

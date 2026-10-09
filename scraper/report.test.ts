@@ -50,14 +50,14 @@ describe('refreshReportMarkdown', () => {
       build: build({ renameCandidates: [{ from: 'Old', to: 'New', reason: 'same-order' }], warnings: ['odd record'] }),
       images: images({
         missing: [
-          { kind: 'event', key: 'Harvest Moon', file: 'Harvest Moon.png', path: 'images/events/harvestmoon.png' },
+          { kind: 'currency', key: 'Ring', file: 'RingFilterOn.png', path: 'images/currencies/ring.png' },
           { kind: 'dragon', key: 'Sunflare', file: 'Sunflare Dragon.png', path: 'images/dragons/Sunflare.png' },
         ],
       }),
     });
     expect(md).toContain('Rename candidates (not applied)');
     expect(md).toContain('- Old → New (same-order)');
-    expect(md).toContain('- Event icon for Harvest Moon (File:Harvest Moon.png)');
+    expect(md).toContain('- Currency icon for Ring (File:RingFilterOn.png)');
     expect(md).toContain('- dragon image for Sunflare (File:Sunflare Dragon.png)');
     expect(md).toContain('- odd record');
   });

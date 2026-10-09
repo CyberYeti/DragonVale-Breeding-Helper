@@ -2,8 +2,8 @@
 // only; what each tab holds comes from core/menu.
 
 import type { Cave } from '../../lib/core/breeding';
-import type { Tab, TabContents } from '../../lib/core/menu';
-import { GENERIC_EVENT_ICON, MENU_ICONS, eventIconPaths, type DragonariumPage, type Snapshot } from '../../lib/snapshot';
+import type { EventInfo, Tab, TabContents } from '../../lib/core/menu';
+import { GENERIC_EVENT_ICON, MENU_ICONS, currencyIconPath, type DragonariumPage, type Snapshot } from '../../lib/snapshot';
 
 /** An icon to draw: a path under public/, fallbacks to try in order if it fails to load, and whether to crop it to a circle. */
 export type IconSpec = { readonly src: string; readonly fallbacks?: readonly string[]; readonly crop?: boolean };
@@ -31,13 +31,11 @@ export const BREEDABLE_ICON: IconSpec = { src: MENU_ICONS.breedable };
 export const LIMITED_ICON: IconSpec = { src: MENU_ICONS.limited, crop: true };
 
 /**
- * The running Event's icon: its own, else its series', else the generic one;
- * the generic one when none is running.
+ * An Event's icon: its currency's (Candy for a Candy Bash), else the generic
+ * one. The generic one too when no Event is running or its currency is unknown.
  */
-export function eventIcon(eventName: string | undefined): IconSpec {
-  if (eventName === undefined) return { src: GENERIC_EVENT_ICON };
-  const [src, ...rest] = eventIconPaths(eventName);
-  return src === undefined ? { src: GENERIC_EVENT_ICON } : { src, fallbacks: [...rest, GENERIC_EVENT_ICON] };
+export function eventIcon(event: EventInfo | undefined): IconSpec {
+  return event?.currency ? { src: currencyIconPath(event.currency), fallbacks: [GENERIC_EVENT_ICON] } : { src: GENERIC_EVENT_ICON };
 }
 
 export function pageIcon(page: DragonariumPage | undefined): IconSpec | null {
@@ -66,7 +64,7 @@ export function tabHeading(
       return { title: 'Limited rotation', icon: LIMITED_ICON };
     case 'event': {
       const first = contents.sections.find((s) => s.kind === 'event');
-      return { title: eventLabel(contents), icon: eventIcon(first?.kind === 'event' ? first.event.name : undefined) };
+      return { title: eventLabel(contents), icon: eventIcon(first?.kind === 'event' ? first.event : undefined) };
     }
   }
 }

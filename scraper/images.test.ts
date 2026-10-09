@@ -6,8 +6,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { crc32, deflateSync, inflateSync } from 'node:zlib';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { MENU_ICONS, SCHEMA_VERSION, eventIconPaths, type Dragon, type Snapshot } from '../src/lib/snapshot';
-import { currentEventNames, downloadImages, type DownloadOptions, type ImageOverrides } from './images';
+import { MENU_ICONS, SCHEMA_VERSION, currencyIconPath, type Dragon, type Snapshot } from '../src/lib/snapshot';
+import { downloadImages, eventCurrencies, treasureIconFile, type DownloadOptions, type ImageOverrides } from './images';
 import type { RawPages } from './pages';
 
 const dragon = (name: string): Dragon => ({
@@ -53,20 +53,37 @@ type FakeWiki = {
   redirects?: Record<string, string>;
   /** What a file's download serves; default a blank 300x300 PNG. */
   files?: Record<string, { body: Uint8Array | string; type?: string }>;
-  /** Answer every imageinfo query with this API error. */
+  /** Answer every query with this API error. */
   apiError?: string;
+  /**
+   * Template name (no "Template:") -> its wikitext. Without it, every
+   * template X shows {{TreasureIcon|X_template.png|...}}.
+   */
+  templates?: Record<string, string>;
+  /** Template name -> the template it redirects to. */
+  templateRedirects?: Record<string, string>;
 };
 
 /**
- * A wiki that knows every file except `absent`. imageinfo normalizes titles
+ * A wiki that knows every file except `absent`, and the currency `templates`. imageinfo normalizes titles
  * the way MediaWiki does (underscores to spaces, first letter upper case) and
  * follows `redirects`; a file downloads from https://cdn/<file> (original) or
  * https://cdn/<file>/120 (thumbnail).
  */
-function fakeWiki({ absent = new Set(), statusFirst, redirects = {}, files = {}, apiError }: FakeWiki = {}) {
+function fakeWiki({
+  absent = new Set(),
+  statusFirst,
+  redirects = {},
+  files = {},
+  apiError,
+  templates,
+  templateRedirects = {},
+}: FakeWiki = {}) {
   const urls: string[] = [];
   /** The titles asked for, one list per imageinfo query. */
   const queries: string[][] = [];
+  /** The titles asked for, one list per template query. */
+  const templateQueries: string[][] = [];
   let failed = false;
   const fetchFn = (async (input: string | URL) => {
     const url = String(input);
@@ -78,6 +95,22 @@ function fakeWiki({ absent = new Set(), statusFirst, redirects = {}, files = {},
     if (url.includes('api.php')) {
       if (apiError) return Response.json({ error: { code: 'x', info: apiError } });
       const titles = new URL(url).searchParams.get('titles')!.split('|');
+      if (new URL(url).searchParams.get('prop') === 'revisions') {
+        templateQueries.push(titles);
+        const redirected: { from: string; to: string }[] = [];
+        const pages = titles.map((asked) => {
+          let name = asked.slice('Template:'.length);
+          const to = templateRedirects[name];
+          if (to) {
+            redirected.push({ from: asked, to: `Template:${to}` });
+            name = to;
+          }
+          const content = templates ? templates[name] : `{{TreasureIcon|${name}_template.png|${name}|17px|{{{1|}}}}}`;
+          const title = `Template:${name}`;
+          return content === undefined ? { title, missing: true } : { title, revisions: [{ slots: { main: { content } } }] };
+        });
+        return Response.json({ query: { redirects: redirected, pages } });
+      }
       queries.push(titles);
       const normalized: { from: string; to: string }[] = [];
       const redirected: { from: string; to: string }[] = [];
@@ -101,7 +134,7 @@ function fakeWiki({ absent = new Set(), statusFirst, redirects = {}, files = {},
     return new Response(served?.body ?? png(300, 300), { headers: { 'content-type': served?.type ?? 'image/png' } });
   }) as typeof fetch;
   const asked = () => queries.flat().map((t) => t.slice(5));
-  return { fetchFn, urls, queries, asked };
+  return { fetchFn, urls, queries, templateQueries, asked };
 }
 
 describe('downloadImages', () => {
@@ -117,7 +150,7 @@ describe('downloadImages', () => {
     root,
     fetch: fetchFn,
     sleep: async () => {},
-    eventNames: ['Big Event'],
+    currencies: ['Candy'],
     ...extra,
   });
   const onDisk = async (path: string) =>
@@ -154,12 +187,11 @@ describe('downloadImages', () => {
     );
   });
 
-  it('names Element, page and Event icons, and saves everything under stable local paths', async () => {
+  it('names Element, page and currency icons, and saves everything under stable local paths', async () => {
     const wiki = fakeWiki();
-    const event = 'Om of Noms: Country Roads II';
     const { snapshot: out } = await downloadImages(
       snapshot(['Drak-E'], ['Gemstone All', 'Om of Noms']),
-      options(wiki.fetchFn, { eventNames: [event] }),
+      options(wiki.fetchFn, { currencies: ['Pine Cone'] }),
     );
     expect(wiki.asked()).toEqual(
       expect.arrayContaining([
@@ -167,57 +199,72 @@ describe('downloadImages', () => {
         'Icon Fire.png',
         'GemstoneAllDragonariumIcon.png',
         'OmofNomsDragonariumIcon.png',
-        'OmOfNomsCountryRoadsIIDragonariumIcon.png',
+        'Pine Cone_template.png',
       ]),
     );
     expect(out.dragons[0]!.image).toBe('images/dragons/DrakE.png');
     expect(out.elements[0]!.icon).toBe('images/elements/Fire.png');
     expect(out.pages.map((p) => p.icon)).toEqual(['images/pages/GemstoneAll.png', 'images/pages/OmofNoms.png']);
-    // The wiki has the full-name icon here, so it is saved under the full-name key.
-    expect(eventIconPaths(event)[0]).toBe('images/events/omofnomscountryroadsii.png');
-    for (const path of [...Object.values(MENU_ICONS), out.dragons[0]!.image!, eventIconPaths(event)[0]!]) {
+    for (const path of [...Object.values(MENU_ICONS), out.dragons[0]!.image!, 'images/currencies/pinecone.png']) {
       expect(await onDisk(path), path).toBe(true);
     }
   });
 
-  // ---- Event icons ----------------------------------------------------------------
+  // ---- Currency icons -------------------------------------------------------------
 
-  const roads = 'Om of Noms: Country Roads II';
-  const eventIconFiles = [
-    'OmOfNomsCountryRoadsIIDragonariumIcon.png',
-    'OmofNomsCountryRoadsIIDragonariumIcon.png',
-    'OmOfNomsDragonariumIcon.png',
-    'OmofNomsDragonariumIcon.png',
-  ];
+  const CANDY = '{{TreasureIcon|candy_template.png|Candy|17px|{{{1|}}}}}';
 
-  it("tries an Event's full name, then its series, title-cased then plain, in one imageinfo query", async () => {
-    const wiki = fakeWiki({ absent: new Set(eventIconFiles.filter((f) => f !== 'OmOfNomsDragonariumIcon.png')) });
-    const { report } = await downloadImages(snapshot([]), options(wiki.fetchFn, { eventNames: [roads] }));
-    expect(wiki.queries).toHaveLength(1);
-    expect(wiki.asked().filter((f) => eventIconFiles.includes(f))).toEqual(eventIconFiles);
-    // The series' icon, saved under the series key, which the app tries second.
-    expect(wiki.urls).toContain('https://cdn/OmOfNomsDragonariumIcon.png/120?format=original');
-    expect(report.downloaded).toContain('images/events/omofnoms.png');
-    expect(eventIconPaths(roads)[1]).toBe('images/events/omofnoms.png');
-    expect(await onDisk('images/events/omofnomscountryroadsii.png')).toBe(false);
+  it("saves the file a currency's template shows, read in one template query", async () => {
+    const wiki = fakeWiki({ templates: { Candy: CANDY } });
+    const { report } = await downloadImages(snapshot([]), options(wiki.fetchFn, { currencies: ['Candy'] }));
+    expect(wiki.templateQueries).toEqual([['Template:Candy', 'Template:Candys']]);
+    expect(wiki.asked()).toContain('candy_template.png');
+    expect(report.downloaded).toContain(currencyIconPath('Candy'));
+    expect(await onDisk('images/currencies/candy.png')).toBe(true);
     expect(report.missing).toEqual([]);
   });
 
-  it('downloads a series icon once for two Events of the series, and skips it next run', async () => {
-    const absent = new Set([...eventIconFiles.slice(0, 2), 'OmOfNomsBigDragonariumIcon.png', 'OmofNomsBigDragonariumIcon.png']);
-    const first = fakeWiki({ absent });
-    const { report } = await downloadImages(snapshot([]), options(first.fetchFn, { eventNames: [roads, 'Om of Noms: Big'] }));
-    expect(report.downloaded.filter((p) => p.startsWith('images/events/'))).toEqual(['images/events/omofnoms.png']);
-
-    const second = fakeWiki({ absent });
-    await downloadImages(snapshot([]), options(second.fetchFn, { eventNames: [roads] }));
-    expect(second.asked().filter((f) => eventIconFiles.includes(f))).toEqual([]);
+  it('tries the plural template next, and follows template redirects', async () => {
+    const wiki = fakeWiki({
+      templates: {
+        Doubloons: '{{TreasureIcon|Doubloon_template.png|Doubloons|17px|{{{1|}}}}}',
+        Iceberries: '{{TreasureIcon|iceberry_template.png|Iceberries|17px|{{{1|}}}}}',
+      },
+      templateRedirects: { Iceberry: 'Iceberries' },
+    });
+    const { report } = await downloadImages(snapshot([]), options(wiki.fetchFn, { currencies: ['Doubloon', 'Iceberry'] }));
+    expect(wiki.asked()).toEqual(expect.arrayContaining(['Doubloon_template.png', 'iceberry_template.png']));
+    expect(report.downloaded).toEqual(
+      expect.arrayContaining(['images/currencies/doubloon.png', 'images/currencies/iceberry.png']),
+    );
   });
 
-  it('reports an Event with no icon as missing, without a warning', async () => {
-    const wiki = fakeWiki({ absent: new Set(eventIconFiles) });
-    const { report } = await downloadImages(snapshot([]), options(wiki.fetchFn, { eventNames: [roads] }));
-    expect(report.missing.map((t) => [t.kind, t.key])).toEqual([['event', roads]]);
+  it("falls back to the currency's filter button, squashed and then as spelled", async () => {
+    const wiki = fakeWiki({ templates: {}, absent: new Set(['LegendaryEggFilterOn.png']) });
+    const { report } = await downloadImages(
+      snapshot([]),
+      options(wiki.fetchFn, { currencies: ['Star Dust', 'Legendary Egg'] }),
+    );
+    expect(wiki.asked()).toEqual(
+      expect.arrayContaining(['StarDustFilterOn.png', 'LegendaryEggFilterOn.png', 'Legendary EggFilterOn.png']),
+    );
+    expect(report.downloaded).toEqual(
+      expect.arrayContaining(['images/currencies/stardust.png', 'images/currencies/legendaryegg.png']),
+    );
+    expect(report.missing).toEqual([]);
+  });
+
+  it('skips a currency whose icon is on disk, templates included', async () => {
+    await downloadImages(snapshot([]), options(fakeWiki().fetchFn, { currencies: ['Candy'] }));
+    const second = fakeWiki();
+    await downloadImages(snapshot([]), options(second.fetchFn, { currencies: ['Candy'] }));
+    expect(second.urls).toEqual([]);
+  });
+
+  it('reports a currency with no icon as missing, without a warning', async () => {
+    const wiki = fakeWiki({ templates: {}, absent: new Set(['RingFilterOn.png']) });
+    const { report } = await downloadImages(snapshot([]), options(wiki.fetchFn, { currencies: ['Ring'] }));
+    expect(report.missing.map((t) => [t.kind, t.key, t.file])).toEqual([['currency', 'Ring', 'RingFilterOn.png']]);
     expect(report.warnings).toEqual([]);
   });
 
@@ -249,10 +296,10 @@ describe('downloadImages', () => {
     const wiki = fakeWiki();
     const names = Array.from({ length: 121 }, (_, i) => `D${i}`);
     await downloadImages(snapshot(names), options(wiki.fetchFn));
-    // 121 Dragons + 1 Element + 1 page + 6 menu icons + 1 Event icon
-    expect(wiki.queries.map((q) => q.length)).toEqual([50, 50, 30]);
-    expect(new Set(wiki.asked()).size).toBe(130);
-    for (const url of wiki.urls.filter((u) => u.includes('api.php')).map((u) => new URL(u))) {
+    // 121 Dragons + 1 Element + 1 page + 6 menu icons + 2 Candy files (template, filter button)
+    expect(wiki.queries.map((q) => q.length)).toEqual([50, 50, 31]);
+    expect(new Set(wiki.asked()).size).toBe(131);
+    for (const url of wiki.urls.filter((u) => u.includes('prop=imageinfo')).map((u) => new URL(u))) {
       expect(url.origin + url.pathname).toBe('https://dragonvale.fandom.com/api.php');
       expect(url.searchParams.get('prop')).toBe('imageinfo');
       expect(url.searchParams.get('iiprop')).toBe('url');
@@ -283,17 +330,17 @@ describe('downloadImages', () => {
   // ---- Downloading --------------------------------------------------------------
 
   it('downloads what the wiki has, warns about the rest, and fills in paths', async () => {
-    const { fetchFn, urls } = fakeWiki({ absent: new Set(['NopeDragonAdult.png', 'BigEventDragonariumIcon.png']) });
+    const { fetchFn, urls } = fakeWiki({ absent: new Set(['NopeDragonAdult.png', 'Candy template.png', 'CandyFilterOn.png']) });
     const { snapshot: out, report } = await downloadImages(snapshot(['Lava', 'Nope']), options(fetchFn));
 
     expect(out.dragons.map((d) => d.image)).toEqual(['images/dragons/Lava.png', null]);
     expect(out.elements[0]!.icon).toBe('images/elements/Fire.png');
     expect(out.pages[0]!.icon).toBe('images/pages/GemstoneAll.png');
     expect(report.warnings).toEqual(['image missing: dragon Nope (File:NopeDragonAdult.png)']);
-    expect(report.missing.map((t) => t.key)).toEqual(['Nope', 'Big Event']);
-    // 1 imageinfo query + 9 downloads (Lava, Fire, the page, 6 menu icons)
-    expect(report.requests).toBe(10);
-    expect(urls.filter((u) => u.includes('api.php'))).toHaveLength(1);
+    expect(report.missing.map((t) => t.key)).toEqual(['Nope', 'Candy']);
+    // 1 template query + 1 imageinfo query + 9 downloads (Lava, Fire, the page, 6 menu icons)
+    expect(report.requests).toBe(11);
+    expect(urls.filter((u) => u.includes('api.php'))).toHaveLength(2);
     // The CDN serves WebP unless asked for the original format.
     expect(urls.filter((u) => !u.includes('api.php')).every((u) => u.endsWith('format=original'))).toBe(true);
     // Thumbnails for everything but the hourglass, which is cropped from the original.
@@ -325,8 +372,8 @@ describe('downloadImages', () => {
   it('retries a transient error and gives up on a permanent one', async () => {
     const busy = fakeWiki({ statusFirst: 503 });
     const { report } = await downloadImages(snapshot(['Lava']), options(busy.fetchFn));
-    // 1 query + 10 downloads (Lava, Fire, the page, 6 menu icons, the Event icon) + 1 retry
-    expect(report.requests).toBe(12);
+    // 1 template query + 1 imageinfo query + 10 downloads (Lava, Fire, the page, 6 menu icons, Candy) + 1 retry
+    expect(report.requests).toBe(13);
 
     const gone = fakeWiki({ statusFirst: 404 });
     await rm(join(root, 'public'), { recursive: true });
@@ -387,14 +434,41 @@ describe('downloadImages', () => {
   });
 });
 
-describe('currentEventNames', () => {
-  const raw = (content: string) => ({ pages: { 'Data:Limited.json': { revision: 1, content } } }) as unknown as RawPages;
-  it('reads the Event names', () => {
-    expect(currentEventNames(raw('{"events": {"A: B": {}, "C": {}}}'))).toEqual(['A: B', 'C']);
+describe('eventCurrencies', () => {
+  const raw = (game: string, limited: string) =>
+    ({
+      pages: { 'Data:Game.json': { revision: 1, content: game }, 'Data:Limited.json': { revision: 1, content: limited } },
+    }) as unknown as RawPages;
+
+  it("reads Data:Game.json's event currencies, then any a running Event charges that it lacks", () => {
+    const game = '{"currencies": {"treasure": ["Gems"], "event": ["Candy", "Pine Cone"]}}';
+    const limited = JSON.stringify({
+      events: {
+        'A: B': { Currency: 'Acorn', dragons: { X: { Currency: 'Candy' }, Y: { Currency: 'Shell' } } },
+      },
+    });
+    expect(eventCurrencies(raw(game, limited))).toEqual(['Candy', 'Pine Cone', 'Acorn', 'Shell']);
   });
-  it('treats a missing or broken events object as none', () => {
-    expect(currentEventNames(raw('{"dragons": {}}'))).toEqual([]);
-    expect(currentEventNames(raw('not json'))).toEqual([]);
+
+  it('keeps one name per icon path', () => {
+    expect(eventCurrencies(raw('{"currencies": {"event": ["Pine Cone", "PineCone"]}}', '{}'))).toEqual(['Pine Cone']);
+  });
+
+  it('treats pages that are missing or broken as listing none', () => {
+    expect(eventCurrencies(raw('not json', '{"dragons": {}}'))).toEqual([]);
+  });
+});
+
+describe('treasureIconFile', () => {
+  it('reads the file a currency template shows', () => {
+    expect(treasureIconFile('{{TreasureIcon|candy_template.png|Candy|17px|{{{1|}}}}}<noinclude>x</noinclude>')).toBe(
+      'candy_template.png',
+    );
+    expect(treasureIconFile('{{ TreasureIcon | Ring.png |Rings|15px}}')).toBe('Ring.png');
+  });
+
+  it('is null for anything else', () => {
+    expect(treasureIconFile('#REDIRECT [[Template:Iceberries]]')).toBeNull();
   });
 });
 

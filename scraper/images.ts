@@ -8,24 +8,25 @@
 //   Elements  Icon <Element>.png, for the Elements in the snapshot
 //   Pages     <Name without spaces/punctuation>DragonariumIcon.png
 //   Menu      the fixed icons in MENU_FILES (paths in src/lib/snapshot/images)
-//   Events    for each running Event, the first the wiki has of
-//             <Name>DragonariumIcon.png for its full name, then for its series
-//             (the part before ":"), each with words title-cased and then
-//             plainly squashed; saved under the key the app looks up
-//             (eventIconPaths in src/lib/snapshot/images)
+//   Currencies for each Event currency (eventCurrencies), the file its wiki
+//             template shows: Template:<Currency>, else Template:<Currency>s,
+//             is {{TreasureIcon|<file>|...}} ("Candy" -> candy_template.png).
+//             Without one, <Currency>FilterOn.png (the shop's filter button).
+//             Saved under currencyIconPath; the app shows the running Event's.
 //
-// Network etiquette: one imageinfo request per 50 files, every request
+// Network etiquette: one imageinfo request per 50 files, one template request
+// per 25 currencies whose icon isn't on disk yet, every request
 // sequential with a pause between, a descriptive User-Agent, and retries with
 // backoff only on 429, 5xx and network errors. Files already on disk are
 // neither resolved nor downloaded again. Static files are downloaded once and
 // served from this repo; the app never hotlinks the wiki's CDN.
 //
-// A missing image is a warning and a null path; a missing Event icon is not
-// (the app shows the generic one).
+// A missing image is a warning and a null path; a missing currency icon is
+// not (an Event paying in it shows the generic icon).
 
 import { access, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
-import { IMAGES_DIR, MENU_ICONS, eventIconPaths, eventSeries, squash, type MenuIcon, type Snapshot } from '../src/lib/snapshot';
+import { IMAGES_DIR, MENU_ICONS, currencyIconPath, isRecord, squash, type MenuIcon, type Snapshot } from '../src/lib/snapshot';
 import { API_URL, USER_AGENT, type RawPages } from './pages';
 import { cropPng, isPng, type CropBox } from './png';
 
@@ -89,12 +90,12 @@ const MENU_FILES: Record<MenuIcon, { file: string; crop?: CropBox }> = {
   coopCave: { file: 'CooperativeBreedingCave2015.png' },
 };
 
-export type ImageKind = 'dragon' | 'element' | 'page' | 'menu' | 'event';
+export type ImageKind = 'dragon' | 'element' | 'page' | 'menu' | 'currency';
 
 /** One image to have on disk. */
 export type ImageTarget = {
   kind: ImageKind;
-  /** The Dragon, Element, page, menu icon or Event it's for. */
+  /** The Dragon, Element, page, menu icon or currency it's for. */
   key: string;
   /** Wiki file name, without the File: prefix. */
   file: string;
@@ -116,34 +117,24 @@ function pageIconFile(name: string, overrides: ImageOverrides = IMAGE_OVERRIDES)
   return overrides.pages[name] ?? `${squash(name)}DragonariumIcon.png`;
 }
 
-/** Each word's first letter upper-cased, then squashed: "Om of Noms" -> "OmOfNoms". */
-function titleSquash(name: string): string {
-  return squash(name.replace(/(^|[^A-Za-z0-9])([a-z])/g, (_, before: string, c: string) => before + c.toUpperCase()));
+/** A currency's templates, in the order to try: Template:Candy, then Template:Candys (Doubloon's is Template:Doubloons). */
+function currencyTemplates(currency: string): string[] {
+  return [`Template:${currency}`, `Template:${currency}s`];
 }
 
-/** One file to try for an Event's icon, and where it's saved if found. */
-type EventCandidate = { file: string; path: string };
+/** The icon file a currency template shows: `{{TreasureIcon|candy_template.png|Candy|17px|...}}` -> candy_template.png. */
+export function treasureIconFile(wikitext: string): string | null {
+  return /\{\{\s*TreasureIcon\s*\|\s*([^|}]+?)\s*\|/i.exec(wikitext)?.[1] ?? null;
+}
 
 /**
- * The files to try for an Event's icon, in order: the full name title-cased,
- * then plainly squashed (saved under the full-name key), then the same for
- * the series (saved under the series key). The wiki names Event icons after
- * the series with every word capitalised ("OmOfNomsDragonariumIcon.png").
+ * The files to try for a currency's icon, in order: its template's, then its
+ * filter button squashed ("StarDustFilterOn.png"), then as Module:DvWiki
+ * spells an unlisted one ("Legendary EggFilterOn.png").
  */
-function eventCandidates(eventName: string): EventCandidate[] {
-  const [fullPath, seriesPath = fullPath] = eventIconPaths(eventName);
-  const out: EventCandidate[] = [];
-  for (const [name, path] of [
-    [eventName, fullPath],
-    [eventSeries(eventName), seriesPath],
-  ] as const) {
-    if (path === undefined) continue;
-    for (const stem of [titleSquash(name), squash(name)]) {
-      const file = `${stem}DragonariumIcon.png`;
-      if (stem !== '' && !out.some((c) => c.file === file)) out.push({ file, path });
-    }
-  }
-  return out;
+function currencyFiles(currency: string, templateFile: string | null): string[] {
+  const files = [templateFile, `${squash(currency)}FilterOn.png`, `${currency}FilterOn.png`];
+  return [...new Set(files.filter((f): f is string => f !== null))];
 }
 
 /**
@@ -176,13 +167,37 @@ function target(kind: ImageKind, key: string, file: string, path: string): Image
   return { kind, key, file, path: `${IMAGES_DIR}/${path}` };
 }
 
-/** The Events in Data:Limited.json, read tolerantly: no `events` object means none. */
-export function currentEventNames(raw: RawPages): string[] {
+/**
+ * The Event currencies: Data:Game.json's `currencies.event`, plus any a
+ * running Event in Data:Limited.json charges that the list lacks (the
+ * Event's own Currency, or its shop's). Read tolerantly: a page that won't
+ * parse adds none. One name per icon path.
+ */
+export function eventCurrencies(raw: RawPages): string[] {
+  const byPath = new Map<string, string>();
+  const add = (currency: unknown) => {
+    if (typeof currency !== 'string' || squash(currency) === '') return;
+    const path = currencyIconPath(currency);
+    if (!byPath.has(path)) byPath.set(path, currency.trim());
+  };
+  const game = parseJson(raw.pages['Data:Game.json']?.content);
+  const listed = isRecord(game) && isRecord(game.currencies) ? game.currencies.event : undefined;
+  if (Array.isArray(listed)) listed.forEach(add);
+  const limited = parseJson(raw.pages['Data:Limited.json']?.content);
+  const events = isRecord(limited) && isRecord(limited.events) ? Object.values(limited.events) : [];
+  for (const event of events) {
+    if (!isRecord(event)) continue;
+    add(event.Currency);
+    if (isRecord(event.dragons)) for (const entry of Object.values(event.dragons)) if (isRecord(entry)) add(entry.Currency);
+  }
+  return [...byPath.values()];
+}
+
+function parseJson(text: string | undefined): unknown {
   try {
-    const events = (JSON.parse(raw.pages['Data:Limited.json'].content) as { events?: unknown }).events;
-    return events && typeof events === 'object' && !Array.isArray(events) ? Object.keys(events) : [];
+    return text === undefined ? null : (JSON.parse(text) as unknown);
   } catch {
-    return [];
+    return null;
   }
 }
 
@@ -209,6 +224,61 @@ function imageInfoUrl(files: readonly string[]): string {
   return `${API_URL}?${params}`;
 }
 
+/** One query for the wikitext of up to BATCH_SIZE templates, following redirects (Template:Iceberry -> Template:Iceberries). */
+function templatesUrl(titles: readonly string[]): string {
+  if (titles.length > BATCH_SIZE) throw new Error(`a query takes at most ${BATCH_SIZE} titles, got ${titles.length}`);
+  const params = new URLSearchParams({
+    action: 'query',
+    prop: 'revisions',
+    rvprop: 'content',
+    rvslots: 'main',
+    titles: titles.join('|'),
+    redirects: '1',
+    format: 'json',
+    formatversion: '2',
+  });
+  return `${API_URL}?${params}`;
+}
+
+/**
+ * Reads a template query (formatversion=2) into currency -> the file its
+ * first existing template shows, or null when neither template exists or
+ * shows a TreasureIcon. Normalized and redirected titles are traced back.
+ */
+function parseTemplates(body: unknown, currencies: readonly string[]): Map<string, string | null> {
+  const query = queryOf(body);
+  const normalized = new Map((query.normalized ?? []).map(({ from, to }) => [from, to]));
+  const redirects = new Map((query.redirects ?? []).map(({ from, to }) => [from, to]));
+  const byTitle = new Map((query.pages as TemplatePage[]).map((p) => [p.title, p]));
+  const out = new Map<string, string | null>();
+  for (const currency of currencies) {
+    let file: string | null = null;
+    for (const asked of currencyTemplates(currency)) {
+      let title = normalized.get(asked) ?? asked;
+      title = redirects.get(title) ?? title;
+      const content = byTitle.get(title)?.revisions?.[0]?.slots?.main?.content;
+      file = typeof content === 'string' ? treasureIconFile(content) : null;
+      if (file) break;
+    }
+    out.set(currency, file);
+  }
+  return out;
+}
+
+type TemplatePage = { title: string; revisions?: { slots?: { main?: { content?: string } } }[] };
+
+/** The `query` of an action=query response; throws on an API error or a response without pages. */
+function queryOf(body: unknown): { normalized?: FromTo[]; redirects?: FromTo[]; pages: unknown[] } {
+  const b = body as {
+    error?: { info?: string };
+    query?: { normalized?: FromTo[]; redirects?: FromTo[]; pages?: unknown };
+  } | null;
+  if (b?.error) throw new Error(`Wiki API error: ${b.error.info ?? JSON.stringify(b.error)}`);
+  const query = b?.query;
+  if (!query || !Array.isArray(query.pages)) throw new Error('Wiki API response has no query.pages array');
+  return { ...query, pages: query.pages };
+}
+
 type ResolvedFile = { url: string; thumbUrl: string } | null;
 
 /**
@@ -218,17 +288,10 @@ type ResolvedFile = { url: string; thumbUrl: string } | null;
  * the wiki doesn't have maps to null.
  */
 function parseImageInfo(body: unknown, files: readonly string[]): Map<string, ResolvedFile> {
-  const b = body as {
-    error?: { info?: string };
-    query?: { normalized?: FromTo[]; redirects?: FromTo[]; pages?: ImageInfoPage[] };
-  } | null;
-  if (b?.error) throw new Error(`Wiki API error: ${b.error.info ?? JSON.stringify(b.error)}`);
-  const query = b?.query;
-  if (!query || !Array.isArray(query.pages)) throw new Error('imageinfo response has no query.pages array');
-
+  const query = queryOf(body);
   const normalized = new Map((query.normalized ?? []).map(({ from, to }) => [from, to]));
   const redirects = new Map((query.redirects ?? []).map(({ from, to }) => [from, to]));
-  const byTitle = new Map(query.pages.map((p) => [p.title, p]));
+  const byTitle = new Map((query.pages as ImageInfoPage[]).map((p) => [p.title, p]));
 
   const out = new Map<string, ResolvedFile>();
   for (const file of files) {
@@ -279,14 +342,15 @@ export type ImageReport = {
   downloaded: string[];
   /** Targets with no file on disk after the run (the wiki lacks them, or downloading was off). */
   missing: ImageTarget[];
-  /** One line per missing target, except Event icons. */
+  /** One line per missing target, except currency icons. */
   warnings: string[];
 };
 
 export type DownloadOptions = {
   /** Repo root; images go to <root>/public/<path>. */
   root: string;
-  eventNames?: string[];
+  /** Event currencies to have an icon for (eventCurrencies). */
+  currencies?: string[];
   overrides?: ImageOverrides;
   /** false: only use what's on disk, no network. */
   download?: boolean;
@@ -301,22 +365,32 @@ export async function downloadImages(
   snapshot: Snapshot,
   options: DownloadOptions,
 ): Promise<{ snapshot: Snapshot; report: ImageReport }> {
-  const { root, eventNames = [], overrides = IMAGE_OVERRIDES, download = true, log = () => {} } = options;
+  const { root, currencies = [], overrides = IMAGE_OVERRIDES, download = true, log = () => {} } = options;
   const targets = planImages(snapshot, overrides);
-  const events = eventNames.map((name) => ({ name, candidates: eventCandidates(name) }));
+  const icons = currencies.map((name) => ({ name, path: currencyIconPath(name) }));
   const local = (t: { path: string }) => join(root, 'public', t.path);
 
   const onDisk = new Set<string>();
-  for (const t of [...targets, ...events.flatMap((e) => e.candidates)]) if (await exists(local(t))) onDisk.add(t.path);
-  const hasIcon = (e: (typeof events)[number]) => e.candidates.some((c) => onDisk.has(c.path));
-  const existing = targets.filter((t) => onDisk.has(t.path)).length + events.filter(hasIcon).length;
+  for (const t of [...targets, ...icons]) if (await exists(local(t))) onDisk.add(t.path);
+  const existing = [...targets, ...icons].filter((t) => onDisk.has(t.path)).length;
   const todo = targets.filter((t) => !onDisk.has(t.path));
-  const eventsTodo = events.filter((e) => !hasIcon(e));
+  const iconsTodo = icons.filter((c) => !onDisk.has(c.path));
+  /** The files tried for each currency icon still to get. */
+  const tried = new Map<string, string[]>();
   const downloaded: string[] = [];
   const client = new PoliteClient(options.fetch ?? fetch, options.delayMs ?? 250, options.sleep ?? sleep);
 
-  if (download && todo.length + eventsTodo.length > 0) {
-    const files = [...new Set([...todo.map((t) => t.file), ...eventsTodo.flatMap((e) => e.candidates.map((c) => c.file))])];
+  if (download && todo.length + iconsTodo.length > 0) {
+    // Each currency asks for two templates, so 25 currencies fill a query.
+    const templateFiles = new Map<string, string | null>();
+    for (const batch of batches(iconsTodo.map((c) => c.name), BATCH_SIZE / 2)) {
+      log(`Reading the templates of ${batch.length} currencies...`);
+      const body = await (await client.get(templatesUrl(batch.flatMap(currencyTemplates)), 'application/json')).json();
+      for (const [currency, file] of parseTemplates(body, batch)) templateFiles.set(currency, file);
+    }
+    for (const c of iconsTodo) tried.set(c.name, currencyFiles(c.name, templateFiles.get(c.name) ?? null));
+
+    const files = [...new Set([...todo.map((t) => t.file), ...[...tried.values()].flat()])];
     log(`Resolving ${files.length} files in ${Math.ceil(files.length / BATCH_SIZE)} imageinfo requests...`);
     const resolved = new Map<string, ResolvedFile>();
     for (const batch of batches(files)) {
@@ -324,9 +398,9 @@ export async function downloadImages(
       for (const [file, r] of parseImageInfo(body, batch)) resolved.set(file, r);
     }
     const found: { file: string; path: string; crop?: CropBox }[] = todo.filter((t) => resolved.get(t.file));
-    for (const e of eventsTodo) {
-      const first = e.candidates.find((c) => resolved.get(c.file));
-      if (first && !found.some((f) => f.path === first.path)) found.push(first);
+    for (const c of iconsTodo) {
+      const file = tried.get(c.name)!.find((f) => resolved.get(f));
+      if (file) found.push({ file, path: c.path });
     }
     log(`Downloading ${found.length} files...`);
     for (const t of found) {
@@ -343,12 +417,17 @@ export async function downloadImages(
 
   const missing: ImageTarget[] = [
     ...targets.filter((t) => !onDisk.has(t.path)),
-    ...events
-      .filter((e) => !hasIcon(e))
-      .map((e) => ({ kind: 'event' as const, key: e.name, file: e.candidates.map((c) => c.file).join(' / '), path: e.candidates[0]?.path ?? '' })),
+    ...icons
+      .filter((c) => !onDisk.has(c.path))
+      .map((c) => ({
+        kind: 'currency' as const,
+        key: c.name,
+        file: (tried.get(c.name) ?? currencyTemplates(c.name)).join(' / '),
+        path: c.path,
+      })),
   ];
   const warnings = missing
-    .filter((t) => t.kind !== 'event')
+    .filter((t) => t.kind !== 'currency')
     .map((t) => `image missing: ${t.kind} ${t.key} (File:${t.file})`);
   return {
     snapshot: applyImagePaths(snapshot, targets, onDisk),

@@ -49,7 +49,7 @@
     <section class="section">
       {#if section.kind === 'event'}
         <header class="event-head">
-          <h2><MenuIcon icon={eventIcon(section.event.name)} /><span>{section.event.name}</span></h2>
+          <h2><MenuIcon icon={eventIcon(section.event)} /><span>{section.event.name}</span></h2>
           <p class="sub">{eventSubtitle(section.event, now)}</p>
         </header>
       {:else if heading}
