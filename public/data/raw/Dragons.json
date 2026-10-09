@@ -29691,7 +29691,7 @@
 		{
 			"Name": "Dotty",
 			"Rarity": "Epic",
-			"BreedingTime": "22H",
+			"BreedingTime": "22 H",
 			"Description": "Dotty dragons are majestic hunters wrapped in kindness and cuteness! Life on the mysterious island they come from has taught them to keep their surrounding ecosystem in perfect balance. Should anything lean too far in one direction and tip the scales, the very island itself undergoes a metamorphosis! The flora is absorbed back into the ecosystem to be correctly regrown, and the fauna is forced to evolve and adapt to the new balance. This keen sense has earned the dotty dragons the position of guardians of Gardenia's crops and fields!",
 			"ReleaseDate": "October 1, 2026 #983",
 			"Order": 983,
@@ -29707,6 +29707,91 @@
 			"BreedingElements": [
 				"Plant",
 				"Air"
+			],
+			"IsLimited": true,
+			"Pedestal": {
+				"BuyPrice": 0,
+				"BuyCurrency": "Gems"
+			},
+			"Traits": {
+				"Available": "All"
+			},
+			"Goal": ""
+		},
+		{
+			"Name": "Hollowjaw",
+			"Rarity": "Rare",
+			"BreedingTime": "15 H",
+			"Description": "",
+			"ReleaseDate": "October 8, 2026 #984",
+			"Order": 984,
+			"BuyPrice": 0,
+			"BuyCurrency": "Gems",
+			"SellPrice": 0,
+			"SellCurrency": "DragonCash",
+			"HatchExperience": 0,
+			"LevelRequirement": 25,
+			"Elements": [
+				"Dark",
+				"Earth",
+				"Plant"
+			],
+			"IsLimited": true,
+			"Pedestal": {
+				"BuyPrice": 0,
+				"BuyCurrency": "Gems"
+			},
+			"Traits": {
+				"Available": "All"
+			},
+			"Goal": ""
+		},
+		{
+			"Name": "Eggony",
+			"Rarity": "Rare",
+			"BreedingTime": "10 H",
+			"Description": "",
+			"ReleaseDate": "October 8, 2026 #985",
+			"Order": 985,
+			"BuyPrice": 0,
+			"BuyCurrency": "Gems",
+			"SellPrice": 0,
+			"SellCurrency": "DragonCash",
+			"HatchExperience": 0,
+			"LevelRequirement": 25,
+			"Elements": [
+				"Fire",
+				"Earth",
+				"Dark"
+			],
+			"IsLimited": true,
+			"Pedestal": {
+				"BuyPrice": 0,
+				"BuyCurrency": "Gems"
+			},
+			"Traits": {
+				"Available": "All"
+			},
+			"Goal": ""
+		},
+		{
+			"Name": "Torment",
+			"Rarity": "Rare",
+			"BreedingTime": "22 H",
+			"Description": "",
+			"ReleaseDate": "October 8, 2026 #986",
+			"Order": 986,
+			"BuyPrice": 0,
+			"BuyCurrency": "Gems",
+			"SellPrice": 0,
+			"SellCurrency": "DragonCash",
+			"HatchExperience": 0,
+			"LevelRequirement": 25,
+			"Elements": [
+				"Metal",
+				"Water",
+				"Dark",
+				"Fire"
 			],
 			"IsLimited": true,
 			"Pedestal": {

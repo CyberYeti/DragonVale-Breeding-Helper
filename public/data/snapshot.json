@@ -1,17 +1,17 @@
 {
   "meta": {
     "schemaVersion": 2,
-    "revision": "fd691da1bd7d",
+    "revision": "445774bcc7ed",
     "source": "https://dragonvale.fandom.com",
     "license": "CC BY-SA 3.0",
     "pageRevisions": {
-      "Data:Dragons.json": 1758623,
-      "Data:BreedingHints.json": 1758584,
+      "Data:Dragons.json": 1758656,
+      "Data:BreedingHints.json": 1758767,
       "Data:Game.json": 1754925,
       "Data:Dragonarium.json": 1758621,
-      "Data:Limited.json": 1758650
+      "Data:Limited.json": 1758773
     },
-    "fetchedAt": "2026-10-08T06:33:29.906Z"
+    "fetchedAt": "2026-10-09T00:21:11.183Z"
   },
   "elements": [
     {
@@ -63,6 +63,11 @@
       "name": "Dark",
       "kind": "primary",
       "icon": "images/elements/Dark.png"
+    },
+    {
+      "name": "Rainbow",
+      "kind": "epic",
+      "icon": "images/elements/Rainbow.png"
     },
     {
       "name": "Sun",
@@ -135,6 +140,11 @@
       "icon": "images/elements/Hidden.png"
     },
     {
+      "name": "Surface",
+      "kind": "epic",
+      "icon": "images/elements/Surface.png"
+    },
+    {
       "name": "Melody",
       "kind": "epic",
       "icon": "images/elements/Melody.png"
@@ -143,6 +153,36 @@
       "name": "Zodiac",
       "kind": "epic",
       "icon": "images/elements/Zodiac.png"
+    },
+    {
+      "name": "Gemstone",
+      "kind": "gem",
+      "icon": "images/elements/Gemstone.png"
+    },
+    {
+      "name": "Crystalline",
+      "kind": "gem",
+      "icon": "images/elements/Crystalline.png"
+    },
+    {
+      "name": "Time",
+      "kind": "legendary",
+      "icon": "images/elements/Time.png"
+    },
+    {
+      "name": "Nest",
+      "kind": "legendary",
+      "icon": "images/elements/Nest.png"
+    },
+    {
+      "name": "Vault",
+      "kind": "legendary",
+      "icon": "images/elements/Vault.png"
+    },
+    {
+      "name": "Mythic",
+      "kind": "mythic",
+      "icon": "images/elements/Mythic.png"
     },
     {
       "name": "Rift",
@@ -33260,6 +33300,111 @@
             "parents": [
               "Chrysalis",
               "Firefly"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Hollowjaw",
+      "wikiPage": "Hollowjaw Dragon",
+      "rarity": "Rare",
+      "order": 984,
+      "elements": [
+        "Dark",
+        "Earth",
+        "Plant"
+      ],
+      "breedingElements": [
+        "Dark",
+        "Earth",
+        "Plant"
+      ],
+      "isLimited": true,
+      "traits": {
+        "kind": "all"
+      },
+      "canBeParent": true,
+      "image": null,
+      "routes": [
+        {
+          "kind": "bred",
+          "requirement": {
+            "parents": [
+              "Nightshade",
+              "Spooker"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Eggony",
+      "wikiPage": "Eggony Dragon",
+      "rarity": "Rare",
+      "order": 985,
+      "elements": [
+        "Fire",
+        "Earth",
+        "Dark"
+      ],
+      "breedingElements": [
+        "Fire",
+        "Earth",
+        "Dark"
+      ],
+      "isLimited": true,
+      "traits": {
+        "kind": "all"
+      },
+      "canBeParent": true,
+      "image": null,
+      "routes": [
+        {
+          "kind": "bred",
+          "requirement": {
+            "elements": [
+              "Fire",
+              "Earth",
+              "Dark"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Torment",
+      "wikiPage": "Torment Dragon",
+      "rarity": "Rare",
+      "order": 986,
+      "elements": [
+        "Metal",
+        "Water",
+        "Dark",
+        "Fire"
+      ],
+      "breedingElements": [
+        "Metal",
+        "Water",
+        "Dark",
+        "Fire"
+      ],
+      "isLimited": true,
+      "traits": {
+        "kind": "all"
+      },
+      "canBeParent": true,
+      "image": "images/dragons/Torment.png",
+      "routes": [
+        {
+          "kind": "bred",
+          "requirement": {
+            "parents": [
+              "Rust"
+            ],
+            "elements": [
+              "Dark",
+              "Fire"
             ]
           }
         }

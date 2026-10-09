@@ -137,10 +137,11 @@ describe('buildSnapshot on the real records', () => {
     expect(report.warnings).toEqual([]);
   });
 
-  it('keeps only the Elements some Route uses, in Data:Game.json order', () => {
-    // Sun and Olympus are displayed (Sun, Gold Olympus) but no Route here needs them.
+  it('keeps only the Elements some Route uses or some Dragon displays, in Data:Game.json order', () => {
+    // No Route here needs Rainbow, Sun, Olympus, Seasonal or Galaxy, but Dragons here display them.
     expect(snapshot.elements.map((e) => e.name)).toEqual([
-      'Plant', 'Fire', 'Earth', 'Cold', 'Lightning', 'Water', 'Air', 'Metal', 'Light', 'Dark', 'Rift',
+      'Plant', 'Fire', 'Earth', 'Cold', 'Lightning', 'Water', 'Air', 'Metal', 'Light', 'Dark',
+      'Rainbow', 'Sun', 'Olympus', 'Seasonal', 'Galaxy', 'Rift',
     ]);
   });
 
@@ -523,11 +524,11 @@ describe('buildSnapshot fails the run', () => {
 });
 
 describe('buildSnapshot on the full raw pages', () => {
-  it('builds 983 Dragons and 52 pages, with the Rift page holding exactly the Rift dragons', async () => {
+  it('builds 986 Dragons and 52 pages, with the Rift page holding exactly the Rift dragons', async () => {
     const raw = await fetchPages({ kind: 'offline', dir: join(root, RAW_DIR) });
     const { snapshot, report } = buildSnapshot(raw, null);
 
-    expect(snapshot.dragons).toHaveLength(983);
+    expect(snapshot.dragons).toHaveLength(986);
     expect(snapshot.pages).toHaveLength(52);
     // Spec §8 says 25 Epic and 17 Special; the wiki's own tags give 26 and 16
     // (Rift is tagged special, as the spec expects, so the difference is elsewhere).
@@ -539,17 +540,21 @@ describe('buildSnapshot on the full raw pages', () => {
     expect(riftDragons).toHaveLength(37);
     expect([...(riftPage?.dragons ?? [])].sort()).toEqual([...riftDragons].sort());
 
-    expect(report.counts.traits).toEqual({ all: 905, fixed: 37, none: 41 });
+    expect(report.counts.traits).toEqual({ all: 908, fixed: 37, none: 41 });
     expect(snapshot.dragons.filter((d) => d.traits.kind === 'fixed').map((d) => d.name).sort()).toEqual(
       [...riftDragons].sort(),
     );
     expect(report.counts.gemstoneAndCrystalline).toBe(29);
-    expect(report.warnings).toEqual([]);
+    // New Candy Bash XIII Dragons the wiki hasn't put on a Dragonarium page yet.
+    expect(report.warnings).toEqual(
+      ['Hollowjaw', 'Eggony', 'Torment'].map((name) => `${name} is on no Dragonarium page (search still finds it)`),
+    );
 
     // Spec §4: 35 Evolved, 5 Summoned; Purchased are the 10 basic and 10 rift primaries.
     expect(snapshot.dragons.filter((d) => d.routes.length === 0)).toEqual([]);
-    expect(report.counts.routes).toEqual({ bred: 914, coop: 19, evolved: 35, summoned: 5, purchased: 20 });
-    // Rainbow, Surface and the gem, legendary, mythic and other Elements are displayed but no Route uses them.
-    expect(snapshot.elements).toHaveLength(27);
+    expect(report.counts.routes).toEqual({ bred: 917, coop: 19, evolved: 35, summoned: 5, purchased: 20 });
+    // The 27 Route Elements, plus Rainbow, Surface and the gem, legendary and mythic ones Dragons display.
+    // Celebration and Omni (other) are neither, so they're left out.
+    expect(snapshot.elements).toHaveLength(35);
   });
 });

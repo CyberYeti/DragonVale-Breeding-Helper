@@ -29,503 +29,435 @@
 		}
 	},
 	"events": {
-		"Om of Noms: Country Roads II": {
-			"countdown": "October 7, 2026",
+		"Whitbee's Candy Bash XIII: Frightful Encounters \u0026 Arcane Rituals": {
+			"countdown": "November 2, 2026",
 			"dragons": {
-				"Haystack": {
-					"Currency": "Spice",
-					"Cost": 12250,
+				"Hollowjaw": {
+					"Currency": "Candy",
+					"Cost": 15150,
 					"Breedable": false
 				},
-				"Sungazer": {
-					"Currency": "Spice",
-					"Cost": 12250,
+				"Eggony": {
+					"Currency": "Candy",
+					"Cost": 14000,
 					"Breedable": false
 				},
-				"Dotty": {
-					"countdown": "October 7, 2026",
-					"Currency": "Spice",
-					"Cost": 12500
+				"Torment": {
+					"countdown": "October 15, 2026",
+					"Currency": "Candy",
+					"Cost": 15250
 				},
-				"Jasmine": {
-					"Currency": "Spice",
+				"Mirhor": {
+					"Currency": "Candy",
+					"Cost": 15000
+				},
+				"Tartarus": {
+					"Currency": "Candy",
+					"Cost": 15000
+				},
+				"Sinking": {
+					"Currency": "Candy",
+					"Cost": 15000
+				},
+				"Brainiac": {
+					"Currency": "Candy",
+					"Cost": 15000
+				},
+				"Righteous": {
+					"Currency": "Candy",
+					"Cost": 15000
+				},
+				"Reaper": {
+					"Currency": "Candy",
+					"Cost": 15000
+				},
+				"Pit": {
+					"Currency": "Candy",
+					"Cost": 15000
+				},
+				"Dumi": {
+					"Currency": "Candy",
+					"Cost": 15000
+				},
+				"Dragpir": {
+					"Currency": "Candy",
 					"Cost": 12000
 				},
-				"Nectavira": {
-					"Currency": "Spice",
-					"Cost": 12500
+				"Spooker": {
+					"Currency": "Candy",
+					"Cost": 13000
 				},
-				"Rose": {
-					"Currency": "Spice",
-					"Cost": 2000
+				"Awoo": {
+					"Currency": "Candy",
+					"Cost": 13500
 				},
-				"Luciflora": {
-					"Currency": "Spice",
-					"Cost": 12000
+				"Drack-o-Lantern": {
+					"Currency": "Candy",
+					"Cost": 13500
 				},
-				"Snapsnap": {
-					"Currency": "Spice",
-					"Cost": 12000
+				"Candycorn": {
+					"Currency": "Candy",
+					"Cost": 16500
 				},
-				"Busby": {
-					"Currency": "Spice",
-					"Cost": 9800
+				"Yaga": {
+					"Currency": "Candy",
+					"Cost": 15500
 				},
-				"Honeybrew": {
-					"Currency": "Spice",
-					"Cost": 9800
+				"Bruntal": {
+					"Currency": "Candy",
+					"Cost": 16000
 				},
-				"Magnolia": {
-					"Currency": "Spice",
-					"Cost": 1900
-				},
-				"Pollenizer": {
-					"Currency": "Spice",
-					"Cost": 12000
-				},
-				"Vidalia": {
-					"Currency": "Spice",
-					"Cost": 10000
-				},
-				"Rooty": {
-					"Currency": "Spice",
-					"Cost": 12000
-				},
-				"Firevine": {
-					"Currency": "Spice",
-					"Cost": 12500
-				},
-				"Rootwyrm": {
-					"Currency": "Spice",
-					"Cost": 12500
-				},
-				"Nightbloom": {
-					"Currency": "Spice",
-					"Cost": 6500
-				},
-				"Wyrmwood": {
-					"Currency": "Spice",
-					"Cost": 7000
-				},
-				"Karroot": {
-					"Currency": "Spice",
-					"Cost": 1050
-				},
-				"Mushry": {
-					"Currency": "Spice",
-					"Cost": 9750
-				},
-				"Garden": {
-					"Currency": "Spice",
-					"Cost": 8000
-				},
-				"Squish": {
-					"Currency": "Spice",
-					"Cost": 8000
-				},
-				"Plumpkin": {
-					"Currency": "Spice",
-					"Cost": 3900
-				},
-				"Sprout": {
-					"Currency": "Spice",
-					"Cost": 5100
-				},
-				"Bushwhack": {
-					"Currency": "Spice",
-					"Cost": 5100
-				},
-				"Teozinite": {
-					"Currency": "Spice",
-					"Cost": 6000
-				},
-				"Bloatato": {
-					"Currency": "Spice",
-					"Cost": 3300
-				},
-				"Kroki": {
-					"Currency": "Spice",
-					"Cost": 6600
-				},
-				"Gourd": {
-					"Currency": "Spice",
-					"Cost": 7000
-				},
-				"Bogberry": {
-					"Currency": "Spice",
-					"Cost": 7000
-				},
-				"Maze": {
-					"Currency": "Spice",
-					"Cost": 7250
-				},
-				"Leaf": {
-					"Currency": "Spice",
-					"Cost": 7700
-				},
-				"Seed": {
-					"Currency": "Spice",
-					"Cost": 7700
-				},
-				"Keyper": {
-					"Currency": "Spice",
-					"Cost": 6600
-				},
-				"Cumberpatch": {
-					"Currency": "Spice",
-					"Cost": 7500
-				},
-				"Aubergine": {
-					"Currency": "Spice",
-					"Cost": 7500
-				},
-				"Curlyleaf": {
-					"Currency": "Spice",
-					"Cost": 8000
-				},
-				"Fomhar": {
-					"Currency": "Spice",
-					"Cost": 8000
-				},
-				"Pikeleaf": {
-					"Currency": "Spice",
-					"Cost": 9000
-				},
-				"Waterwalker": {
-					"Currency": "Spice",
-					"Cost": 10000
-				},
-				"Starwing": {
-					"Currency": "Spice",
+				"Dracomancy": {
+					"Currency": "Candy",
 					"Cost": 1000
 				},
-				"Neoteric": {
-					"Currency": "Spice",
+				"Bone": {
+					"Currency": "Candy",
+					"Cost": 760
+				},
+				"Thicket": {
+					"Currency": "Candy",
+					"Cost": 1000
+				},
+				"Love": {
+					"Currency": "Candy",
+					"Cost": 1140
+				},
+				"Ghost": {
+					"Currency": "Candy",
+					"Cost": 1140
+				},
+				"Dracabra": {
+					"Currency": "Candy",
+					"Cost": 1900
+				},
+				"Oni": {
+					"Currency": "Candy",
 					"Cost": 2000
 				},
-				"Fates": {
-					"Currency": "Spice",
-					"Cost": 1900
-				},
-				"Muse": {
-					"Currency": "Spice",
-					"Cost": 1900
-				},
-				"Fluffles": {
-					"Currency": "Spice",
-					"Cost": 7750
-				},
-				"Trimera": {
-					"Currency": "Spice",
-					"Cost": 9800
-				},
-				"Arcane": {
-					"Currency": "Spice",
-					"Cost": 10400
-				},
-				"Riptide": {
-					"Currency": "Spice",
-					"Cost": 4550
-				},
-				"Nimue": {
-					"Currency": "Spice",
-					"Cost": 12500
-				},
-				"Outride": {
-					"Currency": "Spice",
-					"Cost": 4700
-				},
-				"Vanguard": {
-					"Currency": "Spice",
-					"Cost": 5550
-				},
-				"Quantum": {
-					"Currency": "Spice",
-					"Cost": 5550
-				},
-				"Psyche": {
-					"Currency": "Spice",
-					"Cost": 5900
-				},
-				"Dash": {
-					"Currency": "Spice",
-					"Cost": 5950
-				},
-				"Serenity": {
-					"Currency": "Spice",
-					"Cost": 4450
-				},
-				"Moriante": {
-					"Currency": "Spice",
-					"Cost": 7600
-				},
-				"Lageto": {
-					"Currency": "Spice",
-					"Cost": 7600
-				},
-				"Tranquil": {
-					"Currency": "Spice",
-					"Cost": 7600
-				},
-				"Lunk": {
-					"Currency": "Spice",
-					"Cost": 7800
-				},
-				"Puffles": {
-					"Currency": "Spice",
-					"Cost": 9500
-				},
-				"Professo": {
-					"Currency": "Spice",
-					"Cost": 12400
-				},
-				"Margento": {
-					"Currency": "Spice",
-					"Cost": 12400
-				},
-				"Dartwing": {
-					"Currency": "Spice",
-					"Cost": 3900
-				},
-				"Feast": {
-					"Currency": "Spice",
-					"Cost": 4700
-				},
-				"Harvest Moon": {
-					"Currency": "Spice",
-					"Cost": 4800
-				},
-				"Bounteous": {
-					"Currency": "Spice",
-					"Cost": 5000
-				},
-				"Huddle": {
-					"Currency": "Spice",
-					"Cost": 5000
-				},
-				"Diggy": {
-					"Currency": "Spice",
-					"Cost": 2500
-				},
-				"Fireflight": {
-					"Currency": "Spice",
-					"Cost": 2500
-				},
-				"Gryphus": {
-					"Currency": "Spice",
-					"Cost": 7760
-				},
-				"Khamsin": {
-					"Currency": "Spice",
-					"Cost": 7670
-				},
-				"Country": {
-					"Currency": "Spice",
-					"Cost": 7840
-				},
-				"Sow": {
-					"Currency": "Spice",
-					"Cost": 7500
-				},
-				"Osteryx": {
-					"Currency": "Spice",
-					"Cost": 7500
-				},
-				"Autumn": {
-					"Currency": "Spice",
-					"Cost": 9500
-				},
-				"Liveloch": {
-					"Currency": "Spice",
-					"Cost": 8000
-				},
-				"Pouke": {
-					"Currency": "Spice",
-					"Cost": 10500
-				},
-				"Greenhouse": {
-					"Currency": "Spice",
-					"Cost": 12500
-				},
-				"Davinese": {
-					"Currency": "Spice",
-					"Cost": 10000
-				},
-				"Invento": {
-					"Currency": "Spice",
-					"Cost": 9750
-				},
-				"Kingstone": {
-					"Currency": "Spice",
-					"Cost": 12000
-				},
-				"Armor": {
-					"Currency": "Spice",
-					"Cost": 12500
-				},
-				"Armament": {
-					"Currency": "Spice",
-					"Cost": 4700
-				},
-				"Shield": {
-					"Currency": "Spice",
-					"Cost": 1200
-				},
-				"Paper": {
-					"Currency": "Spice",
-					"Cost": 3000
-				},
-				"Brizoni": {
-					"Currency": "Spice",
-					"Cost": 8300
-				},
-				"Scribe": {
-					"Currency": "Spice",
-					"Cost": 11800
-				},
-				"Construct": {
-					"Currency": "Spice",
-					"Cost": 12000
-				},
-				"Plate": {
-					"Currency": "Spice",
-					"Cost": 10000
-				},
-				"Gargoyle": {
-					"Currency": "Spice",
-					"Cost": 5100
-				},
-				"Standstone": {
-					"Currency": "Spice",
-					"Cost": 8000
-				},
-				"Carnival": {
-					"Currency": "Spice",
-					"Cost": 2000
-				},
-				"Stage": {
-					"Currency": "Spice",
-					"Cost": 5500
-				},
-				"Smigi": {
-					"Currency": "Spice",
-					"Cost": 5900
-				},
-				"Scryer": {
-					"Currency": "Spice",
-					"Cost": 6300
-				},
-				"Undau": {
-					"Currency": "Spice",
-					"Cost": 7500
-				},
-				"Faire": {
-					"Currency": "Spice",
-					"Cost": 2500
-				},
-				"PonkiPong": {
-					"Currency": "Spice",
-					"Cost": 8000
-				},
-				"Morphimagus": {
-					"Currency": "Spice",
-					"Cost": 8500
-				},
-				"Binky": {
-					"Currency": "Spice",
-					"Cost": 8500
-				},
-				"Fuefuego": {
-					"Currency": "Spice",
-					"Cost": 9250
-				},
-				"Prestige": {
-					"Currency": "Spice",
-					"Cost": 9450
-				},
-				"Prestina": {
-					"Currency": "Spice",
-					"Cost": 9900
-				},
-				"Jester": {
-					"Currency": "Spice",
-					"Cost": 9800
-				},
-				"Lightmare": {
-					"Currency": "Spice",
-					"Cost": 2200
-				},
-				"Nightmare": {
-					"Currency": "Spice",
-					"Cost": 2200
-				},
-				"Blue Moon": {
-					"Currency": "Spice",
-					"Cost": 1300
-				},
-				"Moonstruck": {
-					"Currency": "Spice",
-					"Cost": 1850
-				},
-				"Aurora": {
-					"Currency": "Spice",
-					"Cost": 6300
-				},
-				"Elysium": {
-					"Currency": "Spice",
-					"Cost": 9900
-				},
-				"Darkarm": {
-					"Currency": "Spice",
-					"Cost": 11250
-				},
-				"Darcowl": {
-					"Currency": "Spice",
-					"Cost": 4800
-				},
-				"Sparkles": {
-					"Currency": "Spice",
-					"Cost": 5750
-				},
-				"Bastion": {
-					"Currency": "Spice",
-					"Cost": 6300
-				},
-				"Dawnbringer": {
-					"Currency": "Spice",
-					"Cost": 3900
-				},
-				"Dawn": {
-					"Currency": "Spice",
-					"Cost": 1900
-				},
-				"Prism": {
-					"Currency": "Spice",
-					"Cost": 1900
-				},
-				"Stella": {
-					"Currency": "Spice",
-					"Cost": 8250
-				},
-				"Lightmatter": {
-					"Currency": "Spice",
-					"Cost": 9250
-				},
-				"Darkmatter": {
-					"Currency": "Spice",
-					"Cost": 8900
-				},
-				"Harvest": {
-					"Currency": "Spice",
-					"Cost": 4000
-				},
-				"Berry": {
-					"Currency": "Spice",
-					"Cost": 7500
+				"Spectre": {
+					"Currency": "Candy",
+					"Cost": 2150
+				},
+				"Nether": {
+					"Currency": "Candy",
+					"Cost": 2250
+				},
+				"Nosferatu": {
+					"Currency": "Candy",
+					"Cost": 2275
 				},
 				"Bog": {
-					"Currency": "Spice",
+					"Currency": "Candy",
+					"Cost": 2275
+				},
+				"Misfortune": {
+					"Currency": "Candy",
+					"Cost": 2999
+				},
+				"Ambrosia": {
+					"Currency": "Candy",
+					"Cost": 3500
+				},
+				"Delight": {
+					"Currency": "Candy",
+					"Cost": 3750
+				},
+				"Midnight": {
+					"Currency": "Candy",
+					"Cost": 3750
+				},
+				"Gatren": {
+					"Currency": "Candy",
+					"Cost": 4800
+				},
+				"Kwall": {
+					"Currency": "Candy",
+					"Cost": 5600
+				},
+				"Malefice": {
+					"Currency": "Candy",
+					"Cost": 5800
+				},
+				"Maw": {
+					"Currency": "Candy",
+					"Cost": 6000
+				},
+				"Scout": {
+					"Currency": "Candy",
+					"Cost": 6480
+				},
+				"Etch": {
+					"Currency": "Candy",
+					"Cost": 6720
+				},
+				"Narcis": {
+					"Currency": "Candy",
+					"Cost": 7000
+				},
+				"Funis": {
+					"Currency": "Candy",
+					"Cost": 7360
+				},
+				"Combustion": {
+					"Currency": "Candy",
+					"Cost": 7450
+				},
+				"Infernus": {
+					"Currency": "Candy",
+					"Cost": 7680
+				},
+				"Grimoire": {
+					"Currency": "Candy",
+					"Cost": 8000
+				},
+				"Vampir": {
+					"Currency": "Candy",
+					"Cost": 8320
+				},
+				"Dortal": {
+					"Currency": "Candy",
+					"Cost": 8560
+				},
+				"Fury": {
+					"Currency": "Candy",
+					"Cost": 8560
+				},
+				"Magma": {
+					"Currency": "Candy",
+					"Cost": 12000
+				},
+				"Shackle": {
+					"Currency": "Candy",
+					"Cost": 12500
+				},
+				"Omen": {
+					"Currency": "Candy",
+					"Cost": 5000
+				},
+				"Eww": {
+					"Currency": "Candy",
+					"Cost": 13000
+				},
+				"Valor": {
+					"Currency": "Candy",
+					"Cost": 2200
+				},
+				"Gourd": {
+					"Currency": "Candy",
+					"Cost": 2200
+				},
+				"Cerberus": {
+					"Currency": "Candy",
+					"Cost": 4500
+				},
+				"Nightmare": {
+					"Currency": "Candy",
+					"Cost": 2200
+				},
+				"Decay": {
+					"Currency": "Candy",
+					"Cost": 6080
+				},
+				"Lycan": {
+					"Currency": "Candy",
+					"Cost": 6080
+				},
+				"Spirit": {
+					"Currency": "Candy",
+					"Cost": 6080
+				},
+				"Nesting": {
+					"Currency": "Candy",
+					"Cost": 6080
+				},
+				"Zombie": {
+					"Currency": "Candy",
+					"Cost": 6080
+				},
+				"Chromacorn": {
+					"Currency": "Candy",
+					"Cost": 6100
+				},
+				"Wendigo": {
+					"Currency": "Candy",
+					"Cost": 7000
+				},
+				"Porcelain": {
+					"Currency": "Candy",
+					"Cost": 7150
+				},
+				"Plumpkin": {
+					"Currency": "Candy",
 					"Cost": 7500
+				},
+				"Ocular": {
+					"Currency": "Candy",
+					"Cost": 7800
+				},
+				"Wrath": {
+					"Currency": "Candy",
+					"Cost": 7950
+				},
+				"Iden": {
+					"Currency": "Candy",
+					"Cost": 7960
+				},
+				"Nox": {
+					"Currency": "Candy",
+					"Cost": 8760
+				},
+				"Hyperion": {
+					"Currency": "Candy",
+					"Cost": 9500
+				},
+				"Corrupticorn": {
+					"Currency": "Candy",
+					"Cost": 9550
+				},
+				"Umbra": {
+					"Currency": "Candy",
+					"Cost": 9550
+				},
+				"Heavy Metal": {
+					"Currency": "Candy",
+					"Cost": 9600
+				},
+				"Punk": {
+					"Currency": "Candy",
+					"Cost": 10000
+				},
+				"Techno": {
+					"Currency": "Candy",
+					"Cost": 11500
+				},
+				"Brood": {
+					"Currency": "Candy",
+					"Cost": 12000
+				},
+				"Rotblossom": {
+					"Currency": "Candy",
+					"Cost": 12640
+				},
+				"Amalgamate": {
+					"Currency": "Candy",
+					"Cost": 12960
+				},
+				"Kage": {
+					"Currency": "Candy",
+					"Cost": 13680
+				},
+				"Hydnellum": {
+					"Currency": "Candy",
+					"Cost": 14640
+				},
+				"Greymatter": {
+					"Currency": "Candy",
+					"Cost": 15000
+				},
+				"Machina": {
+					"Currency": "Candy",
+					"Cost": 16000
+				},
+				"Tickles": {
+					"Currency": "Candy",
+					"Cost": 17000
+				},
+				"Fortified": {
+					"Currency": "Candy",
+					"Cost": 17500
+				},
+				"Exterran": {
+					"Currency": "Candy",
+					"Cost": 18500
+				},
+				"Eldritch": {
+					"Currency": "Candy",
+					"Cost": 11500
+				},
+				"Charlatan": {
+					"Currency": "Candy",
+					"Cost": 8100
+				},
+				"Scourge": {
+					"Currency": "Candy",
+					"Cost": 8900
+				},
+				"Barbarous": {
+					"Currency": "Candy",
+					"Cost": 9600
+				},
+				"Macabre": {
+					"Currency": "Candy",
+					"Cost": 10400
+				},
+				"Ghostly Plant": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Fire": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Earth": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Cold": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Lava": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Obsidian": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Mountain": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Glacier": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Nosferatu": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Bone": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Decay": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Oni": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Spectre": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Spirit": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Ghost": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Trick": {
+					"Currency": "Candy",
+					"Cost": 5000
+				},
+				"Ortreat": {
+					"Currency": "Candy",
+					"Cost": 5000
 				},
 				"islands": {},
 				"islandThemes": {}

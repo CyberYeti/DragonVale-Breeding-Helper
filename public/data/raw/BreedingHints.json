@@ -8441,6 +8441,34 @@
 				"Chrysalis",
 				"Firefly"
 			]
+		},
+		"Hollowjaw": {
+			"BuyPrice": 15,
+			"BuyPriceType": "Gems",
+			"RequiredDragons": [
+				"Nightshade",
+				"Spooker"
+			]
+		},
+		"Eggony": {
+			"BuyPrice": 15,
+			"BuyPriceType": "Gems",
+			"RequiredElements": [
+				"Fire",
+				"Earth",
+				"Dark"
+			]
+		},
+		"Torment": {
+			"BuyPrice": 15,
+			"BuyPriceType": "Gems",
+			"RequiredDragons": [
+				"Rust"
+			],
+			"RequiredElements": [
+				"Dark",
+				"Fire"
+			]
 		}
 	}
 }
