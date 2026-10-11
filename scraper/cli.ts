@@ -6,6 +6,8 @@
 //   add --no-download to use only the images already under public/images/
 //   add --ci to never prompt: rename candidates are left unapplied and listed
 //   add --report <file> to write the run's Markdown report (the refresh PR's body)
+//       and, under $GITHUB_OUTPUT, needs_review=true|false: true when a Dragon
+//       was removed (a possible rename), so a person must look before it ships
 //
 //   npm run snapshot -- --check [--baseline <pages.json>]...
 //       one small request for the pages' revision IDs. "Changed" unless they
@@ -39,7 +41,7 @@ import {
 } from './pages';
 import { cutRealRecords, REAL_RECORDS_FILE } from './fixture';
 import { downloadImages, eventCurrencies, type ImageReport } from './images';
-import { refreshReportMarkdown } from './report';
+import { needsReview, refreshReportMarkdown } from './report';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const rawDir = join(root, RAW_DIR);
@@ -114,6 +116,10 @@ async function main(args: string[]): Promise<void> {
     const markdown = refreshReportMarkdown({ changed: changedPages(current, committed), build: report, images: images.report });
     await writeFile(reportFile, markdown, 'utf8');
     console.log(`Wrote the report to ${reportFile}.`);
+    const review = needsReview(report);
+    console.log(`needs_review=${review}`);
+    if (process.env.GITHUB_OUTPUT) await appendFile(process.env.GITHUB_OUTPUT, `needs_review=${review}
+`, 'utf8');
   }
 }
 

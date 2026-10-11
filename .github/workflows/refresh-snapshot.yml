@@ -1,17 +1,24 @@
 # Keeps the snapshot up to date with the wiki. Every 6 hours (or by hand) it
 # asks the wiki for the Data: pages' revision IDs, one small request. Only
 # when a page changed since the committed snapshot, and since the open
-# refresh PR, does it scrape, download new images, re-cut the fixture, run
-# the checks, and open or update one PR on the `auto/snapshot-refresh`
-# branch. An unchanged wiki is never scraped again, however long the gap
+# refresh PR, does it scrape, download new images, re-cut the fixture and run
+# the checks. An unchanged wiki is never scraped again, however long the gap
 # (new Dragons the wiki hasn't added yet appear once it does).
 #
-# Rename candidates are never answered here: the PR lists them, and they
-# must be answered by hand (`npm run snapshot -- --offline` on the branch)
-# before merging.
+# Then it splits on one question, whether a Dragon was removed (a possible
+# rename, which would orphan owned flags if published unanswered):
+#   - none removed and the checks pass: commit straight to main and start the
+#     deploy. Nobody has to do anything.
+#   - a Dragon removed, or the checks failed: open or update one PR on the
+#     `auto/snapshot-refresh` branch for a person. Rename candidates must be
+#     answered by hand (`npm run snapshot -- --offline` on the branch) before
+#     merging; merging deploys. The whole snapshot waits, since it is one file.
 #
 # Needs: Settings > Actions > General > "Allow GitHub Actions to create and
-# approve pull requests". Schedules only run from the default branch.
+# approve pull requests". `main` must accept pushes from the workflow (no
+# branch protection). Schedules only run from the default branch. A commit
+# pushed with the workflow token doesn't start other workflows, so the deploy
+# is started by hand-off (`gh workflow run`), not by pages.yml's push trigger.
 name: Refresh the snapshot
 
 on:
@@ -22,6 +29,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 concurrency:
   group: refresh-snapshot
@@ -56,6 +64,7 @@ jobs:
         run: npm run snapshot -- --check ${{ steps.baseline.outputs.args }}
 
       - name: Scrape
+        id: scrape
         if: steps.check.outputs.changed == 'true'
         run: npm run snapshot -- --ci --fixture --report "$RUNNER_TEMP/report.md"
 
@@ -79,8 +88,24 @@ jobs:
             fi
           } >> "$RUNNER_TEMP/report.md"
 
+      # Nothing removed and the checks passed: publish without a person.
+      - name: Publish to main and deploy
+        id: publish
+        if: steps.check.outputs.changed == 'true' && steps.tests.outcome == 'success' && steps.scrape.outputs.needs_review == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data public/images fixtures/real-records.json
+          git commit -m "Refresh the snapshot from the wiki"
+          git push origin HEAD:main
+          # A review PR from an earlier run is out of date now.
+          gh pr close "$BRANCH" --delete-branch --comment "Superseded: the latest refresh needed no review and went straight to main." || true
+          gh workflow run pages.yml --ref main
+
       - name: Open or update the refresh PR
-        if: steps.check.outputs.changed == 'true'
+        if: steps.check.outputs.changed == 'true' && steps.publish.outcome != 'success'
         uses: peter-evans/create-pull-request@v7
         with:
           branch: ${{ env.BRANCH }}

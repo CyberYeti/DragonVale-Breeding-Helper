@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { BuildReport } from './build';
 import type { ImageReport } from './images';
-import { refreshReportMarkdown } from './report';
+import { needsReview, refreshReportMarkdown } from './report';
 
 const build = (over: Partial<BuildReport> = {}): BuildReport => ({
   added: [],
@@ -60,5 +60,15 @@ describe('refreshReportMarkdown', () => {
     expect(md).toContain('- Currency icon for Ring (File:RingFilterOn.png)');
     expect(md).toContain('- dragon image for Sunflare (File:Sunflare Dragon.png)');
     expect(md).toContain('- odd record');
+  });
+});
+
+describe('needsReview', () => {
+  it('is false when Dragons were only added', () => {
+    expect(needsReview(build({ added: ['Sunflare'] }))).toBe(false);
+  });
+
+  it('is true when any Dragon was removed, since it may be a rename', () => {
+    expect(needsReview(build({ removed: ['Old'] }))).toBe(true);
   });
 });

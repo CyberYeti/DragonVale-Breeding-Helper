@@ -14,6 +14,15 @@ export type RefreshReport = {
   images: ImageReport;
 };
 
+/**
+ * Whether a person must look before this goes live. A removed Dragon may be a
+ * rename, and publishing it unanswered would orphan owned flags; additions and
+ * changes can't hurt a saved Collection, so they publish unattended.
+ */
+export function needsReview(build: BuildReport): boolean {
+  return build.removed.length > 0;
+}
+
 const list = (items: readonly string[]) => (items.length ? items.join(', ') : 'none');
 
 /** The report as Markdown. */
