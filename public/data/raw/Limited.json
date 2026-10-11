@@ -1,0 +1,467 @@
+{
+	"dragons": {
+		"Opal": {
+			"countdown": "November 1, 2026"
+		},
+		"Autumn": {
+			"countdown": "December 21, 2026"
+		},
+		"Bismuth": {
+			"countdown": "October 15, 2026"
+		},
+		"Amber": {
+			"countdown": "November 15, 2026"
+		},
+		"Stygian": {
+			"countdown": "October 23, 2026"
+		},
+		"Librian": {
+			"countdown": "October 23, 2026"
+		}
+	},
+	"islandThemes": {},
+	"decorations": {
+		"Miroid Monument": {
+			"countdown": "November 1, 2026"
+		},
+		"Tear of the Cataclysm": {
+			"countdown": "November 15, 2026"
+		}
+	},
+	"events": {
+		"Whitbee's Candy Bash XIII: Frightful Encounters \u0026 Arcane Rituals": {
+			"countdown": "November 2, 2026",
+			"dragons": {
+				"Hollowjaw": {
+					"Currency": "Candy",
+					"Cost": 15150,
+					"Breedable": false
+				},
+				"Eggony": {
+					"Currency": "Candy",
+					"Cost": 14000,
+					"Breedable": false
+				},
+				"Torment": {
+					"countdown": "October 15, 2026",
+					"Currency": "Candy",
+					"Cost": 15250
+				},
+				"Mirhor": {
+					"Currency": "Candy",
+					"Cost": 15000
+				},
+				"Tartarus": {
+					"Currency": "Candy",
+					"Cost": 15000
+				},
+				"Sinking": {
+					"Currency": "Candy",
+					"Cost": 15000
+				},
+				"Brainiac": {
+					"Currency": "Candy",
+					"Cost": 15000
+				},
+				"Righteous": {
+					"Currency": "Candy",
+					"Cost": 15000
+				},
+				"Reaper": {
+					"Currency": "Candy",
+					"Cost": 15000
+				},
+				"Pit": {
+					"Currency": "Candy",
+					"Cost": 15000
+				},
+				"Dumi": {
+					"Currency": "Candy",
+					"Cost": 15000
+				},
+				"Dragpir": {
+					"Currency": "Candy",
+					"Cost": 12000
+				},
+				"Spooker": {
+					"Currency": "Candy",
+					"Cost": 13000
+				},
+				"Awoo": {
+					"Currency": "Candy",
+					"Cost": 13500
+				},
+				"Drack-o-Lantern": {
+					"Currency": "Candy",
+					"Cost": 13500
+				},
+				"Candycorn": {
+					"Currency": "Candy",
+					"Cost": 16500
+				},
+				"Yaga": {
+					"Currency": "Candy",
+					"Cost": 15500
+				},
+				"Bruntal": {
+					"Currency": "Candy",
+					"Cost": 16000
+				},
+				"Dracomancy": {
+					"Currency": "Candy",
+					"Cost": 1000
+				},
+				"Bone": {
+					"Currency": "Candy",
+					"Cost": 760
+				},
+				"Thicket": {
+					"Currency": "Candy",
+					"Cost": 1000
+				},
+				"Love": {
+					"Currency": "Candy",
+					"Cost": 1140
+				},
+				"Ghost": {
+					"Currency": "Candy",
+					"Cost": 1140
+				},
+				"Dracabra": {
+					"Currency": "Candy",
+					"Cost": 1900
+				},
+				"Oni": {
+					"Currency": "Candy",
+					"Cost": 2000
+				},
+				"Spectre": {
+					"Currency": "Candy",
+					"Cost": 2150
+				},
+				"Nether": {
+					"Currency": "Candy",
+					"Cost": 2250
+				},
+				"Nosferatu": {
+					"Currency": "Candy",
+					"Cost": 2275
+				},
+				"Bog": {
+					"Currency": "Candy",
+					"Cost": 2275
+				},
+				"Misfortune": {
+					"Currency": "Candy",
+					"Cost": 2999
+				},
+				"Ambrosia": {
+					"Currency": "Candy",
+					"Cost": 3500
+				},
+				"Delight": {
+					"Currency": "Candy",
+					"Cost": 3750
+				},
+				"Midnight": {
+					"Currency": "Candy",
+					"Cost": 3750
+				},
+				"Gatren": {
+					"Currency": "Candy",
+					"Cost": 4800
+				},
+				"Kwall": {
+					"Currency": "Candy",
+					"Cost": 5600
+				},
+				"Malefice": {
+					"Currency": "Candy",
+					"Cost": 5800
+				},
+				"Maw": {
+					"Currency": "Candy",
+					"Cost": 6000
+				},
+				"Scout": {
+					"Currency": "Candy",
+					"Cost": 6480
+				},
+				"Etch": {
+					"Currency": "Candy",
+					"Cost": 6720
+				},
+				"Narcis": {
+					"Currency": "Candy",
+					"Cost": 7000
+				},
+				"Funis": {
+					"Currency": "Candy",
+					"Cost": 7360
+				},
+				"Combustion": {
+					"Currency": "Candy",
+					"Cost": 7450
+				},
+				"Infernus": {
+					"Currency": "Candy",
+					"Cost": 7680
+				},
+				"Grimoire": {
+					"Currency": "Candy",
+					"Cost": 8000
+				},
+				"Vampir": {
+					"Currency": "Candy",
+					"Cost": 8320
+				},
+				"Dortal": {
+					"Currency": "Candy",
+					"Cost": 8560
+				},
+				"Fury": {
+					"Currency": "Candy",
+					"Cost": 8560
+				},
+				"Magma": {
+					"Currency": "Candy",
+					"Cost": 12000
+				},
+				"Shackle": {
+					"Currency": "Candy",
+					"Cost": 12500
+				},
+				"Omen": {
+					"Currency": "Candy",
+					"Cost": 5000
+				},
+				"Eww": {
+					"Currency": "Candy",
+					"Cost": 13000
+				},
+				"Valor": {
+					"Currency": "Candy",
+					"Cost": 2200
+				},
+				"Gourd": {
+					"Currency": "Candy",
+					"Cost": 2200
+				},
+				"Cerberus": {
+					"Currency": "Candy",
+					"Cost": 4500
+				},
+				"Nightmare": {
+					"Currency": "Candy",
+					"Cost": 2200
+				},
+				"Decay": {
+					"Currency": "Candy",
+					"Cost": 6080
+				},
+				"Lycan": {
+					"Currency": "Candy",
+					"Cost": 6080
+				},
+				"Spirit": {
+					"Currency": "Candy",
+					"Cost": 6080
+				},
+				"Nesting": {
+					"Currency": "Candy",
+					"Cost": 6080
+				},
+				"Zombie": {
+					"Currency": "Candy",
+					"Cost": 6080
+				},
+				"Chromacorn": {
+					"Currency": "Candy",
+					"Cost": 6100
+				},
+				"Wendigo": {
+					"Currency": "Candy",
+					"Cost": 7000
+				},
+				"Porcelain": {
+					"Currency": "Candy",
+					"Cost": 7150
+				},
+				"Plumpkin": {
+					"Currency": "Candy",
+					"Cost": 7500
+				},
+				"Ocular": {
+					"Currency": "Candy",
+					"Cost": 7800
+				},
+				"Wrath": {
+					"Currency": "Candy",
+					"Cost": 7950
+				},
+				"Iden": {
+					"Currency": "Candy",
+					"Cost": 7960
+				},
+				"Nox": {
+					"Currency": "Candy",
+					"Cost": 8760
+				},
+				"Hyperion": {
+					"Currency": "Candy",
+					"Cost": 9500
+				},
+				"Corrupticorn": {
+					"Currency": "Candy",
+					"Cost": 9550
+				},
+				"Umbra": {
+					"Currency": "Candy",
+					"Cost": 9550
+				},
+				"Heavy Metal": {
+					"Currency": "Candy",
+					"Cost": 9600
+				},
+				"Punk": {
+					"Currency": "Candy",
+					"Cost": 10000
+				},
+				"Techno": {
+					"Currency": "Candy",
+					"Cost": 11500
+				},
+				"Brood": {
+					"Currency": "Candy",
+					"Cost": 12000
+				},
+				"Rotblossom": {
+					"Currency": "Candy",
+					"Cost": 12640
+				},
+				"Amalgamate": {
+					"Currency": "Candy",
+					"Cost": 12960
+				},
+				"Kage": {
+					"Currency": "Candy",
+					"Cost": 13680
+				},
+				"Hydnellum": {
+					"Currency": "Candy",
+					"Cost": 14640
+				},
+				"Greymatter": {
+					"Currency": "Candy",
+					"Cost": 15000
+				},
+				"Machina": {
+					"Currency": "Candy",
+					"Cost": 16000
+				},
+				"Tickles": {
+					"Currency": "Candy",
+					"Cost": 17000
+				},
+				"Fortified": {
+					"Currency": "Candy",
+					"Cost": 17500
+				},
+				"Exterran": {
+					"Currency": "Candy",
+					"Cost": 18500
+				},
+				"Eldritch": {
+					"Currency": "Candy",
+					"Cost": 11500
+				},
+				"Charlatan": {
+					"Currency": "Candy",
+					"Cost": 8100
+				},
+				"Scourge": {
+					"Currency": "Candy",
+					"Cost": 8900
+				},
+				"Barbarous": {
+					"Currency": "Candy",
+					"Cost": 9600
+				},
+				"Macabre": {
+					"Currency": "Candy",
+					"Cost": 10400
+				},
+				"Ghostly Plant": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Fire": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Earth": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Cold": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Lava": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Obsidian": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Mountain": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Glacier": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Nosferatu": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Bone": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Decay": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Oni": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Spectre": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Spirit": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Ghostly Ghost": {
+					"Currency": "Candy",
+					"Cost": 2750
+				},
+				"Trick": {
+					"Currency": "Candy",
+					"Cost": 5000
+				},
+				"Ortreat": {
+					"Currency": "Candy",
+					"Cost": 5000
+				},
+				"islands": {},
+				"islandThemes": {}
+			}
+		}
+	}
+}
