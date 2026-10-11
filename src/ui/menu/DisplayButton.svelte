@@ -10,7 +10,7 @@
   import ToolButton from './ToolButton.svelte';
 
   const store = useStore();
-  const changed = $derived(store.display.ownedForms !== 'either' || store.display.allInColour);
+  const changed = $derived(store.display.ownedForms !== 'either' || store.display.allInColour || !store.display.elementIcons);
 </script>
 
 <Popover label="Display" align="right">

@@ -20,6 +20,7 @@ import type {
 /** No filter on: Breedable now off, Show All, no rarity or Element ticked. */
 export const NO_FILTERS: Filters = Object.freeze({
   breedableNow: false,
+  availableNow: false,
   show: 'all',
   rarities: new Set<Rarity>(),
   elements: new Set<string>(),
@@ -40,7 +41,7 @@ export function isShown(dragon: Dragon, ownedForms: OwnedForms): boolean {
  * - A non-blank `query` searches every Dragon and replaces `sections` with
  *   one `search` section, whatever the tab.
  * - Owned forms hides the Dragons it doesn't show.
- * - Filters: Breedable now (in `cave`), Show All/Owned/Not owned (owned per
+ * - Filters: Breedable now (in `cave`), Available now, Show All/Owned/Not owned (owned per
  *   Owned forms), Rarity (none ticked = all), Element (none ticked = all;
  *   else displays every ticked Element, and with `exact` no other).
  * - A non-blank `find` (the page header's "Find on this page") keeps the
@@ -72,6 +73,7 @@ export function applyView(
   const breedable = filters.breedableNow ? breedableNow(world, cave) : null;
   const keep = (d: Dragon) =>
     (breedable === null || breedable.has(d.name)) &&
+    (!filters.availableNow || world.available.has(d.name)) &&
     (filters.show === 'all' || owned(d) === (filters.show === 'owned')) &&
     (filters.rarities.size === 0 || filters.rarities.has(d.rarity)) &&
     elementsMatch(d, filters) &&

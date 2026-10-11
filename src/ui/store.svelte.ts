@@ -52,7 +52,7 @@ const DAY_CHECK_MS = 60_000;
 
 const CAVES: readonly Cave[] = ['normal', 'rift', 'coop'];
 const OWNED_FORMS: readonly Display['ownedForms'][] = ['either', 'normal', 'rift'];
-const DEFAULT_DISPLAY: Display = { ownedForms: 'either', allInColour: false };
+const DEFAULT_DISPLAY: Display = { ownedForms: 'either', allInColour: false, elementIcons: true };
 
 /**
  * Where the Limited data came from.
@@ -162,7 +162,11 @@ export class AppStore {
     return this.#display;
   }
   set display(display: Display) {
-    this.#display = { ownedForms: display.ownedForms, allInColour: display.allInColour };
+    this.#display = {
+      ownedForms: display.ownedForms,
+      allInColour: display.allInColour,
+      elementIcons: display.elementIcons,
+    };
     this.#saveSettings();
   }
 
@@ -306,6 +310,7 @@ export class AppStore {
           ? (display.ownedForms as Display['ownedForms'])
           : DEFAULT_DISPLAY.ownedForms,
         allInColour: typeof display.allInColour === 'boolean' ? display.allInColour : DEFAULT_DISPLAY.allInColour,
+        elementIcons: typeof display.elementIcons === 'boolean' ? display.elementIcons : DEFAULT_DISPLAY.elementIcons,
       };
     }
   }

@@ -253,6 +253,11 @@ describe('applyView filters', () => {
     expect(flat(view(w, FIRE, filters({ breedableNow: true }), 'either', 'rift').sections)).toEqual([]);
   });
 
+  it('Available now hides Dragons that are not Available', () => {
+    const w = menuWorld(owned);
+    expect(flat(view(w, PLANT, filters({ availableNow: true })).sections)).toEqual(['Plant', 'Flower', 'Love', 'Haystack']);
+  });
+
   it('Show Owned alone and Show Not owned alone', () => {
     const w = menuWorld(owned);
     expect(flat(view(w, PLANT, filters({ show: 'owned' })).sections)).toEqual(['Plant', 'Flower']);

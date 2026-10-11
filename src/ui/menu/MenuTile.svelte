@@ -93,7 +93,7 @@
     {view}
     {note}
     riftIcon={riftIcon(store.snapshot, item.dragon)}
-    elements={elementIcons(store.snapshot, item.dragon)}
+    elements={store.display.elementIcons ? elementIcons(store.snapshot, item.dragon) : []}
     showTicks={!nav.selecting}
     onopen={(v) => (nav.selecting ? nav.toggleSelected(name) : nav.openFocus(v.dragon.name, v.opensAs))}
     ontoggle={(tick, v) => store.toggle(v.dragon, tick.form)}

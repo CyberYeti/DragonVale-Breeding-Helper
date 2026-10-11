@@ -1,6 +1,6 @@
 <!--
   The Display popover's contents (spec §8 Filters and Display): Owned forms
-  Either / Normal / Rift, Show all Dragons in colour, and Done. Writes
+  Either / Normal / Rift, Show all Dragons in colour, Show element icons, and Done. Writes
   `store.display` as new objects; the store persists it.
 -->
 <script lang="ts">
@@ -38,6 +38,15 @@
     onchange={(e) => (store.display = { ...store.display, allInColour: e.currentTarget.checked })}
   />
   Show all Dragons in colour
+</label>
+
+<label class="check">
+  <input
+    type="checkbox"
+    checked={store.display.elementIcons}
+    onchange={(e) => (store.display = { ...store.display, elementIcons: e.currentTarget.checked })}
+  />
+  Show element icons
 </label>
 
 <div class="actions">

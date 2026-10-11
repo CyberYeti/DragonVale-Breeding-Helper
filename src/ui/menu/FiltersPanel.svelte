@@ -1,6 +1,6 @@
 <!--
   The Filters popover's contents (spec §8 Filters and Display): Breedable now
-  in the chosen cave, Show All / Owned / Not owned, the Rarity checklist (none
+  in the chosen cave, Available now, Show All / Owned / Not owned, the Rarity checklist (none
   ticked = all), the Element grid of displayed Elements (none ticked = all)
   with its Match exact / Any containing switch, Clear all and Done. Writes
   `nav.filters` as new objects.
@@ -10,13 +10,13 @@
   import { useNav } from '../nav.svelte';
   import { useStore } from '../store.svelte';
   import { caveName } from '../../lib/core/breeding';
-  import { rarityColour } from '../tile/labels';
+  import { rarityFill } from '../tile/labels';
   import {
     RARITIES,
     SHOWS,
     elementChoices,
     elementMatchLabel,
-    raritySymbol,
+    RARITY_SQUARE,
     showLabel,
     toggleElement,
     toggleRarity,
@@ -39,6 +39,15 @@
   <span><b>Breedable now</b> <span class="muted">in the {caveName(store.cave)} cave</span></span>
 </label>
 
+<label class="check">
+  <input
+    type="checkbox"
+    checked={nav.filters.availableNow}
+    onchange={(e) => (nav.filters = { ...nav.filters, availableNow: e.currentTarget.checked })}
+  />
+  <b>Available now</b>
+</label>
+
 <div class="lbl" id="filters-show">Show</div>
 <div class="seg" role="radiogroup" aria-labelledby="filters-show">
   {#each SHOWS as show (show)}
@@ -53,7 +62,7 @@
 </div>
 
 <div class="lbl" id="filters-rarity">Rarity <span class="hint">(none ticked = all)</span></div>
-<div role="group" aria-labelledby="filters-rarity">
+<div class="rarities" role="group" aria-labelledby="filters-rarity">
   {#each RARITIES as rarity (rarity)}
     <label class="check">
       <input
@@ -61,7 +70,7 @@
         checked={nav.filters.rarities.has(rarity)}
         onchange={() => (nav.filters = toggleRarity(nav.filters, rarity))}
       />
-      <span class="sym" style:color={rarityColour(rarity)} aria-hidden="true">{raritySymbol(rarity)}</span>
+      <span class="sym" style:color={rarityFill(rarity)} aria-hidden="true">{RARITY_SQUARE}</span>
       {rarity}
     </label>
   {/each}
@@ -118,6 +127,10 @@
   }
   .muted {
     color: var(--muted);
+  }
+  .rarities {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
   .check {
     display: flex;

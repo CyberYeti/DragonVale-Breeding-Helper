@@ -7,12 +7,13 @@
   import { NO_FILTERS } from '../../lib/core/menu';
   import { useNav } from '../nav.svelte';
   import { useStore } from '../store.svelte';
+  import { rarityFill } from '../tile/labels';
   import {
     RARITIES,
     elementChoices,
     elementMatchLabel,
     filtersOn,
-    raritySymbol,
+    RARITY_SQUARE,
     showLabel,
     toggleElement,
     toggleRarity,
@@ -36,6 +37,14 @@
         onclick={() => (nav.filters = { ...filters, breedableNow: false })}>Breedable now ✕</button
       >
     {/if}
+    {#if filters.availableNow}
+      <button
+        type="button"
+        class="chip"
+        aria-label="Remove filter Available now"
+        onclick={() => (nav.filters = { ...filters, availableNow: false })}>Available now ✕</button
+      >
+    {/if}
     {#if filters.show !== 'all'}
       <button
         type="button"
@@ -49,7 +58,7 @@
         type="button"
         class="chip"
         aria-label="Remove filter {rarity}"
-        onclick={() => (nav.filters = toggleRarity(filters, rarity))}>{raritySymbol(rarity)} {rarity} ✕</button
+        onclick={() => (nav.filters = toggleRarity(filters, rarity))}><span style:color={rarityFill(rarity)} aria-hidden="true">{RARITY_SQUARE}</span> {rarity} ✕</button
       >
     {/each}
     {#each elements as element (element.name)}

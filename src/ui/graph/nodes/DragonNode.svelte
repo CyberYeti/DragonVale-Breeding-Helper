@@ -43,7 +43,7 @@
       {faded}
       far={canvas.far}
       riftIcon={riftIcon(store.snapshot, view.dragon)}
-      elements={elementIcons(store.snapshot, view.dragon)}
+      elements={store.display.elementIcons ? elementIcons(store.snapshot, view.dragon) : []}
       {ownedBanner}
       note={node.form === 'rift' && view.ticks.length > 1 ? 'Rift form' : undefined}
       ontoggle={(tick, v) => store.toggle(v.dragon, tick.form)}

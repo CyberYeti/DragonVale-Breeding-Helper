@@ -58,6 +58,8 @@ export type Show = 'all' | 'owned' | 'not-owned';
 export type Filters = {
   /** Only Dragons Breedable now in the chosen cave. */
   readonly breedableNow: boolean;
+  /** Only Dragons Available right now (a limited Dragon must be in the rotation or a running Event). */
+  readonly availableNow: boolean;
   readonly show: Show;
   /** Ticked rarities. None ticked = every rarity. */
   readonly rarities: ReadonlySet<Rarity>;

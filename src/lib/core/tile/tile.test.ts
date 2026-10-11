@@ -17,7 +17,7 @@ import {
 import type { World } from '../world';
 import { describeTile, type Display, type TileView } from './index';
 
-const EITHER: Display = { ownedForms: 'either', allInColour: false };
+const EITHER: Display = { ownedForms: 'either', allInColour: false, elementIcons: true };
 const CAVES: Cave[] = ['normal', 'rift', 'coop'];
 
 const lava = () => dragon({ name: 'Lava', elements: ['Fire', 'Earth'] });
@@ -130,7 +130,7 @@ describe('banner', () => {
 });
 
 describe('grey or colour per Owned forms', () => {
-  const display = (ownedForms: OwnedForms, allInColour = false): Display => ({ ownedForms, allInColour });
+  const display = (ownedForms: OwnedForms, allInColour = false): Display => ({ ownedForms, allInColour, elementIcons: true });
 
   /** `owned` for Lava (both forms), Fire (no Rift form) and Plumewing (Rift dragon) per cave and setting. */
   function ownedTable(owned: Owned, name: string) {
@@ -221,7 +221,7 @@ describe('ticks', () => {
   it('ticks do not depend on the cave or Owned forms', () => {
     for (const cave of CAVES) {
       for (const ownedForms of ['either', 'normal', 'rift'] as const) {
-        expect(tile(w, 'Lava', cave, { ownedForms, allInColour: false }).ticks).toEqual(tile(w, 'Lava').ticks);
+        expect(tile(w, 'Lava', cave, { ownedForms, allInColour: false, elementIcons: true }).ticks).toEqual(tile(w, 'Lava').ticks);
       }
     }
   });
@@ -261,7 +261,7 @@ describe('Owned banner flag', () => {
 
   it('does not depend on Owned forms', () => {
     const w = build({ owned: { Lava: 'normal' } });
-    expect(tile(w, 'Lava', 'normal', { ownedForms: 'rift', allInColour: false })).toMatchObject({
+    expect(tile(w, 'Lava', 'normal', { ownedForms: 'rift', allInColour: false, elementIcons: true })).toMatchObject({
       owned: false,
       ownedBanner: true,
     });

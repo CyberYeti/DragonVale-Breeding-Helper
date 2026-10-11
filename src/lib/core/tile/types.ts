@@ -9,6 +9,8 @@ export type Display = {
   readonly ownedForms: OwnedForms;
   /** "Show all Dragons in colour": greyscale off. */
   readonly allInColour: boolean;
+  /** "Show element icons": the Elements' icons along the bottom of each tile. */
+  readonly elementIcons: boolean;
 };
 
 /** The one banner across a tile's art, if any. */

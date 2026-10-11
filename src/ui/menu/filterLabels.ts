@@ -16,21 +16,8 @@ export const RARITIES: readonly Rarity[] = [
   'Mythic',
 ];
 
-const RARITY_SYMBOLS: Record<Rarity, string> = {
-  Primary: '◖',
-  Hybrid: '◓',
-  Rare: '◼',
-  Epic: '🟐',
-  Galaxy: '🟊',
-  Gemstone: '◆',
-  Legendary: '▲',
-  Mythic: '▮',
-};
-
-/** The wiki's symbol for a rarity. */
-export function raritySymbol(rarity: Rarity): string {
-  return RARITY_SYMBOLS[rarity];
-}
+/** A rarity's marker: the same square for all, so only the colour tells them apart. */
+export const RARITY_SQUARE = '■';
 
 export const SHOWS: readonly Show[] = ['all', 'owned', 'not-owned'];
 
@@ -43,7 +30,7 @@ export function showLabel(show: Show): string {
 /** The number on the Filters button: one per filter that is on, one per ticked rarity or Element. */
 export function filterCount(filters: Filters): number {
   return (
-    (filters.breedableNow ? 1 : 0) + (filters.show !== 'all' ? 1 : 0) + filters.rarities.size + filters.elements.size
+    (filters.breedableNow ? 1 : 0) + (filters.availableNow ? 1 : 0) + (filters.show !== 'all' ? 1 : 0) + filters.rarities.size + filters.elements.size
   );
 }
 
