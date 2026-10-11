@@ -2,12 +2,12 @@
   "about": "Real records cut from the committed raw pages (public/data/raw) by scraper/fixture.ts. Raw wiki field names. Data from the DragonVale Wiki, CC BY-SA 3.0.",
   "source": "https://dragonvale.fandom.com",
   "license": "CC BY-SA 3.0",
-  "fetchedAt": "2026-10-09T00:21:11.183Z",
+  "fetchedAt": "2026-10-11T17:42:39.069Z",
   "pageRevisions": {
-    "Data:Dragons.json": 1758656,
+    "Data:Dragons.json": 1758826,
     "Data:BreedingHints.json": 1758767,
     "Data:Game.json": 1754925,
-    "Data:Dragonarium.json": 1758621,
+    "Data:Dragonarium.json": 1758802,
     "Data:Limited.json": 1758773
   },
   "dragons": [
