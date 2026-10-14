@@ -12,7 +12,9 @@
 #   - a Dragon removed, or the checks failed: open or update one PR on the
 #     `auto/snapshot-refresh` branch for a person. Rename candidates must be
 #     answered by hand (`npm run snapshot -- --offline` on the branch) before
-#     merging; merging deploys. The whole snapshot waits, since it is one file.
+#     merging; merging deploys. The PR carries the new raw pages and images
+#     but leaves snapshot.json as it was, so that run compares against the old
+#     snapshot. The whole snapshot waits, since it is one file.
 #
 # Needs: Settings > Actions > General > "Allow GitHub Actions to create and
 # approve pull requests". `main` must accept pushes from the workflow (no
