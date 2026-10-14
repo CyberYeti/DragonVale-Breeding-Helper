@@ -14,6 +14,15 @@ export type RefreshReport = {
   images: ImageReport;
 };
 
+/**
+ * Whether a person must look before this goes live. A removed Dragon may be a
+ * rename, and publishing it unanswered would orphan owned flags; additions and
+ * changes can't hurt a saved Collection, so they publish unattended.
+ */
+export function needsReview(build: BuildReport): boolean {
+  return build.removed.length > 0;
+}
+
 const list = (items: readonly string[]) => (items.length ? items.join(', ') : 'none');
 
 /** The report as Markdown. */
@@ -28,8 +37,9 @@ export function refreshReportMarkdown({ changed, build, images }: RefreshReport)
   if (build.renameCandidates.length > 0) {
     out.push('### ⚠️ Rename candidates (not applied)', '');
     out.push(
-      'The refresh never answers rename prompts. Before merging, run `npm run snapshot -- --offline` on this branch, ' +
-        'answer them, and push. Otherwise owned flags for these Dragons stay under the old name.',
+      'The refresh never answers rename prompts, and it left `snapshot.json` as it is on `main` so they can be asked. ' +
+        'Before merging, run `npm run snapshot -- --offline` on this branch, answer them, and push. ' +
+        'Without that, the merged snapshot is still the old one.',
       '',
     );
     for (const { from, to, reason } of build.renameCandidates) out.push(`- ${from} → ${to} (${reason})`);

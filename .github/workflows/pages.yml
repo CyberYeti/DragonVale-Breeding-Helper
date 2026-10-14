@@ -1,9 +1,12 @@
-# Deploys the app to GitHub Pages. Switched off until the tool goes public
-# (spec §2): it only runs when triggered by hand. To switch it on, add a
-# `push: branches: [main]` trigger and enable Pages (source: GitHub Actions).
+# Deploys the app to GitHub Pages (source: GitHub Actions). Runs on every push
+# to main (a merged PR), by hand, and when the snapshot refresh publishes
+# straight to main: that push is made with the workflow token, which starts no
+# other workflows, so the refresh dispatches this one itself.
 name: Deploy to GitHub Pages
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
