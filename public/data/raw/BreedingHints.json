@@ -8469,6 +8469,14 @@
 				"Dark",
 				"Fire"
 			]
+		},
+		"Defflorescence": {
+			"BuyPrice": 20,
+			"BuyPriceType": "Gems",
+			"RequiredDragons": [
+				"Amalgamate",
+				"Etch"
+			]
 		}
 	}
 }
