@@ -545,10 +545,7 @@ describe('buildSnapshot on the full raw pages', () => {
       [...riftDragons].sort(),
     );
     expect(report.counts.gemstoneAndCrystalline).toBe(29);
-    // New Candy Bash XIII Dragons the wiki hasn't put on a Dragonarium page yet.
-    expect(report.warnings).toEqual(
-      ['Hollowjaw', 'Eggony', 'Torment'].map((name) => `${name} is on no Dragonarium page (search still finds it)`),
-    );
+    expect(report.warnings).toEqual([]);
 
     // Spec §4: 35 Evolved, 5 Summoned; Purchased are the 10 basic and 10 rift primaries.
     expect(snapshot.dragons.filter((d) => d.routes.length === 0)).toEqual([]);
