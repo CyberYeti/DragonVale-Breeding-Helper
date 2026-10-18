@@ -3,6 +3,7 @@
 //   npm run snapshot -- --fetch-only   fetch the raw pages (one request) and write them
 //   npm run snapshot -- --offline      read the committed raw pages, no network
 //   add --fixture to (re)cut fixtures/real-records.json from the pages read
+//       (by hand only: the refresh leaves that frozen sample alone)
 //   add --no-download to use only the images already under public/images/
 //   add --ci to never prompt: rename candidates are left unapplied and listed
 //   (with --ci, a run that removed a Dragon leaves snapshot.json unchanged)

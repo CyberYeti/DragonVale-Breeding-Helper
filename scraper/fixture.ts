@@ -1,6 +1,8 @@
 // Cuts fixtures/real-records.json from the raw pages: a few real Dragon
 // records and their hints, kept raw (wiki field names), shared by the scraper
-// and core tests. `npm run snapshot -- --offline --fixture` rewrites it.
+// and core tests. A frozen sample: the refresh doesn't touch it, so the code
+// tests don't move with the wiki. `npm run snapshot -- --offline --fixture`
+// rewrites it by hand.
 
 import { OPPOSITES } from './build';
 import { PAGE_TITLES, type RawPages } from './pages';

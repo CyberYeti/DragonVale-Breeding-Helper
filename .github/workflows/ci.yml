@@ -1,0 +1,35 @@
+# The code checks: typecheck, lint and every test, on each PR and each push
+# to main. A code bug shows up on the PR that made it, not on the next
+# snapshot refresh (which runs only the data tests). Nothing here blocks a
+# merge unless branch protection on main requires it.
+#
+# The refresh's own PR and its pushes to main use the workflow token, which
+# starts no other workflows, so this doesn't run on them.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run lint
+      - run: npm test

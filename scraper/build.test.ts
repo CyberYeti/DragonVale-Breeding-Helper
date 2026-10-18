@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { SCHEMA_VERSION, type Snapshot } from '../src/lib/snapshot';
 import { buildSnapshot, SnapshotBuildError } from './build';
-import { fetchPages, PAGE_TITLES, RAW_DIR, type RawPages } from './pages';
+import { PAGE_TITLES, type RawPages } from './pages';
 import { REAL_RECORDS_FILE, type RealRecords } from './fixture';
 
 const root = join(import.meta.dirname, '..');
@@ -520,38 +520,5 @@ describe('buildSnapshot fails the run', () => {
       expect.stringContaining('Dragonarium page Fire needs exactly one group tag'),
     ]);
     expect(failures(rawPages({ dragons: [fire, fire] }))).toEqual(['Data:Dragons.json names Fire more than once']);
-  });
-});
-
-describe('buildSnapshot on the full raw pages', () => {
-  it('builds 986 Dragons and 52 pages, with the Rift page holding exactly the Rift dragons', async () => {
-    const raw = await fetchPages({ kind: 'offline', dir: join(root, RAW_DIR) });
-    const { snapshot, report } = buildSnapshot(raw, null);
-
-    expect(snapshot.dragons).toHaveLength(986);
-    expect(snapshot.pages).toHaveLength(52);
-    // Spec §8 says 25 Epic and 17 Special; the wiki's own tags give 26 and 16
-    // (Rift is tagged special, as the spec expects, so the difference is elsewhere).
-    expect(report.counts.pages).toEqual({ elemental: 10, epic: 26, special: 16 });
-
-    const riftDragons = snapshot.dragons.filter((d) => d.elements.includes('Rift')).map((d) => d.name);
-    const riftPage = snapshot.pages.find((p) => p.name === 'Rift');
-    expect(riftPage?.group).toBe('special');
-    expect(riftDragons).toHaveLength(37);
-    expect([...(riftPage?.dragons ?? [])].sort()).toEqual([...riftDragons].sort());
-
-    expect(report.counts.traits).toEqual({ all: 908, fixed: 37, none: 41 });
-    expect(snapshot.dragons.filter((d) => d.traits.kind === 'fixed').map((d) => d.name).sort()).toEqual(
-      [...riftDragons].sort(),
-    );
-    expect(report.counts.gemstoneAndCrystalline).toBe(29);
-    expect(report.warnings).toEqual([]);
-
-    // Spec §4: 35 Evolved, 5 Summoned; Purchased are the 10 basic and 10 rift primaries.
-    expect(snapshot.dragons.filter((d) => d.routes.length === 0)).toEqual([]);
-    expect(report.counts.routes).toEqual({ bred: 917, coop: 19, evolved: 35, summoned: 5, purchased: 20 });
-    // The 27 Route Elements, plus Rainbow, Surface and the gem, legendary and mythic ones Dragons display.
-    // Celebration and Omni (other) are neither, so they're left out.
-    expect(snapshot.elements).toHaveLength(35);
   });
 });
