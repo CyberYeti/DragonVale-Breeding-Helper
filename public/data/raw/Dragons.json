@@ -7058,7 +7058,7 @@
 			"Name": "Garland",
 			"Rarity": "Rare",
 			"BreedingTime": "24 H",
-			"Description": "Gallantly gathering the fruit and flora to celebrate the 4th anniversary of the magic of Dragonvale, the witch Gardenia stumbled upon an incredibly beautiful and particularly stubborn bushel of blossoms to pick. Nestled deep in the verdant vines of an ancient, magical tree, the Garland dragon was awoken by Gardenia. The majestic creature stoically stood up, and Gardenia instantly knew this guest would guarantee a grandiose celebration.",
+			"Description": "Gallantly gathering the fruit and flora to celebrate the 4th anniversary of the magic of DragonVale, the witch Gardenia stumbled upon an incredibly beautiful and particularly stubborn bushel of blossoms to pick. Nestled deep in the verdant vines of an ancient, magical tree, the Garland dragon was awoken by Gardenia. The majestic creature stoically stood up, and Gardenia instantly knew this guest would guarantee a grandiose celebration.",
 			"ReleaseDate": "September 12, 2015 #236",
 			"Order": 236,
 			"BuyPrice": 1444,
@@ -7945,7 +7945,7 @@
 			"Name": "Melancholy",
 			"Rarity": "Epic",
 			"BreedingTime": "24 H",
-			"Description": "Despite its name, the melancholy dragon isn't actually gloomy -- instead, this droopy-looking dragon seems to be more like a sadness-soaking sponge. Visitors claim that spending time with this dragon actually seems to lift their spirits, as if the melancholy dragon absorbs their troubles. In fact, it's not uncommon for magical healers to prescribe an afternoon with this adorably mopey dragon to cure a case of the blue-hoos. Whether it works or not, the gloomy dragon doesn't seem to mind the company.",
+			"Description": "Despite its name, the melancholy dragon isn't actually gloomy -- instead, this droopy-looking dragon seems to be more like a sadness-soaking sponge. Visitors claim that spending time with this dragon actually seems to lift their spirits, as if the melancholy dragon absorbs their troubles. In fact, it's not uncommon for magical healers to prescribe an afternoon with this adorably moppey dragon to cure a case of the blue-hoos. Whether it works or not, the gloomy dragon doesn't seem to mind the company.",
 			"ReleaseDate": "January 28, 2016 #265",
 			"Order": 265,
 			"BuyPrice": 1600,
@@ -10537,7 +10537,8 @@
 			"Traits": {
 				"Available": "All"
 			},
-			"Goal": "Maybe visitors will help this dragon to come out of its shell!"
+			"Goal": "Maybe visitors will help this dragon to come out of its shell!",
+			"IsLimited": true
 		},
 		{
 			"Name": "Cumulus",
@@ -10630,7 +10631,8 @@
 			"Traits": {
 				"Available": "All"
 			},
-			"Goal": "Do you think the pond dragon and the salamander dragon hang out?"
+			"Goal": "Do you think the pond dragon and the salamander dragon hang out?",
+			"IsLimited": true
 		},
 		{
 			"Name": "Sumi",
@@ -11038,7 +11040,9 @@
 			"Traits": {
 				"Default": "Dark"
 			},
-			"Goal": "Do you think there are pumpermelons in the Rift?"
+			"Goal": "Do you think there are pumpermelons in the Rift?",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Voltaic",
@@ -11063,7 +11067,9 @@
 			"Traits": {
 				"Default": "Dark"
 			},
-			"Goal": "As intense-looking as it is shy, which is quite the combination!"
+			"Goal": "As intense-looking as it is shy, which is quite the combination!",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Snowsquall",
@@ -11088,7 +11094,9 @@
 			"Traits": {
 				"Default": "Cold"
 			},
-			"Goal": "Spententacular!"
+			"Goal": "Spententacular!",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Spore",
@@ -11113,7 +11121,9 @@
 			"Traits": {
 				"Default": "Plant"
 			},
-			"Goal": "Wonder what else lurks in the Rift..."
+			"Goal": "Wonder what else lurks in the Rift...",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Alpenglow",
@@ -11138,7 +11148,9 @@
 			"Traits": {
 				"Default": "Lightning"
 			},
-			"Goal": "You're glowing over this dragon!"
+			"Goal": "You're glowing over this dragon!",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Infrared",
@@ -11412,7 +11424,9 @@
 			"Traits": {
 				"Default": "Metal"
 			},
-			"Goal": "Nothing like a new dragon to chase away the blues!"
+			"Goal": "Nothing like a new dragon to chase away the blues!",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Viridian",
@@ -11437,7 +11451,9 @@
 			"Traits": {
 				"Default": "Light"
 			},
-			"Goal": "What a Rifty dragon!"
+			"Goal": "What a Rifty dragon!",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Plumewing",
@@ -11462,7 +11478,9 @@
 			"Traits": {
 				"Default": "Air"
 			},
-			"Goal": "They say dragons who like shiny things bring good luck. Treasure it!"
+			"Goal": "They say dragons who like shiny things bring good luck. Treasure it!",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Kampos",
@@ -11487,7 +11505,9 @@
 			"Traits": {
 				"Default": "Water"
 			},
-			"Goal": "Another day, another dragon!"
+			"Goal": "Another day, another dragon!",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Antumbra",
@@ -11512,7 +11532,9 @@
 			"Traits": {
 				"Default": "Earth"
 			},
-			"Goal": "What an exo-traordinary dragon!"
+			"Goal": "What an exo-traordinary dragon!",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Ghast",
@@ -11537,7 +11559,9 @@
 			"Traits": {
 				"Default": "Fire"
 			},
-			"Goal": "We're aghast we didn't discover this dragon sooner!"
+			"Goal": "We're aghast we didn't discover this dragon sooner!",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Solarflare",
@@ -11630,7 +11654,9 @@
 			"Traits": {
 				"Default": "Fire"
 			},
-			"Goal": "How does this dragon strike you?"
+			"Goal": "How does this dragon strike you?",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Lacuna",
@@ -11655,7 +11681,9 @@
 			"Traits": {
 				"Default": "Water"
 			},
-			"Goal": "That is one impressive tail!"
+			"Goal": "That is one impressive tail!",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Dandelion",
@@ -11850,7 +11878,9 @@
 			"Traits": {
 				"Default": "Cold"
 			},
-			"Goal": "That is one adorable dragon you've hatched there!"
+			"Goal": "That is one adorable dragon you've hatched there!",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Nesting",
@@ -12023,7 +12053,9 @@
 			"Traits": {
 				"Default": "Light"
 			},
-			"Goal": "Who knew that the once forgotten nimbus dragon was hidden in the Rift all along?"
+			"Goal": "Who knew that the once forgotten nimbus dragon was hidden in the Rift all along?",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Plumpkin",
@@ -12450,7 +12482,9 @@
 			"Traits": {
 				"Default": "Earth"
 			},
-			"Goal": "You'll never be lonely when you're tumbling along with the tumbling tumblethorn dragons!"
+			"Goal": "You'll never be lonely when you're tumbling along with the tumbling tumblethorn dragons!",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Satin",
@@ -12651,7 +12685,9 @@
 			"Traits": {
 				"Default": "Fire"
 			},
-			"Goal": "I'm not eggsagerating: this dragon is eggsactly what your park needed! I couldn't be more eggcited!"
+			"Goal": "I'm not eggsagerating: this dragon is eggsactly what your park needed! I couldn't be more eggcited!",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Misfortune",
@@ -12830,7 +12866,7 @@
 			"Name": "Djinni",
 			"Rarity": "Epic",
 			"BreedingTime": "48 H",
-			"Description": "After spending one thousand and one nights searching the Sandarra Desert for treasure, the traveler Ala Din came across the fabled Cave of Wanderers. Though the cave was filled with fascinating and jeweled treasure, he became transfixed on a somewhat grimy lamp. Overtaken by the need to shine it up a bit, he suddenly found himself in front of a djinni dragon.\u003Cbr /\u003E\u003Cbr /\u003EHaving heard rumors of such fantastical creatures from legend, he did the first thing that came to mind: he wished for more wishes. This was of course against the rules of magic, and immediately and forever stripped the djinni dragons of any wish-granting powers they might have had.",
+			"Description": "After spending one thousand and one nights searching the Sandara Desert for treasure, the traveler Ala Din came across the fabled Cave of Wanderers. Though the cave was filled with fascinating and jeweled treasure, he became transfixed on a somewhat grimy lamp. Overtaken by the need to shine it up a bit, he suddenly found himself in front of a djinni dragon.\u003Cbr /\u003E\u003Cbr /\u003EHaving heard rumors of such fantastical creatures from legend, he did the first thing that came to mind: he wished for more wishes. This was of course against the rules of magic, and immediately and forever stripped the djinni dragons of any wish-granting powers they might have had.",
 			"ReleaseDate": "May 23, 2018 #432",
 			"Order": 432,
 			"BuyPrice": 2750,
@@ -12999,7 +13035,9 @@
 			"Traits": {
 				"Default": "Light"
 			},
-			"Goal": "They say that sand is coarse, rough, irritating, and gets everywhere... but I simply love this sandscale dragon!"
+			"Goal": "They say that sand is coarse, rough, irritating, and gets everywhere... but I simply love this sandscale dragon!",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Tidepool",
@@ -13521,7 +13559,7 @@
 			"Description": "During a midnight stroll searching for firefly dragons, princess Eris thought she left her chromacorn dragon friend at home. She didn't realize her clingy companion followed her into the woods until she caught sight of it rummaging in a blushroom patch. When the chromacorn dragon couldn't find any bright blue snacks, it reared up and roared. Under the full moon, a dark purple shimmer spread over the dragon and transformed it into something new… the corrupticorn dragon! Eris said aloud, “I never knew dragons could get hangry”.\u003Cbr /\u003E\u003Cbr /\u003E*Collect and place 10 unique Flames to perform the ritual with a chromacorn dragon",
 			"ReleaseDate": "October 12, 2018 #455",
 			"Order": 455,
-			"BuyPrice": 12000,
+			"BuyPrice": 11500,
 			"BuyCurrency": "Etherium",
 			"SellPrice": 1500000,
 			"SellCurrency": "DragonCash",
@@ -14256,10 +14294,7 @@
 				"Cold"
 			],
 			"BreedingElements": [
-				"Ornamental",
-				"Plant",
-				"Fire",
-				"Cold"
+				"Ornamental"
 			],
 			"Devolution": "Gift",
 			"IsLimited": true,
@@ -14292,10 +14327,7 @@
 				"Cold"
 			],
 			"BreedingElements": [
-				"Ornamental",
-				"Plant",
-				"Fire",
-				"Cold"
+				"Ornamental"
 			],
 			"Devolution": "Gift",
 			"IsLimited": true,
@@ -14328,10 +14360,7 @@
 				"Cold"
 			],
 			"BreedingElements": [
-				"Ornamental",
-				"Plant",
-				"Fire",
-				"Cold"
+				"Ornamental"
 			],
 			"Devolution": "Gift",
 			"IsLimited": true,
@@ -14475,10 +14504,7 @@
 				"Cold"
 			],
 			"BreedingElements": [
-				"Ornamental",
-				"Plant",
-				"Fire",
-				"Cold"
+				"Ornamental"
 			],
 			"Devolution": "Gift",
 			"IsLimited": true,
@@ -14548,10 +14574,7 @@
 				"Cold"
 			],
 			"BreedingElements": [
-				"Ornamental",
-				"Plant",
-				"Fire",
-				"Cold"
+				"Ornamental"
 			],
 			"Devolution": "Gift",
 			"IsLimited": true,
@@ -17071,7 +17094,9 @@
 			"Traits": {
 				"Default": "Water"
 			},
-			"Goal": "This dragon is a living fossil of the prehistoric clown, that all modern clowns evolved from. Both beautiful and terrifying."
+			"Goal": "This dragon is a living fossil of the prehistoric clown, that all modern clowns evolved from. Both beautiful and terrifying.",
+			"BuyPrice": 10000,
+			"BuyCurrency": "Etherium"
 		},
 		{
 			"Name": "Flickerflame",
@@ -17748,7 +17773,11 @@
 			"Traits": {
 				"Available": "All"
 			},
-			"Goal": "Biggest fan of Tiamat and Bahamut."
+			"Goal": "Biggest fan of Tiamat and Bahamut.",
+			"BreedingElements": [
+				"Earth",
+				"Fire"
+			]
 		},
 		{
 			"Name": "Flowerhop",
@@ -18168,7 +18197,7 @@
 			"Name": "Scout",
 			"Rarity": "Epic",
 			"BreedingTime": "24 H",
-			"Description": "For many many years Camp Dragonvale has been a place that all young dragons and wizards can go to test themselves and more importantly - form friendships. Under the watchful eye of the scout dragon, the counselor of the camp, they learn and grow together. The scout, once a young volunteer, has been a part of the camp for so long, that they are now almost as one. The fire head keeps the camp fires going for the young adventurers, and the ice head keeps all the beverages cool and refreshing so that its campers never need anything. Pretty cool, right?",
+			"Description": "For many many years Camp DragonVale has been a place that all young dragons and wizards can go to test themselves and more importantly - form friendships. Under the watchful eye of the scout dragon, the counselor of the camp, they learn and grow together. The scout, once a young volunteer, has been a part of the camp for so long, that they are now almost as one. The fire head keeps the camp fires going for the young adventurers, and the ice head keeps all the beverages cool and refreshing so that its campers never need anything. Pretty cool, right?",
 			"ReleaseDate": "October 16, 2020 #609",
 			"Order": 609,
 			"BuyPrice": 2040,
@@ -18494,7 +18523,6 @@
 			],
 			"BreedingElements": [
 				"Dark",
-				"Light",
 				"Rift"
 			],
 			"IsLimited": true,
@@ -20110,7 +20138,12 @@
 			"Traits": {
 				"Available": "All"
 			},
-			"Goal": "A fast and shining new addition to the Vale!"
+			"Goal": "A fast and shining new addition to the Vale!",
+			"BreedingElements": [
+				"Metal",
+				"Light",
+				"Earth"
+			]
 		},
 		{
 			"Name": "Infernus",
@@ -23691,7 +23724,7 @@
 			"Name": "Tutan",
 			"Rarity": "Epic",
 			"BreedingTime": "23 H",
-			"Description": "One of Veezir's favorite dragons, the tutans sensed the activity around the Beacon of the Sun and have made their way to the Vale from the dunes of Sandarra. There they make their lairs in pyramids to hide from the scorching heat, but here the sun is more forgiving and they are willing to withstand it, as long as they are near the Beacon. Whether they wish to bring it down, protect or rule over it is unclear, but they seem drawn to it like many others.",
+			"Description": "One of Veezir's favorite dragons, the tutans sensed the activity around the Beacon of the Sun and have made their way to the Vale from the dunes of Sandara. There they make their lairs in pyramids to hide from the scorching heat, but here the sun is more forgiving and they are willing to withstand it, as long as they are near the Beacon. Whether they wish to bring it down, protect or rule over it is unclear, but they seem drawn to it like many others.",
 			"ReleaseDate": "July 13, 2023 #787",
 			"Order": 787,
 			"BuyPrice": 2075,
@@ -25645,7 +25678,7 @@
 			"Name": "Leviathan",
 			"Rarity": "Epic",
 			"BreedingTime": "23 H",
-			"Description": "These dragons inhabit the deepest parts of the oceans shooting up from the abyss sinking unsuspecting ships passing above. Eventually Tolzar found that this behaviour was not fully intentional and the ships were just unlucky. The leviathans simply cannot control their buoyancy very well, and sometimes take up too much air at once, rocketing them up towards his sub. Nautical adventures in the zones they inhabit are a bit risky, but we promise you they mean you no harm!",
+			"Description": "These dragons inhabit the deepest parts of the oceans, shooting up from the abyss sinking unsuspecting ships passing above. Eventually Tolzar found that this behaviour was not fully intentional and the ships were just unlucky. The leviathans simply cannot control their buoyancy very well, and sometimes take up too much air at once, rocketing them up towards his sub. Nautical adventures in the zones they inhabit are a bit risky, but we promise you they mean you no harm!",
 			"ReleaseDate": "August 1, 2024 #849",
 			"Order": 849,
 			"BuyPrice": 2600,
@@ -25742,7 +25775,7 @@
 			"Name": "Moppey",
 			"Rarity": "Rare",
 			"BreedingTime": "14 H",
-			"Description": "In halls so grand and wide, the grumpy moppey dragons stride.\u003Cbr /\u003E\u003Cbr /\u003E With tail in tow, they sweep and mop,\u003Cbr /\u003E through endless rooms, they never stop. \u003Cbr /\u003E\u003Cbr /\u003E Worn out brooms, but never slack,\u003Cbr /\u003Ethey clean the floors and don't look back. \u003Cbr /\u003E\u003Cbr /\u003E With every swipe slosh and sweep, \u003Cbr /\u003E they labor on, while others sleep.",
+			"Description": "In halls so grand and wide,\u003Cbr /\u003Ethe grumpy moppey dragons stride.\u003Cbr /\u003EWith tail in tow, they sweep and mop,\u003Cbr /\u003Ethrough endless rooms, they never stop.\u003Cbr /\u003EWorn out brooms but never slack,\u003Cbr /\u003Ethey clean the floors and don't look back.\u003Cbr /\u003EWith every swipe slosh and sweep,\u003Cbr /\u003Ethey labor on, while others sleep.",
 			"ReleaseDate": "August 22, 2024 #852",
 			"Order": 852,
 			"BuyPrice": 1650,
@@ -25770,7 +25803,7 @@
 			"Name": "Hex",
 			"Rarity": "Epic",
 			"BreedingTime": "18 H",
-			"Description": "Exchange students come from afar, jungles, lush, and bizzare.\u003Cbr /\u003E\u003Cbr /\u003E Scales of night, a dragon's charm, hexes swirl without alarm.\u003Cbr /\u003E\u003Cbr /\u003E Wings of shadow, magic bright, mystic eyes that pierce the night. \u003Cbr /\u003E\u003Cbr /\u003E Cursed flame, a fearsome sight, in the jungle, fear the bite!",
+			"Description": "Exchange students come from afar, jungles lush and bizarre.\u003Cbr /\u003EScales of night, a dragon’s charm, hexes swirl without alarm.\u003Cbr /\u003EWings of shadow, magic bright, mystic eyes that pierce the night.\u003Cbr /\u003ECursed flame, a fearsome sight, in the jungle, fear the bite!",
 			"ReleaseDate": "August 22, 2024 #853",
 			"Order": 853,
 			"BuyPrice": 1900,
@@ -25778,7 +25811,7 @@
 			"SellPrice": 1300000,
 			"SellCurrency": "DragonCash",
 			"HatchExperience": 1300000,
-			"LevelRequirement": 18,
+			"LevelRequirement": 25,
 			"Elements": [
 				"Apocalypse",
 				"Plant",
@@ -25802,7 +25835,7 @@
 			"Name": "Treebark",
 			"Rarity": "Rare",
 			"BreedingTime": "16 H",
-			"Description": "Towers and roofops make for a good roosting place apparently, or at least to the elusive treebark dragons. ''Scourge of the Chimmneys'', some would call them or that they enjoy the anti-tile lifestyle. Valers have been trying to get them down from rooftops for awhile now, and only recently did they actually succeed. The key was to build dummy houses and towers, with brand new roof tiles which the dragons wouldn't be able to resist. Valers do not mind their prescence, as long as they don't cause anymore leaky roofs amd broken chimmneys.  ",
+			"Description": "Towers and rooftops make for a very good roosting place apparently, or at least to the elusive treebark dragons. \"The Scourge of Chimneys\", some would call them, or that they enjoy that anti-tile lifestyle. Valers have been trying to get them down from their rooftops for a while now, and only recently did they actually succeed. The key was to build dummy houses and towers, with brand new roof tiles which the dragons wouldn't be able to resist. Valers do not mind their presence, as long as they don't cause any more leaky roofs and broken chimneys.",
 			"ReleaseDate": "August 22, 2024 #854",
 			"Order": 854,
 			"BuyPrice": 2000,
@@ -25858,7 +25891,7 @@
 			"Name": "Quamera",
 			"Rarity": "Epic",
 			"BreedingTime": "18 H",
-			"Description": "A fierce storm ravaged the Vale, chaos and destruction reigned supreme, until the quamera dragons came to intervene. Each head absorbing the violent energies of the strom cloud, letting out roars feral and loud. Not long after their arrival the dragons succeeded, the storm's onslaught had been impeded. With elemental powers the dragons were imbued, when the threat was subdued.",
+			"Description": "A fierce storm ravaged the Vale, chaos and destruction reigned supreme, until the quamera dragons came to intervene. Each head absorbing the violent energies of the storm cloud, letting out roars feral and loud. Not long after their arrival the dragons succeeded, the storm's onslaught had been impeded. With elemental powers the dragons were imbued, when the threat was subdued.",
 			"ReleaseDate": "September 5, 2024 #856",
 			"Order": 856,
 			"BuyPrice": 2000,
@@ -25871,10 +25904,10 @@
 				"Olympus"
 			],
 			"BreedingElements": [
-				"Cold",
-				"Earth",
+				"Dark",
 				"Lightning",
-				"Dark"
+				"Cold",
+				"Earth"
 			],
 			"IsLimited": true,
 			"Pedestal": {
@@ -25918,7 +25951,7 @@
 			"Name": "Doily",
 			"Rarity": "Rare",
 			"BreedingTime": "13 H",
-			"Description": "For the celebration of the Vale's 13th anniversary, a great gathering of the elder wizards was organized. A group of dedicated and focused practitioners of magic, all united by one common goal: creating the ultimate doily. For some, there is nothing better to decorate your house with it. It looks pretty under any dessert and any cup of tea, even on their Home Optical Oracles. As the weaving of magic and spools of lace went on, the wizards used up more magic than the incantation called for, and a most peculiar kind of doily came to be, a doily dragon.",
+			"Description": "For the celebration of the Vale's 13th anniversary, a great gathering of the elder wizards was organized. A group of dedicated and focused practitioners of magic, all united by one common goal: creating the ultimate doily. For some, there is nothing better to decorate your house with. It looks pretty under any dessert and any cup of tea, even on their Home Optical Oracles. As the weaving of magic and spools of lace went on, the wizards used up more magic than the incantation called for, and a most peculiar kind of doily came to be, a doily dragon.",
 			"ReleaseDate": "September 13, 2024 #858",
 			"Order": 858,
 			"BuyPrice": 2013,
@@ -25947,7 +25980,7 @@
 			"Name": "Spelldome",
 			"Rarity": "Rare",
 			"BreedingTime": "20 H",
-			"Description": "Some dragons have a deeper connection to the magic weave than others, like spelldome dragons who excel in creating protective barriers. This makes them highly sought after as assistants in the studies of magic. For you see, these anti-magical properties are perfect in training wizzlings, like a water bucket near a fire pit. Either despite, or because of their close connection to the magic weave, these drgons are not particular fans of magic itself, but a treat is a treat.",
+			"Description": "Some dragons have a deeper connection to the magic weave than others, like spelldome dragons who excel in creating protective barriers. This makes them highly sought after as assistants in the studies of magic. For you see, these anti-magical properties are perfect in the training of wizzlings, like a water bucket near a fire pit. Either despite, or because of their close connection to the magic weave, these dragons are not particular fans of magic itself, but a treat is a treat.",
 			"ReleaseDate": "September 19, 2024 #859",
 			"Order": 859,
 			"BuyPrice": 2000,
@@ -25975,7 +26008,7 @@
 			"Name": "Alchemy",
 			"Rarity": "Epic",
 			"BreedingTime": "23 H",
-			"Description": "Alchemy Dragon Potion Guide by Solus and Lunara:\u003Cbr\u003EReagents:\u003Cbr\u003E* Dragon's Breath Essence - For unparalleled magical potency and dragon core.\u003Cbr\u003E* Moonstone Shards - To imbue the potion with lunar wisdom.\u003Cbr\u003E* Unicorn Horn Dust - For purity and precision in alchemical reactions.\u003Cbr\u003E* Wyrm Scale Powder - To enhance the potion's resilience and strength.\u003Cbr\u003E* Elder Tree Sap - To stabilize and amplify the potion's effects.\u003Cbr\u003E\u003Cbr\u003ENote: Don't forget the fire and the cauldron, and definitely don't knock all potions and ingredients of the table!",
+			"Description": "Alchemy Dragon Potion Guide by Solus and Lunara: \u003Cbr /\u003EReagents:\u003Cbr /\u003E•  Dragon's Breath Essence - For unparalleled magical potency and dragon core.\u003Cbr /\u003E•  Moonstone Shards - To imbue the potion with lunar wisdom.\u003Cbr /\u003E•  Unicorn Horn Dust - For purity and precision in alchemical reactions.\u003Cbr /\u003E•  Wyrm Scale Powder - To enhance the potion’s resilience and strength.\u003Cbr /\u003E•  Elder Tree Sap - To stabilize and amplify the potion’s effects.\u003Cbr /\u003E\u003Cbr /\u003ENote: Don't forget the fire and the cauldron, and definitely don't knock all potions and ingredients off the table!",
 			"ReleaseDate": "September 26, 2024 #860",
 			"Order": 860,
 			"BuyPrice": 2400,
@@ -26038,7 +26071,7 @@
 			"Name": "Jiaolong",
 			"Rarity": "Rare",
 			"BreedingTime": "24 H",
-			"Description": "As suddenly as lightning strikes, these dragons descended from cloudy skies of the Far East, to join their fellow dragons in the Vale! Their arrival was foretold in ancient murals and myths, but no one could have predicted they would sleep in for their own prophetic arrival. Accustomed to the soft, fluffy clouds above, they bring a few with them, to feel cozy and remind them of home.",
+			"Description": "As suddenly as lightning strikes, these dragons descended from the cloudy skies of the Far East, to join their fellow dragons in the Vale! Their arrival was foretold in ancient murals and myths, but no one could have predicted they would sleep in for their own prophetic arrival. Accustomed to the soft, fluffy clouds above, they bring a few with them, to feel cozy and remind them of home.",
 			"ReleaseDate": "October 10, 2024 #862",
 			"Order": 862,
 			"BuyPrice": 2000,
@@ -26067,7 +26100,7 @@
 			"Name": "Dragpir",
 			"Rarity": "Rare",
 			"BreedingTime": "16 H",
-			"Description": "Hiding on top of the highest trees deep within the misty forests, the dragpir dragons have long eluded the gaze of wizards and witches. Cloaked in feathers and fur that blend seamlessly with the night, they silently hunted for jewellery and magical items. The only clue to their approach was the loud screech they emitted as they began their descent",
+			"Description": "Hiding on top of the highest trees deep within the misty forests, the dragpir dragons have long eluded the gaze of wizards and witches. Cloaked in feathers and fur that blend seamlessly with the night, they silently hunted for jewellery and magical items. The only clue to their approach was the loud screech they emitted as they began their descent.",
 			"ReleaseDate": "October 10, 2024 #863",
 			"Order": 863,
 			"BuyPrice": 1550,
@@ -26095,7 +26128,7 @@
 			"Name": "Spooker",
 			"Rarity": "Rare",
 			"BreedingTime": "14 H",
-			"Description": "To give his beloved cat a good scare, Whitbee decided to place a special order. ''A box of tricks to spook her'', he wrote in his orders. Somewhere along the way his message got lost in an unwitting game of crystal ball. On the day of delivery, six big boxes arrived and a group of spooker dragons burst from them, giving Whitbee the scare instead. This might not have been what he ordered, but he welcomed them nonetheless! The first dragon in the Vale to make its way here via mail! ",
+			"Description": "To give his beloved cat a good scare, Whitbee decided to place a special order. \"A box of tricks to spook her\", he wrote in his orders. Somewhere along the way his message got lost in an unwitting game of crystal ball. On the day of delivery, six big boxes arrived and a group of spooker dragons burst from them, giving Whitbee the scare instead. This might not have been what he ordered, but he welcomed them nonetheless! The first dragon in the Vale to make its way here via mail!",
 			"ReleaseDate": "October 10, 2024 #864",
 			"Order": 864,
 			"BuyPrice": 1500,
@@ -26123,7 +26156,7 @@
 			"Name": "Awoo",
 			"Rarity": "Epic",
 			"BreedingTime": "20 H",
-			"Description": "Through the woods it stalked alone,\u003Cbr /\u003E Roaming lands but not its own.\u003Cbr /\u003E When the full moon lit the sky,\u003Cbr /\u003E Piercing the night with its lonely cry.\u003Cbr /\u003E A family's love brought it peace, \u003Cbr /\u003E From its wild ways, it found release.\u003Cbr /\u003E Now it watches, brave and strong,\u003Cbr /\u003E Where it once did not belong. ",
+			"Description": "Through the woods it stalked alone,\u003Cbr /\u003ERoaming lands but not its own.\u003Cbr /\u003EWhen the full moon lit the sky,\u003Cbr /\u003EPiercing the night with its lonely cry.\u003Cbr /\u003EA family's love brought it peace,\u003Cbr /\u003EFrom its wild ways, it found release.\u003Cbr /\u003ENow it watches, brave and strong,\u003Cbr /\u003EWhere it once did not belong.",
 			"ReleaseDate": "October 10, 2024 #865",
 			"Order": 865,
 			"BuyPrice": 1800,
@@ -26198,10 +26231,6 @@
 				"Light",
 				"Plant"
 			],
-			"BreedingElements": [
-				"Light",
-				"Plant"
-			],
 			"IsLimited": true,
 			"Pedestal": {
 				"BuyPrice": 155,
@@ -26216,7 +26245,7 @@
 			"Name": "Yaga",
 			"Rarity": "Rare",
 			"BreedingTime": "17 H",
-			"Description": "An ancient legend speaks of a trail of treats winding deep into the misty swamp, where the yaga-dragons dwell. Many curious valers have followed the path, lured by its promise, only to disappear without a trace. What truly happens within the dark heart of the swamp remains a mystery. But the question lingers... Do you dare follow the trail of treats?",
+			"Description": "An ancient legend speaks of a trail of treats winding deep into the misty swamp, where the yaga-dragons dwell. Many curious valers have followed the path, lured by its promise, only to disappear without a trace. What truly happens within the dark heart of the swamp remains a mystery. But the question lingers… Do you dare follow the trail of treats?",
 			"ReleaseDate": "October 31, 2024 #868",
 			"Order": 868,
 			"BuyPrice": 1950,
@@ -26318,7 +26347,7 @@
 			"Description": "As more pieces are uncovered, something twisted and unnatural is starting to take shape yet again. The air around is hard to breathe, waters below are tainted, and flowers wither in its presence. Dig deeper to aid in its return, it is too late to turn back now.",
 			"ReleaseDate": "November 14, 2024 #870/#927",
 			"Order": 927,
-			"BuyPrice": 0,
+			"BuyPrice": 200,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2000000,
 			"SellCurrency": "DragonCash",
@@ -26335,7 +26364,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 185,
 				"BuyCurrency": "Gems"
 			},
 			"Evolutions": [
@@ -26359,7 +26388,7 @@
 			"Description": "Valers recoil at the sight of this monstrosity, the hairs on their necks stand up whenever this unspeakable horror is near. The ritual is almost complete, uncanny how the knowledge of its steps seem to come.. naturally to you.",
 			"ReleaseDate": "November 14, 2024 #870/#928",
 			"Order": 928,
-			"BuyPrice": 0,
+			"BuyPrice": 250,
 			"BuyCurrency": "Gems",
 			"SellPrice": 3000000,
 			"SellCurrency": "DragonCash",
@@ -26376,7 +26405,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 185,
 				"BuyCurrency": "Gems"
 			},
 			"Evolutions": [
@@ -26397,7 +26426,7 @@
 			"Alias": "Dracomancy",
 			"Rarity": "Epic",
 			"BreedingTime": "21 H",
-			"Description": "Freed from its earthly prison, the ancient evil arises and brings despair and decay wherever it goes. Your role in this is unquestionable, but the memory of it and steps you took to summon this abomination are gone. Wizards who have the strength and will to help do their best to contain this evil. Whitbee is particularly intrigued, as he recognizes the danger posed by this... dracomancy dragon!",
+			"Description": "Freed from its earthly prison, the ancient evil arises and brings despair and decay wherever it goes. Your role in this is unquestionable, but the memory of it and the steps you took to summon this abomination are gone. Wizards who have the strength and will to help do their best to contain this evil. Whitbee is particularly intrigued, as he recognizes the danger posed by this... dracomancy dragon!",
 			"ReleaseDate": "November 14, 2024 #871",
 			"Order": 871,
 			"BuyPrice": 1900,
@@ -26430,7 +26459,7 @@
 			"Name": "Gingerbread",
 			"Rarity": "Epic",
 			"BreedingTime": "14 H",
-			"Description": "Once upon a time, there was a wizard-baker who was rumored to have started the tradition of creating gingerbread houses. Valers would wonder where the idea came from, until one day a curious traveller happened upon the inspiration that started it all. A group of jolly gingerbread dragons, dancing and playing in the cold. They tumbled through the snow , like sweets in powdered sugar, bouncing and sparkling as they rolled, their candy-coated frames bringing joy to all.",
+			"Description": "Once upon a time, there was a wizard-baker who was rumored to have started the tradition of creating gingerbread houses. Valers would wonder where the idea came from, until one day a curious traveller happened upon the inspiration that started it all. A group of jolly gingerbread dragons, dancing and playing in the cold. They tumbled through the snow, like sweets in powdered sugar, bouncing and sparkling as they rolled, their candy-coated frames bringing joy to all.",
 			"ReleaseDate": "December 5, 2024 #872",
 			"Order": 872,
 			"BuyPrice": 1600,
@@ -26458,7 +26487,7 @@
 			"Name": "Eaves",
 			"Rarity": "Rare",
 			"BreedingTime": "12 H",
-			"Description": "A quote from a Dragonvale wizzling's tale: \u003Cbr /\u003E\u003Cbr /\u003E Did you hear that, child? The soft thumping on the roof? Yes? Be not afraid. It's not a monster lurking in the chimney or a krampus dragon lurking around. We have a little guardian - a small dragon with a fluffy tail that sweeps the roof and clears the chimney, keeping everything nice and clean. They're our quiet protector, making sure we stay safe and cozy through even the coldest of nights.\u003Cbr /\u003E\u003Cbr /\u003E",
+			"Description": "A quote from a DragonVale wizzling's tale: \"Did you hear that, child? The soft thumping on the roof? Yes? Be not afraid. It’s not a monster lurking in the chimney or a krampus dragon lurking around. We have a little guardian - a small dragon with a fluffy tail that sweeps the roof and clears the chimney, keeping everything nice and clean. They're our quiet protector, making sure we stay safe and cozy through even the coldest of nights.\"",
 			"ReleaseDate": "December 5, 2024 #873",
 			"Order": 873,
 			"BuyPrice": 1400,
@@ -26487,21 +26516,17 @@
 			"Name": "Tectonic",
 			"Rarity": "Epic",
 			"BreedingTime": "13 H",
-			"Description": "Seismancers of the Vale tell us that the plates of the world sometims shift, revealing new curiosities in their wake. During one such shift, Lumi found herself near the epicentre of a great tremor. As the shaking subsided, she cautiously approached the chasm that had formed in the ground. To her astonishment, a dragon emerged from the depths, breaking free from the ground itself. As sleepy as anyone would be from an eternity of slumber, the dragon was just as confused to see her, as she was to see it.",
+			"Description": "Seismancers of the Vale tell us that the plates of the world sometimes shift, revealing new curiosities in their wake. During one such shift, Lumi found herself near the epicentre of a great tremor. As the shaking subsided, she cautiously approached the chasm that had formed in the ground. To her astonishment, a dragon emerged from the depths, breaking free from the ground itself. As sleepy as anyone would be from an eternity of slumber, the dragon was just as confused to see her, as she was to see it.",
 			"ReleaseDate": "December 5, 2024 #874",
 			"Order": 874,
 			"BuyPrice": 1850,
 			"BuyCurrency": "Gems",
 			"SellPrice": 1500000,
 			"SellCurrency": "DragonCash",
-			"HatchExperience": 1880000,
+			"HatchExperience": 1500000,
 			"LevelRequirement": 11,
 			"Elements": [
 				"Hidden",
-				"Earth",
-				"Plant"
-			],
-			"BreedingElements": [
 				"Earth",
 				"Plant"
 			],
@@ -26513,7 +26538,7 @@
 			"Traits": {
 				"Available": "All"
 			},
-			"Goal": "This dragon's camouflage is of a wizardry level!"
+			"Goal": "Тhis dragon's camouflage is of a wizardry level!"
 		},
 		{
 			"Name": "Lavaloch",
@@ -26548,7 +26573,7 @@
 			"Name": "Iceclaw",
 			"Rarity": "Rare",
 			"BreedingTime": "16 H",
-			"Description": "While exploring the Frozen Highlands of the North, these dragons unwittingly ended up in a fierce, unrelenting snowstorm. Stranded and freezing for days, frostbite began to slowly set in. Their bodies may have been broken, but their spirtis were not! The frost can bite, but so can they! Summoning magic from  deep within, they used the cold around them to mend instead of hurt, and so, the iceclaw dragons made their triumphant escape!",
+			"Description": "While exploring the Frozen Highlands of the North, these dragons unwittingly ended up in a fierce, unrelenting snowstorm. Stranded and freezing for days, frostbite began to slowly set in. Their bodies may have been broken, but their spirits were not! The frost can bite, but so can they! Summoning magic from deep within, they used the cold around them to mend instead of hurt, and so, the iceclaw dragons made their triumphant escape!",
 			"ReleaseDate": "December 12, 2024 #876",
 			"Order": 876,
 			"BuyPrice": 1800,
@@ -26576,7 +26601,7 @@
 			"Name": "Flamegobbler",
 			"Rarity": "Rare",
 			"BreedingTime": "17 H",
-			"Description": "Flamegobbler dragons are heat-loving, spice-craving, flame-taming marvels. Unlike other dragons, they evolved to gobble fire and lava, transforming it into a harmless ash in their belly. Praised for preventing environmental devastation, these dragons are invaluable in containing wildfires - or simply sharing a bowl of the spiciest food. Not only they can prevent forest fires!",
+			"Description": "Flamegobbler dragons are heat-loving, spice-craving, flame-taming marvels. Unlike other dragons, they evolved to gobble fire and lava, transforming it into harmless ash in their belly. Praised for preventing environmental devastation, these dragons are invaluable in containing wildfires - or simply sharing a bowl of the spiciest food. Not only they can prevent forest fires!",
 			"ReleaseDate": "December 19, 2024 #877",
 			"Order": 877,
 			"BuyPrice": 1900,
@@ -26604,7 +26629,7 @@
 			"Name": "Pyros \u0026 Glacius",
 			"Rarity": "Rare",
 			"BreedingTime": "19 H",
-			"Description": "Some dragon breeds mix about as well as water and oil, or in this case: ice and fire. Compelled to compete and outdo one another, pyros and glacius dragons exemplify this from the moment they hatch. Locked in an endless dance of one-upmanship, we can't help but wonder if are they truly distinct breeds, or two sides of the same coin? Such is the enigmatic nature of friendship and rivalry.",
+			"Description": "Some dragon breeds mix about as well as water and oil, or in this case: ice and fire. Compelled to compete and outdo one another, pyros and glacius dragons exemplify this from the moment they hatch. Locked in an endless dance of one-upmanship, we can’t help but wonder if are they truly distinct breeds, or two sides of the same coin? Such is the enigmatic nature of friendship and rivalry.",
 			"ReleaseDate": "December 26, 2024 #878",
 			"Order": 878,
 			"BuyPrice": 2100,
@@ -26633,14 +26658,14 @@
 			"Name": "Aquadruple Leap Year",
 			"Rarity": "Epic",
 			"BreedingTime": "20 H",
-			"Description": "The fourth leap year in the Vale called for a four headed dragon. And the rule of four follows the alchemical elements as well: fire, earth, air, and water working and weaving in harmony. However, with the eruption of Mount Valsuivius, the fire element gained too much power and threatened the balance. Its polar opposite element of water answered the call to bring back harmony, empowering these dragons to fight back!",
+			"Description": "The fourth leap year in the Vale called for a four headed dragon. And the rule of four follows the alchemical elements as well: fire, earth, air, and water working and weaving together in harmony. However, with the eruption of Mount Valesuvius, the fire element gained too much power and threatened the balance. Its polar opposite element of water answered the call to bring back harmony, empowering these dragons to fight back!",
 			"ReleaseDate": "December 27, 2024 #879",
 			"Order": 879,
-			"BuyPrice": 0,
+			"BuyPrice": 2500,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2000000,
 			"SellCurrency": "DragonCash",
-			"HatchExperience": 3000000,
+			"HatchExperience": 2000000,
 			"LevelRequirement": 12,
 			"Elements": [
 				"Rainbow",
@@ -26661,7 +26686,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 180,
 				"BuyCurrency": "Gems"
 			},
 			"Devolution": "Quadruple Leap Year",
@@ -26674,7 +26699,7 @@
 			"Name": "Earthcore",
 			"Rarity": "Rare",
 			"BreedingTime": "20 H",
-			"Description": "With the eruption of Mount Valesuvius, the earth below was shaken to its very core, awakening primordial powers unseen before in the Vale. Visitors initially reported monstrous and terrifying creatures emerging from cracks in the ground, wreaking havoc in their wake. It soon became clear they were a new breed of dragons - ones born from the earth's core itself.",
+			"Description": "With the eruption of Mount Valesuvius, the earth below was shaken to its very core, awakening primordial powers unseen before in the Vale. Visitors initially reported monstrous and terrifying creatures emerging from cracks in the ground, wreaking havoc in their wake. It soon became clear they were a new breed of dragons - ones born from the earth’s core itself.",
 			"ReleaseDate": "January 2, 2025 #880",
 			"Order": 880,
 			"BuyPrice": 2200,
@@ -26716,10 +26741,6 @@
 				"Fire",
 				"Earth"
 			],
-			"BreedingElements": [
-				"Fire",
-				"Earth"
-			],
 			"IsLimited": true,
 			"Pedestal": {
 				"BuyPrice": 175,
@@ -26734,7 +26755,7 @@
 			"Name": "Lilypond",
 			"Rarity": "Epic",
 			"BreedingTime": "13 H",
-			"Description": "In a lot of villages, Valers would often visit lakes and ponds on Valentine's Day. Legend says heart-shaped lily pads would magically appear that were able to fulfill wishes. One day, a little girl made her big wish by one of these pads: to have a friend help prepare a surprise for her parents' anniversary. But to her own surprise, upon hearing the wish, the pond of lilies itself rose up to her aid!",
+			"Description": "In a lot of villages, Valers would often visit lakes and ponds on Valentine's Day. Legend says heart-shaped lily pads would magically appear that were able to fulfill wishes. One day, a little girl made her big wish by one of these pads: to have a friend help prepare a surprise for her parents’ anniversary. But to her own surprise, upon hearing the wish, the pond of lilies itself rose up to her aid!",
 			"ReleaseDate": "January 23, 2025 #882",
 			"Order": 882,
 			"BuyPrice": 1650,
@@ -26745,10 +26766,6 @@
 			"LevelRequirement": 14,
 			"Elements": [
 				"Hidden",
-				"Water",
-				"Plant"
-			],
-			"BreedingElements": [
 				"Water",
 				"Plant"
 			],
@@ -26766,7 +26783,7 @@
 			"Name": "Hasu",
 			"Rarity": "Epic",
 			"BreedingTime": "16 H",
-			"Description": "Even the mightiest, fiercest and most powerful of dragons need some time to relax and unwind. And among them, there's a special dragon known for its unique way of relaxing, something the Valers have named \"dragoga\". This practice has been adopted by many observers, lots of whom believe that it significantly improves mood and recovery. Many claim that the \"hasu pose\" is the most relaxing of all, especially at the beach. ",
+			"Description": "Even the mightiest, fiercest and most powerful of dragons need some time to relax and unwind. And among them, there's a special dragon known for its unique way of relaxing, something the Valers have named \"dragoga\". This practice has been adopted by many observers, lots of whom believe that it significantly improves mood and recovery. Many claim that the \"hasu pose\" is the most relaxing of all, especially at the beach.",
 			"ReleaseDate": "January 23, 2025 #883",
 			"Order": 883,
 			"BuyPrice": 1700,
@@ -26798,7 +26815,7 @@
 			"Name": "Smoothie",
 			"Rarity": "Rare",
 			"BreedingTime": "14 H",
-			"Description": "Much like the chomps, these dragons evolved and specialized in their favorite activity: making smoothies! And following Kaleni around, they learned a thing or two, like his recipe for the Best DragonVale Smoothie: \u003Cbr /\u003E\u003Cbr /\u003E  \u0026#x2022; 14 Ounces of Coconut Milk (1 1/2 cups) \u003Cbr /\u003E  \u0026#x2022; 1/2 Dragon Fruit   \u003Cbr /\u003E \u0026#x2022; 2 Cups Nubbleberry juice    \u003Cbr /\u003E \u0026#x2022; 1/2 Pumpermelon   \u003Cbr /\u003E \u0026#x2022; 2 Tablespoons of Honey  \u003Cbr /\u003E \u0026#x2022; 1/2 Teaspoon Pure Magic Extract  \u003Cbr /\u003E\u003Cbr /\u003E Note: Don't forget to serve cold with ice!",
+			"Description": "Much like the chomps, these dragons evolved and specialized in their favorite activity: making and drinking smoothies! And following Kaleni around, they learned a thing or two, like his recipe for the Best DragonVale Smoothie:\u003Cbr /\u003E\u003Cbr /\u003E•14 Ounces of Coconut Milk (1 ½ cups)\u003Cbr /\u003E• ½  Dragon Fruit \u003Cbr /\u003E• 2 Cups Nubbleberry juice\u003Cbr /\u003E• ½  Pumpermelon\u003Cbr /\u003E• 2 Tablespoons of Honey\u003Cbr /\u003E• ½ Teaspoon Pure Magic Extract\u003Cbr /\u003E\u003Cbr /\u003ENote: Don't forget to serve cold with ice!",
 			"ReleaseDate": "January 23, 2025 #884",
 			"Order": 884,
 			"BuyPrice": 1500,
@@ -26825,8 +26842,8 @@
 		{
 			"Name": "Maracas",
 			"Rarity": "Epic",
-			"BreedingTime": "22  H",
-			"Description": "While strolling along the beach, visitors might hear a rhythmic sound, like seeds rattling in a hollow shell. The curious who dare follow the enchanting melody often discover hidden gatherings of maracas dragons. Nestled in lush foilage, these lovely dragons create an unforgettable tune, turning even the stiffest of dancers into masters.",
+			"BreedingTime": "22 H",
+			"Description": "While strolling along the beach, visitors might hear a rhythmic sound, like seeds rattling in a hollow shell. The curious who dare follow the enchanting melody often discover hidden gatherings of maracas dragons. Nestled in lush foliage, these lovely dragons create an unforgettable tune, turning even the stiffest of dancers into masters.",
 			"ReleaseDate": "January 30, 2025 #885",
 			"Order": 885,
 			"BuyPrice": 2000,
@@ -26859,8 +26876,8 @@
 		{
 			"Name": "Waapawaapa",
 			"Rarity": "Rare",
-			"BreedingTime": "18  H",
-			"Description": "Kojntas was thrilled to find his beloved canna dragons had a convergent evolution buddy, their distant relative the waapawaapas. The first of many discoveries to come, was that despite being more suited to tropical conditions, these dragons behave in much the same way. Even down to their stick-losing habits. ",
+			"BreedingTime": "18 H",
+			"Description": "Kojntas was thrilled to find his beloved canna dragons had a convergent evolution buddy, their distant relative the waapawaapas. The first of many discoveries to come, was that despite being more suited to tropical conditions, these dragons behave in much the same way. Even down to their stick-losing habits.",
 			"ReleaseDate": "February 6, 2025 #886",
 			"Order": 886,
 			"BuyPrice": 1700,
@@ -26887,8 +26904,8 @@
 		{
 			"Name": "Shy",
 			"Rarity": "Epic",
-			"BreedingTime": "21  H",
-			"Description": "In his initial studies of these dragons, Wizard Reed Aktid classified them as Dragon-960 in project \"Study, Catalogue, Pet\", but they later became known as just shy. Their shyness is so intense, he found them challenging to study and catalogue, as the dragons seemed to sense whenever they were being watched or even talked about. Upon sensing this, they would go feral and immediately move aside a bit while making sure not to inconvenience anyone in their path. Petting is allowed, as long as you don't make a big deal out of it. ",
+			"BreedingTime": "21 H",
+			"Description": "In his initial studies of these dragons, Wizard Reed Aktid classified them as Dragon-960 in his project \"Study, Catalogue, Pet\", but they later became known as just shy. Their shyness is so intense, he found them challenging to study and catalogue, as the dragons seemed to sense whenever they were being watched or even talked about. Upon sensing this, they would go feral and immediately move aside a bit while making sure not to inconvenience anyone in their path. Petting is allowed, as long as you don't make a big deal out of it.",
 			"ReleaseDate": "February 13, 2025 #887",
 			"Order": 887,
 			"BuyPrice": 2400,
@@ -26921,8 +26938,8 @@
 		{
 			"Name": "Hollow",
 			"Rarity": "Epic",
-			"BreedingTime": "20  H",
-			"Description": "Before teleporting away after a date, tree-shaper Eepius left behind this normal, inconspicuous looking dragon as a lovely gift. Attached was a note with some instructions: \"This dragon needs a loving home. If you hear it giggling - the dragon was probably clearing its nostrils. If you hear it snoring at night - you didn't. Please leave food every morning and look away, it is a shy eater. \" So, not to be rude or anything, his date took the dragon and showed it around the Vale, getting it accustomed to its new home, with the other dragons.",
+			"BreedingTime": "20 H",
+			"Description": "Before teleporting away after a date, tree-shaper Eepius left behind this normal, inconspicuous looking dragon as a lovely gift. Attached was a note with some instructions: “This dragon needs a loving home. If you hear it giggling - the dragon was probably clearing its nostrils. If you hear it snoring at night - you didn't. Please leave food every morning and look away, it is a shy eater.“ So, not to be rude or anything, his date took the dragon and showed it around the Vale, getting it accustomed to its new home, with the other dragons.",
 			"ReleaseDate": "February 13, 2025 #888",
 			"Order": 888,
 			"BuyPrice": 2300,
@@ -26935,8 +26952,9 @@
 				"Olympus"
 			],
 			"BreedingElements": [
-				"Plant",
+				"Olympus",
 				"Earth",
+				"Plant",
 				"Metal"
 			],
 			"IsLimited": true,
@@ -26952,7 +26970,7 @@
 		{
 			"Name": "Koholahola",
 			"Rarity": "Rare",
-			"BreedingTime": "19  H",
+			"BreedingTime": "19 H",
 			"Description": "These playful dragons love to splash around and spray any Valers that pass near their habitats. As playful as they may be, a pod of koholaholas sleeping in unison is an eerie sight, and unintentionally spook some visitors. Rumors say that they originate from the moon and were summoned here by the great wizard Wilzeek. Take that not with a pinch, but with an ocean's worth of salt.",
 			"ReleaseDate": "February 20, 2025 #889",
 			"Order": 889,
@@ -26981,7 +26999,7 @@
 		{
 			"Name": "Flamindos",
 			"Rarity": "Rare",
-			"BreedingTime": "20  H",
+			"BreedingTime": "20 H",
 			"Description": "In the same fashion they can lean one leg on the other and still stand, these dragons know they can always lean on each other in times of need. Even if said need is just 5 more minutes of sleep in the morning. Their bodies are built perfectly for hugs and embracing their fellow flamindos. Valers could learn a thing or two from these gentle and loving dragons.",
 			"ReleaseDate": "February 27, 2025 #890",
 			"Order": 890,
@@ -27009,7 +27027,7 @@
 		{
 			"Name": "Caramelo",
 			"Rarity": "Rare",
-			"BreedingTime": "14  H",
+			"BreedingTime": "14 H",
 			"Description": "Famous confectioner Ortreat was in his lab concocting his latest sweets and treats - caramel candy mixed with sparkles of candy magic. A recipe simple on paper, but very easy to mess up in practice. And mess up he did, but not resulting in chocolate exploding all over the lab, or being encased in a candy bubble. He got off easy this time with just a very sticky beard, when the caramelo dragon burst out of the heated vial.",
 			"ReleaseDate": "March 20, 2025 #891",
 			"Order": 891,
@@ -27037,7 +27055,7 @@
 		{
 			"Name": "Sourtail",
 			"Rarity": "Rare",
-			"BreedingTime": "17  H",
+			"BreedingTime": "17 H",
 			"Description": "Native to the mysterious Candy Land, these dragons were drawn to the Vale by its pleasant scenery and treat variety. Apart from their name, there is nothing sour about these dragons, as they are some of the sweetest ones out there. They love chasing after each other's tails around and playing with Wizards and Wizzlings alike.",
 			"ReleaseDate": "March 20, 2025 #892",
 			"Order": 892,
@@ -27064,7 +27082,7 @@
 		{
 			"Name": "Swirly",
 			"Rarity": "Rare",
-			"BreedingTime": "16  H",
+			"BreedingTime": "16 H",
 			"Description": "Candy Land is home to many dragons, some sweet as candy, some small as a bonbon, some cute as a gumdrop. And some are all of the above, like the sweet, small and cute swirly dragons. Moving to the Vale has its benefits, like near infinite food, friends and pets, although it has its minor downsides too, like often being chased around by Wizzlings who mistake them for giant lollipops.",
 			"ReleaseDate": "March 20, 2025 #893",
 			"Order": 893,
@@ -27093,7 +27111,7 @@
 			"Name": "Jiggly",
 			"Rarity": "Rare",
 			"BreedingTime": "14 H",
-			"Description": "Sugar, sweetness, and a delicious treat... These were the perfect ingredients chosen to create the perfect little dragon. But in a twist of fate, Ortreat accidentally added one more unexpected ingredient: Strawberry Jello. And so, the jiggly dragons were born! With their gooey, wobbly powers, they became a fusion of berry, jello, and irresistable tastiness.",
+			"Description": "Sugar, sweetness, and a delicious treat... These were the perfect ingredients chosen to create the perfect little dragon. But in a twist of fate, Ortreat accidentally added one more unexpected ingredient: Strawberry Jello. And so, the jiggly dragons were born! With their gooey, wobbly powers, they became a fusion of berry, jello, and irresistible tastiness.",
 			"ReleaseDate": "March 27, 2025 #894",
 			"Order": 894,
 			"BuyPrice": 1750,
@@ -27205,7 +27223,7 @@
 			"Name": "Mimicake",
 			"Rarity": "Epic",
 			"BreedingTime": "21 H",
-			"Description": " Ro's famous Dragon Fruit Cake is a fan favorite among Valers, wizards, witches and dragons, for some especially. Like our little mimicake dragons. Valers aren't sure if the cake's design was inspired by them, or if the dragons' appearance changed over time from consuming so many cakes. Ro is always happy to bake more for her number one fans!",
+			"Description": "Ro's famous Dragon Fruit Cake is a fan favorite among Valers, wizards, witches and dragons, for some especially. Like our little mimicake dragons. Valers aren't sure if the cake's design was inspired by them, or if the dragons' appearance changed over time from consuming so many cakes. Ro is always happy to bake more for her number one fans!",
 			"ReleaseDate": "April 17, 2025 #898",
 			"Order": 898,
 			"BuyPrice": 2400,
@@ -27216,10 +27234,6 @@
 			"LevelRequirement": 12,
 			"Elements": [
 				"Hidden",
-				"Lightning",
-				"Plant"
-			],
-			"BreedingElements": [
 				"Lightning",
 				"Plant"
 			],
@@ -27281,11 +27295,6 @@
 				"Dark",
 				"Lightning"
 			],
-			"BreedingElements": [
-				"Cold",
-				"Dark",
-				"Lightning"
-			],
 			"IsLimited": true,
 			"Pedestal": {
 				"BuyPrice": 150,
@@ -27328,7 +27337,7 @@
 			"Name": "Redbelly",
 			"Rarity": "Rare",
 			"BreedingTime": "12 H",
-			"Description": "Another one of Vam Pierce's discoveries from the depths of the Crimson Sea, where bizzare dragons seem to be a regular occurrence. These dragons have shiny, bioluminescent scales covered in a jelly-like membrane, likely to help catch marine snow deep below. Be sure to wear gloves when petting.",
+			"Description": "Another one of Vam Pierce's discoveries from the depths of the Crimson Sea, where bizarre dragons seem to be a regular occurrence. These dragons have shiny, bioluminescent scales covered in a jelly-like membrane, likely to help catch marine snow deep below. Be sure to wear gloves when petting.",
 			"ReleaseDate": "May 8, 2025 #902",
 			"Order": 902,
 			"BuyPrice": 1800,
@@ -27385,7 +27394,7 @@
 			"Name": "Maelstrom",
 			"Rarity": "Rare",
 			"BreedingTime": "19 H",
-			"Description": "Dragons in tune with the songs of the sea, always ready to answer its call for aid. Whether it be evil wizards dumping alchemical residue in the water, or angler dragons overfishing, the maelstrom will make quick work of them. In the water they may be a force to be reckoned with, but out in the open air they need every bit of help they can get, so they conjure up a whirling piece of home everywhere they go. For us that would be like a wizard conjuring up a dust storm under their feet whenever they go swimming",
+			"Description": "Dragons in tune with the songs of the sea, always ready to answer its call for aid. Whether it be evil wizards dumping alchemical residue in the water, or angler dragons overfishing, the maelstrom will make quick work of them. In the water they may be a force to be reckoned with, but out in the open air they need every bit of help they can get, so they conjure up a whirling piece of home everywhere they go. For us that would be like a wizard conjuring a dust storm under their feet whenever they go swimming.",
 			"ReleaseDate": "May 15, 2025 #904",
 			"Order": 904,
 			"BuyPrice": 1600,
@@ -27414,7 +27423,7 @@
 			"Name": "Blobert",
 			"Rarity": "Rare",
 			"BreedingTime": "23 H",
-			"Description": "The deepest places hold all kinds of interesting creatures, all designed and adapted to withstand the crushing  pressure of these depths. Blobert dragons are an excellent example, as they are not too bothered by the pressure of all the ocean above them. They are so impressive, that the wizard Asch wanted to study them, to learn how to withstand Peer pressure, but he got talked out of it.",
+			"Description": "The deepest places hold all kinds of interesting creatures, all designed and adapted to withstand the crushing pressure of these depths. Blobert dragons are an excellent example, as they are not too bothered by the pressure of all the ocean above them. They are so impressive, that the wizard Asch wanted to study them, to learn how to withstand Peer pressure, but he got talked out of it.",
 			"ReleaseDate": "May 22, 2025 #905",
 			"Order": 905,
 			"BuyPrice": 1670,
@@ -27442,7 +27451,7 @@
 			"Name": "Bounty",
 			"Rarity": "Epic",
 			"BreedingTime": "19 H",
-			"Description": "As relatives of the gold dragons, they sure do like their treasure, and they aren't going anywhere without it! Wizards have tried inspecting the chest multiple times, curious as to what can be so precious and captivating. But the dragons are fiercely protective and will chase away any who get close to what they own. Although, one could argue in reality it is the treasure that owns the dragon.",
+			"Description": "As relatives of the gold dragons, they sure do like their treasure, and they aren't going anywhere without it! Wizards have tried inspecting the chest multiple times, curious as to what can be so precious and captivating. But the dragons are fiercely protective of their bounty and will chase away any who get close to what they own. Although, one could argue in reality it is the treasure that owns the dragon.",
 			"ReleaseDate": "May 29, 2025 #906",
 			"Order": 906,
 			"BuyPrice": 2100,
@@ -27470,7 +27479,7 @@
 			"Name": "Aykula",
 			"Rarity": "Rare",
 			"BreedingTime": "18 H",
-			"Description": "Terrors of the deep, known for sinking countless vessels, like many of Tolzar's prototypes for The Nautilus. While aykulas were engaging in their mindless and destructive fun, Tolzar was engaged in a mindful and constructive study to make The Nautilus impervious to their attacks. It is thanks to them that he perfected his design, as one after another the unmanned prototypes would sink to the bottom, assuming there was anything left to even reach the bottom.",
+			"Description": "Terrors of the deep, known for sinking countless vessels, like many of Tolzar's prototypes for The Nautilus. While the aykulas were engaging in their mindless and destructive fun, Tolzar was engaged in a mindful and constructive study to make The Nautilus impervious to their attacks. It is thanks to them that he perfected his design, as one after another the unmanned prototypes would sink to the bottom, assuming there was anything left to even reach the bottom.",
 			"ReleaseDate": "June 5, 2025 #907",
 			"Order": 907,
 			"BuyPrice": 2000,
@@ -27698,7 +27707,7 @@
 			"Description": "Following the Cataclysm, the intense heat on the Surface changed these otherwise plain looking dragons. Sleeping peacefully underground, their bodies were suddenly infused with the surrounding precious metals, as they melted almost instantly. They now soar the skies like a disco ball of the sky, glimmering under the sunlight with a range of vibrant reflections. Or would that be refraction?",
 			"ReleaseDate": "July 24, 2025 #915",
 			"Order": 915,
-			"BuyPrice": 1750,
+			"BuyPrice": 1700,
 			"BuyCurrency": "Gems",
 			"SellPrice": 1700000,
 			"SellCurrency": "DragonCash",
@@ -27778,7 +27787,7 @@
 			"Name": "Luciflora",
 			"Rarity": "Rare",
 			"BreedingTime": "17 H",
-			"Description": "Even dragons need a good night's sleep, with luciflora dragons taking an extra precaution by enveloping their entire heads. They really don't want to get woken up early by Wizards mowing their lawn with Tolzar's noisy auto-scythe.",
+			"Description": "Even dragons need a good night's sleep, with luciflora dragons taking an extra precaution by enveloping their entire heads. They really don't want to get woken up early by Wizards mowing their lawn with Tolzar's noisy auto-scythes.",
 			"ReleaseDate": "August 21, 2025 #918",
 			"Order": 918,
 			"BuyPrice": 1800,
@@ -27949,7 +27958,7 @@
 			"Name": "Ivory",
 			"Rarity": "Rare",
 			"BreedingTime": "14 H",
-			"Description": "Seen as a symbol of beauty and purity, these dragons will sometimes bless wizards with their prescence, especially if they have left some treats on the lawn. But they do not linger for long, as their free spirits know not the burdens of home, they know only the joy of exploration and curiosity. For not all who wander are lost.",
+			"Description": "Seen as a symbol of beauty and purity, these dragons will sometimes bless wizards with their presence, especially if they have left some treats on the lawn. But they do not linger for long, as their free spirits know not the burdens of home, they know only the joy of exploration and curiosity. For not all who wander are lost.",
 			"ReleaseDate": "September 12, 2025 #924",
 			"Order": 924,
 			"BuyPrice": 2014,
@@ -28037,7 +28046,7 @@
 			"Description": "Wizards and heroes of mighty magic have tried to prove themselves by taming the pit dragons, but so far none have been able to best them. Their sheer strength, power and desire to lay all day in their homeworld's lakes of fire are unmatched, and their wings will cleave away any who try to bother them!",
 			"ReleaseDate": "October 9, 2025 #929",
 			"Order": 929,
-			"BuyPrice": 0,
+			"BuyPrice": 2600,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2600000,
 			"SellCurrency": "DragonCash",
@@ -28051,7 +28060,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 185,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28066,7 +28075,7 @@
 			"Description": "Not all dragons coming from the otherworld are mean-spirited monsters, some are cute and sweet bundles of joy like the dumi dragons. Whitbee was excited to see something good come out of this predicament, the perfect gift for his favorite assistant Glumi! Truly a match made in.. wherever the dragon came from!",
 			"ReleaseDate": "October 9, 2025 #930",
 			"Order": 930,
-			"BuyPrice": 0,
+			"BuyPrice": 2500,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2400000,
 			"SellCurrency": "DragonCash",
@@ -28079,7 +28088,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 180,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28094,7 +28103,7 @@
 			"Description": "With the otherworld pouring over into ours, all kinds of weird critters, bizzare creatures and hope eaters are being seen for the first time by the wizards and valers! Is this a mirror dimension version of one of our own dragons? Or could it be a dragon that copies other dragons' physiology, but badly and imperfectly? That could be a thing.",
 			"ReleaseDate": "October 9, 2025 #931",
 			"Order": 931,
-			"BuyPrice": 0,
+			"BuyPrice": 2600,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2500000,
 			"SellCurrency": "DragonCash",
@@ -28108,7 +28117,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 185,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28123,7 +28132,7 @@
 			"Description": "Coming from a place as deep down in the ground as the peaks of Olympus are high in the sky, tartarus dragons will drag down anyone brave or foolish enough to venture close to inspect their bottomless pit. The few lucky enough to get away say they spotted ocular dragons down there, probably due to their poor depth perception.",
 			"ReleaseDate": "October 16, 2025 #932",
 			"Order": 932,
-			"BuyPrice": 0,
+			"BuyPrice": 2800,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2850000,
 			"SellCurrency": "DragonCash",
@@ -28137,7 +28146,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 200,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28149,10 +28158,10 @@
 			"Name": "Sinking",
 			"Rarity": "Rare",
 			"BreedingTime": "19 H",
-			"Description": "Valers were shocked when the dragons they were used to seeing stuck in the ground, are now wreaking havoc whereever they go, as they have now been finally unleashed upon our world in their full glory. When it is time for them to dig deep, no foundations, no roots nor potatoes are safe from their wrath. ",
+			"Description": "Valers were shocked when the dragons they were used to seeing stuck in the ground, are now wreaking havoc wherever they go, as they have now been finally unleashed upon our world in their full glory. When it is time for them to dig deep, no foundations, no roots nor potatoes are safe from their wrath.",
 			"ReleaseDate": "October 23, 2025 #933",
 			"Order": 933,
-			"BuyPrice": 0,
+			"BuyPrice": 2600,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2500000,
 			"SellCurrency": "DragonCash",
@@ -28166,7 +28175,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 185,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28181,7 +28190,7 @@
 			"Description": "Starting off as a test tube experiment in Whitbee's lab, a brain so big it was visible from miles away, was given remarkable psionic powers when the portal to the Otherworld opened. Influenced by these foreign energies, this brain built itself a body from floating debris and raw materials found all around. Do not let this silly face deceive you, these dragons are far more capable than meets the eye.",
 			"ReleaseDate": "October 30, 2025 #934",
 			"Order": 934,
-			"BuyPrice": 0,
+			"BuyPrice": 2500,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2400000,
 			"SellCurrency": "DragonCash",
@@ -28194,7 +28203,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 180,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28209,7 +28218,7 @@
 			"Description": "Dragons only rumored to have existed have made their way to the Vale to answer the call, sensing the evil spewing from the Otherworld. Said to originate from the primordial light, when the elements first formed, they carry an aura of light so pure that it cleanses all darkness around them. Their return offers both a moment of reprieve and a sign of how dire things truly are.",
 			"ReleaseDate": "November 6, 2025 #935",
 			"Order": 935,
-			"BuyPrice": 0,
+			"BuyPrice": 3000,
 			"BuyCurrency": "Gems",
 			"SellPrice": 3000000,
 			"SellCurrency": "DragonCash",
@@ -28222,7 +28231,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 210,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28237,7 +28246,7 @@
 			"Description": "In the depths of the Otherworld lay dark-souled beasts with blades sharp enough to split light itself, patiently waiting for prey to stumble by the darkness of their lair. Valers and other dragons have nightmares of this creature, further fueling its power as they fear the reaper.",
 			"ReleaseDate": "November 13, 2025 #936",
 			"Order": 936,
-			"BuyPrice": 0,
+			"BuyPrice": 3000,
 			"BuyCurrency": "Gems",
 			"SellPrice": 3000000,
 			"SellCurrency": "DragonCash",
@@ -28250,7 +28259,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 210,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28265,7 +28274,7 @@
 			"Description": "You don't always need a raging fire, thick blubber or a fluffy coat to fend off the cold! These dragons from faraway mountains have discovered that by controlling their breath and focusing their mind, they can resist the cold. Some Wizards and Witches are even copying them to try and learn this technique!",
 			"ReleaseDate": "December 11, 2025 #937",
 			"Order": 937,
-			"BuyPrice": 0,
+			"BuyPrice": 2400,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2400000,
 			"SellCurrency": "DragonCash",
@@ -28278,13 +28287,13 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 175,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
 				"Available": "All"
 			},
-			"Goal": "This dragon is all about peace and serenity."
+			"Goal": "This dragon is all about peace and serenity!"
 		},
 		{
 			"Name": "Thaw",
@@ -28293,7 +28302,7 @@
 			"Description": "Seeing how much fun the cubicle dragons were having, and how unbothered they were by the prank, the Wizard Osheya reversed the gift in frustration. The icy cocoon has melted away and these dragons are now free to roam and enjoy the winter celebration, as cheerful as always! The only sliding they will be doing from now on is down an actual slide!",
 			"ReleaseDate": "December 11, 2025 #938",
 			"Order": 938,
-			"BuyPrice": 0,
+			"BuyPrice": 3500,
 			"BuyCurrency": "Gems",
 			"SellPrice": 3500000,
 			"SellCurrency": "DragonCash",
@@ -28306,7 +28315,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 240,
 				"BuyCurrency": "Gems"
 			},
 			"Devolution": "Cubicle",
@@ -28322,7 +28331,7 @@
 			"Description": "The falling of petals is a good sign of seasons changing, but a violent storm of petals flying everywhere is a good sign of a fubuki dragon approaching. Coming from the highest peaks of the Isles of Nipong, these dragons seem to thrive in cold environments. And the cold season of the Vale seems to have 'peaked' their interest.",
 			"ReleaseDate": "December 11, 2025 #939",
 			"Order": 939,
-			"BuyPrice": 0,
+			"BuyPrice": 2400,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2400000,
 			"SellCurrency": "DragonCash",
@@ -28335,7 +28344,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 175,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28350,7 +28359,7 @@
 			"Description": "Tolzar, having grown tired of his guests dragging snow inside constantly, put his mind to work and solved this once and for all. Combining his inventions with an essence of cold dragons' affinity for snow, and earthcore's tendency to melt it, the perfect solution was given form. A dragon that will be naturally attracted to the snow, but melt and vaporize it whenever it gets close.",
 			"ReleaseDate": "December 18, 2025 #940",
 			"Order": 940,
-			"BuyPrice": 0,
+			"BuyPrice": 2800,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2800000,
 			"SellCurrency": "DragonCash",
@@ -28364,7 +28373,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 200,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28379,7 +28388,7 @@
 			"Description": "Distant relatives of the oasian dragons, the onsen migrated to the Frozen Highlands of the North long ago, looking to escape the heat in a colder environment. Any snow that falls on them quickly pools on their back as it melts by their high internal temperatures, making it a perfect safe haven for small creatures trying to escape the cold, like some monkeys and capybaras.",
 			"ReleaseDate": "December 25, 2025 #941",
 			"Order": 941,
-			"BuyPrice": 0,
+			"BuyPrice": 2400,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2400000,
 			"SellCurrency": "DragonCash",
@@ -28392,7 +28401,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 175,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28404,10 +28413,10 @@
 			"Name": "Jawny",
 			"Rarity": "Epic",
 			"BreedingTime": "24 H",
-			"Description": "Reports from visitors have been coming in of creepy creatures wandering the halls of the Winter Wizort, banging on doors and peaking from behind corners. It is hard to read the intention behind their intense stares, they could just be intrigued by the Wizards robes' shining, or the cups of red rum visitors carry around. The witnesses started calling them jawny dragons due to their impressive jaws, and they are not a threat you should overlook!",
+			"Description": "Reports from visitors have been coming in of creepy creatures wandering the halls of the Winter Wizort, banging on doors and peaking from behind corners. It is hard to read the intention behind their intense stares, they could just be intrigued by the Wizard robes' shining, or the cups of red rum visitors carry around. The witnesses started calling them jawny dragons due to their impressive jaws, and they are not a threat you should overlook!",
 			"ReleaseDate": "January 1, 2026 #942",
 			"Order": 942,
-			"BuyPrice": 0,
+			"BuyPrice": 3000,
 			"BuyCurrency": "Gems",
 			"SellPrice": 3000000,
 			"SellCurrency": "DragonCash",
@@ -28420,7 +28429,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 210,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28435,7 +28444,7 @@
 			"Description": "Somewhere in the icy depths a dragon was born, a foxlike creature. Although you can't ignore its elegancy, there's something more to it, this dragon has a mission. A mission unlike any other, it might seem simple at first sight, but it shouldn't be underestimated. The mission is to keep each and every habitat clean, to serve others and make everything shine exactly in its image.",
 			"ReleaseDate": "January 8, 2026 #943",
 			"Order": 943,
-			"BuyPrice": 0,
+			"BuyPrice": 3500,
 			"BuyCurrency": "Gems",
 			"SellPrice": 3500000,
 			"SellCurrency": "DragonCash",
@@ -28447,7 +28456,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 240,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28462,7 +28471,7 @@
 			"Description": "Wizzlings and dragons love soapy bubbles, especially when they freeze over in winter, turning them into neat and beautiful, but fragile spheres of ice. In the excitement, one dragon saw an opportunity in the bigger bubbles, jumping in and using its icy cold breath to flash freeze it. The iceere dragons can exit their dragon ball at will, but why would they?",
 			"ReleaseDate": "January 15, 2026 #944",
 			"Order": 944,
-			"BuyPrice": 0,
+			"BuyPrice": 2600,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2600000,
 			"SellCurrency": "DragonCash",
@@ -28475,7 +28484,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 185,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28490,7 +28499,7 @@
 			"Description": "Light as a feather and bright as a star, chochin dragons will light up the way for valers and midnight pretenders even in the darkest of nights. They may be paper thin, but they are sturdy as steel and the only tearing they do is through the clouds! Reports say they sometimes suddenly stick their tongues out, but we have yet to see it to even study it.",
 			"ReleaseDate": "January 29, 2026 #945",
 			"Order": 945,
-			"BuyPrice": 0,
+			"BuyPrice": 2750,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2750000,
 			"SellCurrency": "DragonCash",
@@ -28503,7 +28512,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 195,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28518,7 +28527,7 @@
 			"Description": "The calming and mystical melody of wind chimes ringing has captivated Wizards and Witches since before the Cataclysm. Many still use them today, but few are lucky enough to hear the melody of the chime dragons themselves. We don't know which came first, the chime or the dragon, but we do know oni dragons seem oddly afraid of them.",
 			"ReleaseDate": "January 29, 2026 #946",
 			"Order": 946,
-			"BuyPrice": 0,
+			"BuyPrice": 2800,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2800000,
 			"SellCurrency": "DragonCash",
@@ -28531,7 +28540,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 200,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28543,10 +28552,10 @@
 			"Name": "Spirit Mist",
 			"Rarity": "Epic",
 			"BreedingTime": "18 H",
-			"Description": "These dragons descend from high mountains peaks where the very mist is infused with spiritual energies. What brought them down to the Vale remains a mystery to this day, but a welcome one at least. Even though sometimes they will playfully swoop down and pick up wizzlings high into the mists before letting them back down gently, as if they have been spirited away.",
+			"Description": "These dragons descend from high mountain peaks where the very mist is infused with spiritual energies. What brought them down to the Vale remains a mystery to this day, but a welcome one at least. Even though sometimes they will playfully swoop down and pick up wizzlings high into the mists before letting them back down gently, as if they have been spirited away.",
 			"ReleaseDate": "February 5, 2026 #947",
 			"Order": 947,
-			"BuyPrice": 0,
+			"BuyPrice": 3500,
 			"BuyCurrency": "Gems",
 			"SellPrice": 3500000,
 			"SellCurrency": "DragonCash",
@@ -28559,7 +28568,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 240,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28574,7 +28583,7 @@
 			"Description": "Studying magical scrolls and tomes from distant lands, the great Witch Coraline was able to infuse green tea with potent dragon essence, bringing one of the cutest and calmest dragons to the Vale. You need very good and powerful friends over in Pelican Island to get a hold of this kind of knowledge!",
 			"ReleaseDate": "February 12, 2026 #948",
 			"Order": 948,
-			"BuyPrice": 0,
+			"BuyPrice": 3300,
 			"BuyCurrency": "Gems",
 			"SellPrice": 3300000,
 			"SellCurrency": "DragonCash",
@@ -28586,7 +28595,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 230,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28601,7 +28610,7 @@
 			"Description": "Amongst the ruins, stood an unassuming mossy runestone protected by a number of stone-carved guardians. Kaleni recognized six of them, or at least what was left of them after all these years, but the seventh was a mystery to him despite still being intact. Cautiously clearing the moss from the runestone made it glow again in a bright blue light. The stone statue started to crack and slowly came to life, but instead of protecting the runestone it seemed far more interested in playing with Kaleni and chasing the sunlight visible outside.",
 			"ReleaseDate": "March 16, 2026 #949",
 			"Order": 949,
-			"BuyPrice": 0,
+			"BuyPrice": 1500,
 			"BuyCurrency": "Gems",
 			"SellPrice": 750000,
 			"SellCurrency": "DragonCash",
@@ -28617,7 +28626,7 @@
 				"Monolith"
 			],
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 115,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28632,7 +28641,7 @@
 			"Description": "Who knows how many valers have worked and walked over these farmlands without suspecting there is a dragon sleeping underneath. These ancient dragons resurfaced with Kaleni's recent discovery, and he hopes he can study them to unlock more of his ancestors' secrets and their mastery over the crops!",
 			"ReleaseDate": "March 16, 2026 #950",
 			"Order": 950,
-			"BuyPrice": 0,
+			"BuyPrice": 2250,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2250000,
 			"SellCurrency": "DragonCash",
@@ -28645,7 +28654,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 165,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28660,7 +28669,7 @@
 			"Description": "While exploring giant stone ruins, Kaleni kept finding runestones that had lost their glow, just waiting to be enchanted again. One by one they lit up, with the biggest one causing a rumble of stone and mortar the likes of which he had never witnessed before. Burcadian architecture goes way beyond just regular farms and bazaars, many of their monumental forts, castles and temples survive to this day despite all odds. Some in better condition than others.",
 			"ReleaseDate": "March 16, 2026 #951",
 			"Order": 951,
-			"BuyPrice": 0,
+			"BuyPrice": 2250,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2250000,
 			"SellCurrency": "DragonCash",
@@ -28672,7 +28681,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 165,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28687,7 +28696,7 @@
 			"Description": "Upon seeing these dragons, Kaleni scrambled to find a scroll that could shed some colorful light on their origin, habits, quirks and features. It would appear they were the inspiration for the stained glass the Burcadians sprinkle wherever they can. This staple of their culture aims to mimic the glow and radiance of the vitrail dragons basking in the sun, as their refractions brighten even the shadiest of places.",
 			"ReleaseDate": "March 19, 2026 #952",
 			"Order": 952,
-			"BuyPrice": 0,
+			"BuyPrice": 2250,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2250000,
 			"SellCurrency": "DragonCash",
@@ -28700,7 +28709,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 165,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28715,7 +28724,7 @@
 			"Description": "In the dampest and darkest section of the uncovered Burcadian ruins, Kaleni found a heap of pupas vertically and neatly arranged, as if in temporary storage. With curiosity winning over caution he approached them, but from his presence and the new glowing warmth bursting in, the pupas started shaking and rattling like angry beans. Suddenly they started rapidly hatching in numbers, one even jumping on Kaleni's face, forcing him to the ground. They swarmed out and into the Vale, where they were always meant to be.",
 			"ReleaseDate": "March 26, 2026 #953",
 			"Order": 953,
-			"BuyPrice": 0,
+			"BuyPrice": 2000,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2000000,
 			"SellCurrency": "DragonCash",
@@ -28728,11 +28737,10 @@
 				"Earth",
 				"Cold",
 				"Fire",
-				"Plant",
-				"Chrysalis"
+				"Plant"
 			],
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 150,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28744,7 +28752,7 @@
 			"Name": "Leleek",
 			"Rarity": "Epic",
 			"BreedingTime": "12 H",
-			"Description": "The wizards and witches of the Vale sometimes bring together their beloved visitors to show them new and unique dragons, ones from faraway lands or from entirely different kind of world altogether! From entirely different kind of world might be the leleek dragons, the way they keep popping up unexpectedly everywhere! “Oh look, another leleek...surely you can't be serious?”",
+			"Description": "The wizards and witches of the Vale sometimes bring together their beloved visitors to show them new and unique dragons, ones from faraway lands or from entirely different kind of world altogether! From entirely different kind of world might be the leleek dragons, the way they keep popping up unexpectedly everywhere! \"Oh look, another leleek.. surely you can't be serious?\"",
 			"ReleaseDate": "April 1, 2026 #954",
 			"Order": 954,
 			"BuyPrice": 999,
@@ -28764,7 +28772,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 85,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28779,7 +28787,7 @@
 			"Description": "The genius-wizard Teslan was hard at work to uncover the secrets of the Burcadian ruins and how the mechanisms they used were powered! This would be no easy task today, let alone back then! What he found on a small flat hilltop were familiar yellow crystals, scattered around in a circular pattern, markings on the ground connecting them and a giant metallic rod in the middle, pointing at the sky. With the pull of a nearby lever, the stones under him rumbled back to life, gears turned and the lightning rod ascended towards the sky. With a blinding flash and a deafening blast, the rod was struck back down not by lightning, but by a dragon! The very same that energize the erudine crystals!",
 			"ReleaseDate": "April 2, 2026 #955",
 			"Order": 955,
-			"BuyPrice": 0,
+			"BuyPrice": 2500,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2500000,
 			"SellCurrency": "DragonCash",
@@ -28789,13 +28797,9 @@
 				"Lightning",
 				"Earth"
 			],
-			"BreedingElements": [
-				"Lightning",
-				"Earth"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 180,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28810,7 +28814,7 @@
 			"Description": "Discovered by the same hermit who conjured the Pine Apple Trees, the pinco dragons blend seamlessly in the forests! From the moment they hatch, their bright green scales slowly darken with each passing day, as if roasted by the sun. And if you happen to hear the loud chewing of fruit along your hike, chances are they are right next to you.. somewhere.",
 			"ReleaseDate": "April 9, 2026 #956",
 			"Order": 956,
-			"BuyPrice": 0,
+			"BuyPrice": 2400,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2400000,
 			"SellCurrency": "DragonCash",
@@ -28821,13 +28825,9 @@
 				"Plant",
 				"Cold"
 			],
-			"BreedingElements": [
-				"Plant",
-				"Cold"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 175,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28842,7 +28842,7 @@
 			"Description": "It can be minutes, hours or perhaps days, but proteggs don't move from the eggs they guard until they hatch safely under their protection. The egg's needs always take priority and the dragons often go a long time without food, treats or rest, even in the safest environments. Murals tell stories of dragons unwittingly in charge of dud eggs, which unbeknownst to them, will never hatch. Wasting away, waiting for that first crack in the shell, which will never come. And so, volunteers of the Vale dedicate their time and effort to inspect the eggs to aid these selfless protectors.",
 			"ReleaseDate": "April 16, 2026 #957",
 			"Order": 957,
-			"BuyPrice": 0,
+			"BuyPrice": 2800,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2800000,
 			"SellCurrency": "DragonCash",
@@ -28853,14 +28853,9 @@
 				"Light",
 				"Earth"
 			],
-			"BreedingElements": [
-				"Plant",
-				"Light",
-				"Earth"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 200,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28875,7 +28870,7 @@
 			"Description": "With all the sweeping of heaps of dust and dirt, some of it magical, an amalgamation formed right under the wizards' noses! A great unclean dragon and arch nemesis of the dustroyers was given form! Tremble in fear cleaners, sneezing be upon ye!",
 			"ReleaseDate": "April 30, 2026 #958",
 			"Order": 958,
-			"BuyPrice": 0,
+			"BuyPrice": 2250,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2250000,
 			"SellCurrency": "DragonCash",
@@ -28885,13 +28880,9 @@
 				"Earth",
 				"Air"
 			],
-			"BreedingElements": [
-				"Earth",
-				"Air"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 165,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28906,7 +28897,7 @@
 			"Description": "In Gastronomy Magic classes they teach apprentices to never mix water with burning oil, for it causes a violent explosion! Well, what happens when you mix dust with burning hatred for it? A violent implosion, sucking up all dust in the vicinity! The one thing dustroyer dragons hate more than dust, is having to move objects when cleaning!",
 			"ReleaseDate": "April 30, 2026 #959",
 			"Order": 959,
-			"BuyPrice": 0,
+			"BuyPrice": 2700,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2700000,
 			"SellCurrency": "DragonCash",
@@ -28917,14 +28908,9 @@
 				"Earth",
 				"Air"
 			],
-			"BreedingElements": [
-				"Cold",
-				"Earth",
-				"Air"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 190,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28939,11 +28925,11 @@
 			"Description": "Perhaps taking the idea of spring cleaning too literally, the wizards can't seem to get them to stop, no matter how hard they try! At least it will be clean around their tub with all that splashing around..",
 			"ReleaseDate": "April 30, 2026 #960",
 			"Order": 960,
-			"BuyPrice": 0,
+			"BuyPrice": 2300,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2750000,
 			"SellCurrency": "DragonCash",
-			"HatchExperience": 2750000,
+			"HatchExperience": 2300000,
 			"LevelRequirement": 25,
 			"Elements": [
 				"Water",
@@ -28951,15 +28937,9 @@
 				"Dark",
 				"Light"
 			],
-			"BreedingElements": [
-				"Water",
-				"Air",
-				"Dark",
-				"Light"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 165,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -28974,7 +28954,7 @@
 			"Description": "To combat the endless avalanches of dirt and dust, the wizards conjured up a bubbly explosion of soap that would clean the entire vale! And it worked, perhaps too well.. With some dust dragons being so spotlessly cleaned, so utterly dustroyed, that there was nothing left but the soap! Turning them into bubbly ghosts of their former selves!",
 			"ReleaseDate": "May 7, 2026 #961",
 			"Order": 961,
-			"BuyPrice": 0,
+			"BuyPrice": 2200,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2200000,
 			"SellCurrency": "DragonCash",
@@ -28985,14 +28965,9 @@
 				"Air",
 				"Cold"
 			],
-			"BreedingElements": [
-				"Water",
-				"Air",
-				"Cold"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 160,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29007,7 +28982,7 @@
 			"Description": "One wizard's trash may be another's treasure, and the same goes for dragons too. If an ocular dragon came upon a pair of spectacles, they would need them about as much as a helianthus would. But a trashure dragon? Oh, they might not need them now, but some day maybe. Maybe.",
 			"ReleaseDate": "May 14, 2026 #962",
 			"Order": 962,
-			"BuyPrice": 0,
+			"BuyPrice": 2800,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2800000,
 			"SellCurrency": "DragonCash",
@@ -29018,13 +28993,9 @@
 				"Dark",
 				"Plant"
 			],
-			"BreedingElements": [
-				"Dark",
-				"Plant"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 200,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29039,7 +29010,7 @@
 			"Description": "Among the many attracted by the Beacon of the Sun, these dragons migrated to congregate in the pools of the Vale. The Sun's rays here aren't nearly as intense as they are in Sandara, but they seem no less interested in them. One would be forgiven for thinking the sobek dragons and the Sun have a special connection, more than just plain sunbathing.",
 			"ReleaseDate": "June 11, 2026 #963",
 			"Order": 963,
-			"BuyPrice": 0,
+			"BuyPrice": 2200,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2200000,
 			"SellCurrency": "DragonCash",
@@ -29050,14 +29021,9 @@
 				"Plant",
 				"Dark"
 			],
-			"BreedingElements": [
-				"Water",
-				"Plant",
-				"Dark"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 160,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29072,7 +29038,7 @@
 			"Description": "Walking through the vast tunnels of the pyramids here, you will feel unnatural gusts of air almost breathing down your neck, odd smells that shouldn't be here, and sounds down the hallway that are too loud for mere scarabs. Exploring with a group is advised, for if you stray away from the group, you won't be alone for long. The light of the torch should be enough to keep you safe, as long as you don't look up. Not all who come to the Beacon are friends of the Sun.",
 			"ReleaseDate": "June 11, 2026 #964",
 			"Order": 964,
-			"BuyPrice": 0,
+			"BuyPrice": 2300,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2300000,
 			"SellCurrency": "DragonCash",
@@ -29084,15 +29050,9 @@
 				"Fire",
 				"Plant"
 			],
-			"BreedingElements": [
-				"Dark",
-				"Water",
-				"Fire",
-				"Plant"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 165,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29104,10 +29064,10 @@
 			"Name": "Naja",
 			"Rarity": "Epic",
 			"BreedingTime": "16 H",
-			"Description": "Which burns more, fire or venom? And which hurts more, venom or fire? The better question is, why not use both if you can, and indeed the naja dragons do. Not only that, but their fangs are sharper then cactus spines and their scales harder than gold, but then again, so are most things. Maybe that's why Wizards have them around their treasures, to make sure loot dragons stay away.",
+			"Description": "Which burns more, fire or venom? And which hurts more, venom or fire? The better question is, why not use both if you can, and indeed the naja dragons do. Not only that, but their fangs are sharper than cactus spines and their scales harder than gold, but then again, so are most things. Maybe that's why Wizards have them around their treasures, to make sure loot dragons stay away.",
 			"ReleaseDate": "June 11, 2026 #965",
 			"Order": 965,
-			"BuyPrice": 0,
+			"BuyPrice": 2500,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2500000,
 			"SellCurrency": "DragonCash",
@@ -29118,12 +29078,14 @@
 				"Treasure"
 			],
 			"BreedingElements": [
+				"Sun",
+				"Treasure",
 				"Earth",
 				"Light"
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 180,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29135,10 +29097,10 @@
 			"Name": "Sandshifter",
 			"Rarity": "Rare",
 			"BreedingTime": "12 H",
-			"Description": "The dunes in Sandara create an ever-changing landscape, where the mountains of sand you climbed today, may be entirely spread across the horizon tomorrow. But something you can be sure won't be gone any time soon, are the sandshifter dragons, lurking deep in sands of the desert. Making their way through effortlessly, almost as if swimming through the sand, no matter how coarse or rough it is. And every, vibration or tremor felt at the surface is immediately investigated, like a shark in pursuit.",
+			"Description": "The dunes in Sandara create an ever-changing landscape, where the mountains of sand you climbed today, may be entirely spread across the horizon tomorrow. But something you can be sure won't be gone any time soon, are the sandshifter dragons, lurking deep in sands of the desert. Making their way through effortlessly, almost as if swimming through the sand, no matter how coarse or rough it is. And every vibration or tremor felt at the surface is immediately investigated, like a shark in pursuit.",
 			"ReleaseDate": "June 18, 2026 #966",
 			"Order": 966,
-			"BuyPrice": 0,
+			"BuyPrice": 2200,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2200000,
 			"SellCurrency": "DragonCash",
@@ -29149,14 +29111,9 @@
 				"Water",
 				"Dark"
 			],
-			"BreedingElements": [
-				"Earth",
-				"Water",
-				"Dark"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 160,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29168,10 +29125,10 @@
 			"Name": "Pharrox",
 			"Rarity": "Epic",
 			"BreedingTime": "24 H",
-			"Description": "Dusty old tablets and crumbling scrolls describe the pharrox dragon as esteemed pets of the ancient Sand Kings and Pharaohs. They were seen as a status of one's wealth and attunement to the blessed sun! And, in an attempt to better mimic the dragons' behavior and elevate themselves spiritually, their eggs would be gifted to Kings and Pharaohs as a gesture of good faith, as they do to each other.",
+			"Description": "Dusty old tablets and crumbling scrolls describe the pharrox dragons as esteemed pets of the ancient Sand Kings and Pharaohs. They were seen as a status of one's wealth and attunement to the blessed sun! And, in an attempt to better mimic the dragons' behavior and elevate themselves spiritually, their eggs would be gifted to Kings and Pharaohs as a gesture of good faith, as they do to each other.",
 			"ReleaseDate": "June 25, 2026 #967",
 			"Order": 967,
-			"BuyPrice": 0,
+			"BuyPrice": 2800,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2800000,
 			"SellCurrency": "DragonCash",
@@ -29183,27 +29140,29 @@
 				"Air"
 			],
 			"BreedingElements": [
+				"Sun",
+				"Treasure",
 				"Air",
 				"Dark"
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 200,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
 				"Available": "All"
 			},
-			"Goal": "This dragon is brimming with magnificience!"
+			"Goal": "This dragon is brimming with magnificence!"
 		},
 		{
 			"Name": "Tetra",
 			"Rarity": "Epic",
 			"BreedingTime": "24 H",
-			"Description": "The chambers holding the opulent tomb of Amun-Ra had inanimate, yet intricate dragon statues all around, keeping the darkness at bay for the time untold. Numerous wizards have made their way through the tomb chambers, but anything they would do, say or cast in there simply went unnoticed. Until a lonely tutan dragon wandered in looking for a shady spot to rest, the first of its kind to enter here. Its very presence lit up the chambers, beams of light shooting all across the halls, bouncing from gem to gem, finding their way to the hearts of the statues, rekindling the spark of life within them. Repulsed by the apparent state of the tutan dragon, but impelled to protect it by the sight of its mask, they stormed out in confusion whether to purge it, or to cure what they saw as wrong with it.",
+			"Description": "The chambers holding the opulent tomb of Amun-Ra had inanimate, yet intricate dragon statues all around, keeping the darkness at bay for time untold. Numerous wizards have made their way through the tomb chambers, but anything they would do, say or cast in there simply went unnoticed. Until a lonely tutan dragon wandered in looking for a shady spot to rest, the first of its kind to enter here. Its very presence lit up the chambers, beams of light shooting all across the halls, bouncing from gem to gem, finding their way to the hearts of the statues, rekindling the spark of life within them. Repulsed by the apparent state of the tutan dragon, but impelled to protect it by the sight of its mask, they stormed out in confusion whether to purge it, or to cure what they saw as wrong with it.",
 			"ReleaseDate": "July 2, 2026 #968",
 			"Order": 968,
-			"BuyPrice": 0,
+			"BuyPrice": 2900,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2900000,
 			"SellCurrency": "DragonCash",
@@ -29214,13 +29173,9 @@
 				"Metal",
 				"Light"
 			],
-			"BreedingElements": [
-				"Metal",
-				"Light"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 205,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29232,10 +29187,10 @@
 			"Name": "Plagues",
 			"Rarity": "Epic",
 			"BreedingTime": "17 H",
-			"Description": "Veezir's warnings fell upon deaf ears, the forbidden chambers were opened, and teh horror that lay within was unleashed. From the very moment the massive slab doors were opened, many of the wizards present immediately felt ill, and it quickly became clear that whatever the ancient aclhemists sealed here, was not meant to see the light of day ever again. The ancient affliction that now plagues the wizards may have its cure stored in this very chamber, it could be in any one of the many jars they found, but who will be brave enough to venture in and look for it?",
+			"Description": "Veezir's warnings fell upon deaf ears, the forbidden chambers were opened, and the horror that lay within was unleashed. From the very moment the massive slab doors were opened, many of the wizards present immediately felt ill, and it quickly became clear that whatever the ancient alchemists sealed here, was not meant to see the light of day ever again. The ancient affliction that now plagues the wizards may have its cure stored in this very chamber, it could be in any one of the many jars they found, but who will be brave enough to venture in and look for it?",
 			"ReleaseDate": "July 9, 2026 #969",
 			"Order": 969,
-			"BuyPrice": 0,
+			"BuyPrice": 2900,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2900000,
 			"SellCurrency": "DragonCash",
@@ -29247,13 +29202,9 @@
 				"Fire",
 				"Plant"
 			],
-			"BreedingElements": [
-				"Fire",
-				"Plant"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 205,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29264,11 +29215,11 @@
 		{
 			"Name": "Nomad",
 			"Rarity": "Epic",
-			"BreedingTime": "15H",
+			"BreedingTime": "15 H",
 			"Description": "By observing these dragons for ages, the nomadic wizards of Sandara have learned the art of traversing endless dunes, surviving the scorching sun and freezing nights, and navigating an ever-changing blanket of sand. Something that we have to pass down through lessons and trials, they know instinctively as it is in their nature. Which hours of the day to journey forward, and which to hunker down. How to tell if a sandstorm is coming, and if you are in its path. On which dunes to slide, and from which to glide. Nomads do sometimes cross paths, but it is customary to not linger, be it dragon or wizards.",
 			"ReleaseDate": "July 16, 2026 #970",
 			"Order": 970,
-			"BuyPrice": 0,
+			"BuyPrice": 2800,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2800000,
 			"SellCurrency": "DragonCash",
@@ -29280,13 +29231,9 @@
 				"Air",
 				"Fire"
 			],
-			"BreedingElements": [
-				"Air",
-				"Fire"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 200,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29297,11 +29244,11 @@
 		{
 			"Name": "Pathfinder",
 			"Rarity": "Rare",
-			"BreedingTime": "24H",
+			"BreedingTime": "24 H",
 			"Description": "Sensing the magnetic fields all around us, these dragons can always find their way home! Be it deep down in some long forgotten cave or in the thickest of forests, there is no place they cannot navigate and will always lead the group to camp! Or to the nearest polarus dragon.",
 			"ReleaseDate": "July 30, 2026 #973",
 			"Order": 973,
-			"BuyPrice": 0,
+			"BuyPrice": 2850,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2850000,
 			"SellCurrency": "DragonCash",
@@ -29313,15 +29260,9 @@
 				"Lightning",
 				"Metal"
 			],
-			"BreedingElements": [
-				"Earth",
-				"Water",
-				"Lightning",
-				"Metal"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 200,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29332,11 +29273,11 @@
 		{
 			"Name": "Cairn",
 			"Rarity": "Rare",
-			"BreedingTime": "20H",
+			"BreedingTime": "20 H",
 			"Description": "When you come across a nice vantage point up on the mountain trail, you just have to stop and admire it! The trees on distant peaks looking like one single blanket. Then wondering if there are any other hikers under all that vegetation, in view but out of sight. Just like this dragon was under all these rocks, until Kaleni decided its back looked like a good place to rest. He learned a valuable lesson in petrology that day!",
 			"ReleaseDate": "July 30, 2026 #971",
 			"Order": 971,
-			"BuyPrice": 0,
+			"BuyPrice": 2800,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2800000,
 			"SellCurrency": "DragonCash",
@@ -29346,13 +29287,9 @@
 				"Earth",
 				"Plant"
 			],
-			"BreedingElements": [
-				"Earth",
-				"Plant"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 200,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29363,11 +29300,11 @@
 		{
 			"Name": "Emburn",
 			"Rarity": "Rare",
-			"BreedingTime": "20H",
+			"BreedingTime": "20 H",
 			"Description": "So deeply in tune with nature and blessed to grow their beautiful roots, vines and flowers in perpetuity, these dragons are stuck in a constant cycle of regrowth and ruin. That very same boundless growth feeds the flames they now carry with them, creating a self perpetuating tug of war between renewal and destruction.",
 			"ReleaseDate": "July 30, 2026 #972",
 			"Order": 972,
-			"BuyPrice": 0,
+			"BuyPrice": 3000,
 			"BuyCurrency": "Gems",
 			"SellPrice": 3000000,
 			"SellCurrency": "DragonCash",
@@ -29378,14 +29315,9 @@
 				"Plant",
 				"Air"
 			],
-			"BreedingElements": [
-				"Fire",
-				"Plant",
-				"Air"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 210,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29396,11 +29328,11 @@
 		{
 			"Name": "Fairyoak",
 			"Rarity": "Epic",
-			"BreedingTime": "23H",
+			"BreedingTime": "23 H",
 			"Description": "All the fairies from those stories we tell each other by the bonfire have to live somewhere, right? And what better place than under the protection of a dragon, as whatever it is fairies have to fear will be nowhere near! In return for keeping them safe, fairyoaks get a steady supply of berries and shiny goodies gathered by their whimsical tenants.",
 			"ReleaseDate": "August 6, 2026 #974",
 			"Order": 974,
-			"BuyPrice": 0,
+			"BuyPrice": 2900,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2900000,
 			"SellCurrency": "DragonCash",
@@ -29411,13 +29343,9 @@
 				"Plant",
 				"Earth"
 			],
-			"BreedingElements": [
-				"Plant",
-				"Earth"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 205,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29428,11 +29356,11 @@
 		{
 			"Name": "Morrax",
 			"Rarity": "Rare",
-			"BreedingTime": "15H",
+			"BreedingTime": "15 H",
 			"Description": "Their visage hidden for most of their existence, where only others of their kind know what lies beneath the hides. Their intentions unclear and origin shrouded in mystery, for they are somehow absent from our history. Their cries and roars somewhat familiar, yet suspicious to those with a good ear. With your skin crawling and the beast howling, do you turn your back to run, or face the faceless horror?",
 			"ReleaseDate": "August 13, 2026 #975",
 			"Order": 975,
-			"BuyPrice": 0,
+			"BuyPrice": 2800,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2800000,
 			"SellCurrency": "DragonCash",
@@ -29443,14 +29371,9 @@
 				"Metal",
 				"Cold"
 			],
-			"BreedingElements": [
-				"Fire",
-				"Metal",
-				"Cold"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 200,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29462,10 +29385,10 @@
 			"Name": "Achu",
 			"Rarity": "Rare",
 			"BreedingTime": "17 H 30 M",
-			"Description": "The forest in the stories hide more than whimsical fairies and spooky crawlies, like the curious achu dragons. If spotted while hiding in the shrubbery, they will quickly run to a new spot! If their tummies are growling, they will run to the nearest mushroom patch! If bored, they will run just for fun! But the running their legs do is nothing compared to the running their nose do! It seems as though if they are allergic to the towns, the Valers themselves, or the alchemical dust in the air. Wizards with hay fever find this particularly funny.",
+			"Description": "The forests in the stories hide more than whimsical fairies and spooky crawlies, like the curious Achu Dragons. If spotted while hiding in the shrubbery, they will quickly run to a new spot! If their tummies are growling, they will run to the nearest mushroom patch! If bored, they will run just for fun! But the running their legs do is nothing compared to the running their noses do! It seems as though they are allergic to the towns, the Valers themselves, or the alchemical dust in the air. Wizards with hay fever find this particularly funny.",
 			"ReleaseDate": "August 20, 2026 #976",
 			"Order": 976,
-			"BuyPrice": 0,
+			"BuyPrice": 2900,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2900000,
 			"SellCurrency": "DragonCash",
@@ -29477,15 +29400,9 @@
 				"Water",
 				"Fire"
 			],
-			"BreedingElements": [
-				"Plant",
-				"Dark",
-				"Water",
-				"Fire"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 205,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29500,7 +29417,7 @@
 			"Description": "The forest can be a scary place at night. And the two tiny glowing orbs you see in the distance could just be an owl staring back at you. That's what you tell yourself anyway. An owl with bright red eyes. Eyes that never blink, that never look away. Getting bigger and bigger every time you look away. And you have to, navigating through the pitch black forest, with only strands of moonlight to guide you. By the time you find your way back to the tent, the orbs are now the size of scrying orbs. And it slowly dawns on you... that they aren't getting bigger... they are getting closer. And whatever they belong to, is no owl.",
 			"ReleaseDate": "August 27, 2026 #977",
 			"Order": 977,
-			"BuyPrice": 0,
+			"BuyPrice": 3000,
 			"BuyCurrency": "Gems",
 			"SellPrice": 3000000,
 			"SellCurrency": "DragonCash",
@@ -29508,17 +29425,12 @@
 			"LevelRequirement": 15,
 			"Elements": [
 				"Dark",
-				"Water",
-				"Air"
-			],
-			"BreedingElements": [
-				"Dark",
 				"Air",
 				"Water"
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 210,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29533,7 +29445,7 @@
 			"Description": "Far away from the lamps and torches of town, one can see an amazing array of stars and celestial bodies scattered along the night sky! Countless dots and patterns to look for, constellations to catalog, memorize and awe at! An art triastra dragons absolutely excel at! So fixed to the sky, that each dragon's favorite stars appear imprinted onto their eye! Noel adopted a few of these cute walking telescopes as companions on his own journey to catalog the stars! They are easy enough to take care of, as they feed off the light of the stars, however faint it may be, and care little for their surroundings. He does occasionally cover them with a blanket when the sun gets too bright.",
 			"ReleaseDate": "September 3, 2026 #978",
 			"Order": 978,
-			"BuyPrice": 0,
+			"BuyPrice": 3100,
 			"BuyCurrency": "Gems",
 			"SellPrice": 3100000,
 			"SellCurrency": "DragonCash",
@@ -29545,14 +29457,9 @@
 				"Water",
 				"Light"
 			],
-			"BreedingElements": [
-				"Dark",
-				"Water",
-				"Light"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 2015,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29567,23 +29474,19 @@
 			"Description": "Dense clay, stubborn shale and overgrown roots stand no chance before the sharp tails of the furrow dragon! It is scary to imagine what they might have needed those for back in the more dangerous and turbulent times of their past, but nowadays they use them to help around the fields and earn extra treats! The quicker the furrowing, the quicker the planting and harvesting!",
 			"ReleaseDate": "September 17, 2026 #979",
 			"Order": 979,
-			"BuyPrice": 0,
+			"BuyPrice": 2300,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2300000,
 			"SellCurrency": "DragonCash",
 			"HatchExperience": 2300000,
-			"LevelRequirement": 15,
+			"LevelRequirement": 18,
 			"Elements": [
-				"Earth",
-				"Metal"
-			],
-			"BreedingElements": [
 				"Earth",
 				"Metal"
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 165,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29595,10 +29498,10 @@
 			"Name": "Haystack",
 			"Rarity": "Epic",
 			"BreedingTime": "23 H",
-			"Description": "Haystack dragons have a habit of snatching up any shiny or interesting objects that fall within their reach, be it pitchforks, wands or any other add \u003Csic\u003E trinkets! Gardenia suspects that's how her enchanted sewing needle got lost! She and many others have searched the fields, the haystacks and actual hay stacks to no avail.",
+			"Description": "Haystack dragons have a habit of snatching up any shiny or interesting objects that fall within their reach, be it pitchforks, wands or any other add trinkets! Gardenia suspects that's how her enchanted sewing needle got lost! She and many others have searched the fields, the haystacks and actual hay stacks to no avail.",
 			"ReleaseDate": "September 17, 2026 #981",
 			"Order": 981,
-			"BuyPrice": 0,
+			"BuyPrice": 2400,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2400000,
 			"SellCurrency": "DragonCash",
@@ -29609,12 +29512,13 @@
 				"Plant"
 			],
 			"BreedingElements": [
+				"Dream",
 				"Plant",
 				"Earth"
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 175,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29629,7 +29533,7 @@
 			"Description": "In autumn you will usually find Gardenia out and about in the fields of the Arcane Grange, tending to the plants along with the sungazer dragons. They play a very important role in the cycle of farming! Collecting sunlight for the understory plants, attracting pollinators from far and wide and scattering seeds with their tail as they go along their day!",
 			"ReleaseDate": "September 17, 2026 #980",
 			"Order": 980,
-			"BuyPrice": 0,
+			"BuyPrice": 2400,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2400000,
 			"SellCurrency": "DragonCash",
@@ -29641,12 +29545,14 @@
 				"Plant"
 			],
 			"BreedingElements": [
+				"Sun",
+				"Seasonal",
 				"Plant",
 				"Light"
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 175,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29661,7 +29567,7 @@
 			"Description": "The wizzlings in charge of planting the pumpermelons and meta-carotenes accidentally turned entire fields into arid deserts when their agricultural spells went wonky, turning enchanted seeds into burnt husks! To avoid pestering Gardenia and getting in trouble, they sought out the tumble dragons who thrive in these conditions! Sprinkling them with new seeds, the little wannabe farmers sent the dragons rolling across the fields, like pinwheels of doom! Unusual methods yield unusual results, and it was the most bountiful harvest Gardenia had ever seen!",
 			"ReleaseDate": "September 24, 2026 #982",
 			"Order": 982,
-			"BuyPrice": 0,
+			"BuyPrice": 2500,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2500000,
 			"SellCurrency": "DragonCash",
@@ -29673,14 +29579,9 @@
 				"Rift",
 				"Dark"
 			],
-			"BreedingElements": [
-				"Plant",
-				"Earth",
-				"Dark"
-			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 180,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
@@ -29695,7 +29596,7 @@
 			"Description": "Dotty dragons are majestic hunters wrapped in kindness and cuteness! Life on the mysterious island they come from has taught them to keep their surrounding ecosystem in perfect balance. Should anything lean too far in one direction and tip the scales, the very island itself undergoes a metamorphosis! The flora is absorbed back into the ecosystem to be correctly regrown, and the fauna is forced to evolve and adapt to the new balance. This keen sense has earned the dotty dragons the position of guardians of Gardenia's crops and fields!",
 			"ReleaseDate": "October 1, 2026 #983",
 			"Order": 983,
-			"BuyPrice": 0,
+			"BuyPrice": 2350,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2350000,
 			"SellCurrency": "DragonCash",
@@ -29705,32 +29606,33 @@
 				"Chrysalis"
 			],
 			"BreedingElements": [
+				"Chrysalis",
 				"Plant",
 				"Air"
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 170,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
 				"Available": "All"
 			},
-			"Goal": ""
+			"Goal": "This dragon is cute as a button!"
 		},
 		{
 			"Name": "Hollowjaw",
 			"Rarity": "Rare",
 			"BreedingTime": "15 H",
-			"Description": "",
+			"Description": "What nastier trick is there than to have all the treats you could want but be unable to enjoy them? Perhaps it was a wish from a genie dragon that went sideways, or hanging around too many misfortune dragons, but hollowjaws have no mouths, and they must eat. An affliction that Whitbee is researching far and wide in an attempt to reverse!",
 			"ReleaseDate": "October 8, 2026 #984",
 			"Order": 984,
-			"BuyPrice": 0,
+			"BuyPrice": 2100,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2100000,
 			"SellCurrency": "DragonCash",
-			"HatchExperience": 0,
-			"LevelRequirement": 25,
+			"HatchExperience": 2100000,
+			"LevelRequirement": 15,
 			"Elements": [
 				"Dark",
 				"Earth",
@@ -29738,27 +29640,27 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 155,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
 				"Available": "All"
 			},
-			"Goal": ""
+			"Goal": "This dragon does not bite, even if it wants to!"
 		},
 		{
 			"Name": "Eggony",
 			"Rarity": "Rare",
 			"BreedingTime": "10 H",
-			"Description": "",
+			"Description": "With the opening of the Otherworldly portal, what Kaleni feared the most became reality, as eggs exposed to its dark energies became corrupted, turning into ticking time-bombs of cruelty, acid and boiling yolk! Some more resilient hatchlings manage to adapt and overcome their new nature to thrive in this new hostile environment. Where the Vale offers kindness, support and love, the eggony dragons see only malice, hostility and hatred!",
 			"ReleaseDate": "October 8, 2026 #985",
 			"Order": 985,
-			"BuyPrice": 0,
+			"BuyPrice": 2150,
 			"BuyCurrency": "Gems",
-			"SellPrice": 0,
+			"SellPrice": 2150000,
 			"SellCurrency": "DragonCash",
-			"HatchExperience": 0,
-			"LevelRequirement": 25,
+			"HatchExperience": 2150000,
+			"LevelRequirement": 15,
 			"Elements": [
 				"Fire",
 				"Earth",
@@ -29766,27 +29668,27 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 155,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
 				"Available": "All"
 			},
-			"Goal": ""
+			"Goal": "This dragon may not run, but is very runny!"
 		},
 		{
 			"Name": "Torment",
 			"Rarity": "Rare",
 			"BreedingTime": "22 H",
-			"Description": "",
+			"Description": "All the malice, cruelty and anger from the Otherworld made flesh, or rather rusty iron. The clank of their steps sends shivers down the spines of Valers. The aggressive grinding of their plates shatters eardrums! The impending doom they bring shines a blinding light! All that these forces need are eyes to find their next target, a body to inflict their punishment with and a dark heart to keep it all together!",
 			"ReleaseDate": "October 8, 2026 #986",
 			"Order": 986,
-			"BuyPrice": 0,
+			"BuyPrice": 2100,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2100000,
 			"SellCurrency": "DragonCash",
-			"HatchExperience": 0,
-			"LevelRequirement": 25,
+			"HatchExperience": 2100000,
+			"LevelRequirement": 15,
 			"Elements": [
 				"Metal",
 				"Water",
@@ -29795,7 +29697,35 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 155,
+				"BuyCurrency": "Gems"
+			},
+			"Traits": {
+				"Available": "All"
+			},
+			"Goal": "Local dragon too angry to stay in egg!"
+		},
+		{
+			"Name": "Defflorescence",
+			"Rarity": "Epic",
+			"BreedingTime": "23 H",
+			"Description": "",
+			"ReleaseDate": "October 15, 2026 #987",
+			"Order": 987,
+			"BuyPrice": 0,
+			"BuyCurrency": "Gems",
+			"SellPrice": 2300000,
+			"SellCurrency": "DragonCash",
+			"HatchExperience": 0,
+			"LevelRequirement": 15,
+			"Elements": [
+				"Apocalypse",
+				"Plant",
+				"Dark"
+			],
+			"IsLimited": true,
+			"Pedestal": {
+				"BuyPrice": 150,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {

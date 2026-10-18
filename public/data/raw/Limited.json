@@ -6,8 +6,8 @@
 		"Autumn": {
 			"countdown": "December 21, 2026"
 		},
-		"Bismuth": {
-			"countdown": "October 15, 2026"
+		"Sanguinite": {
+			"countdown": "November 15, 2026"
 		},
 		"Amber": {
 			"countdown": "November 15, 2026"
@@ -42,10 +42,10 @@
 					"Cost": 14000,
 					"Breedable": false
 				},
-				"Torment": {
-					"countdown": "October 15, 2026",
+				"Defflorescence": {
+					"countdown": "October 22, 2026",
 					"Currency": "Candy",
-					"Cost": 15250
+					"Cost": 15000
 				},
 				"Mirhor": {
 					"Currency": "Candy",

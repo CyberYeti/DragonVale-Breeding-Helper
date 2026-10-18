@@ -1,17 +1,17 @@
 {
   "meta": {
     "schemaVersion": 2,
-    "revision": "17d854935395",
+    "revision": "e7da7da89e5c",
     "source": "https://dragonvale.fandom.com",
     "license": "CC BY-SA 3.0",
     "pageRevisions": {
-      "Data:Dragons.json": 1758826,
-      "Data:BreedingHints.json": 1758767,
+      "Data:Dragons.json": 1759037,
+      "Data:BreedingHints.json": 1759007,
       "Data:Game.json": 1754925,
-      "Data:Dragonarium.json": 1758802,
-      "Data:Limited.json": 1758773
+      "Data:Dragonarium.json": 1759025,
+      "Data:Limited.json": 1759011
     },
-    "fetchedAt": "2026-10-11T17:42:39.069Z"
+    "fetchedAt": "2026-10-18T04:14:42.506Z"
   },
   "elements": [
     {
@@ -11489,7 +11489,7 @@
         "Lightning",
         "Hidden"
       ],
-      "isLimited": false,
+      "isLimited": true,
       "traits": {
         "kind": "all"
       },
@@ -11588,7 +11588,7 @@
         "Cold",
         "Hidden"
       ],
-      "isLimited": false,
+      "isLimited": true,
       "traits": {
         "kind": "all"
       },
@@ -15850,10 +15850,7 @@
         "Cold"
       ],
       "breedingElements": [
-        "Ornamental",
-        "Plant",
-        "Fire",
-        "Cold"
+        "Ornamental"
       ],
       "isLimited": true,
       "traits": {
@@ -15883,10 +15880,7 @@
         "Cold"
       ],
       "breedingElements": [
-        "Ornamental",
-        "Plant",
-        "Fire",
-        "Cold"
+        "Ornamental"
       ],
       "isLimited": true,
       "traits": {
@@ -15916,10 +15910,7 @@
         "Cold"
       ],
       "breedingElements": [
-        "Ornamental",
-        "Plant",
-        "Fire",
-        "Cold"
+        "Ornamental"
       ],
       "isLimited": true,
       "traits": {
@@ -16051,10 +16042,7 @@
         "Cold"
       ],
       "breedingElements": [
-        "Ornamental",
-        "Plant",
-        "Fire",
-        "Cold"
+        "Ornamental"
       ],
       "isLimited": true,
       "traits": {
@@ -16118,10 +16106,7 @@
         "Cold"
       ],
       "breedingElements": [
-        "Ornamental",
-        "Plant",
-        "Fire",
-        "Cold"
+        "Ornamental"
       ],
       "isLimited": true,
       "traits": {
@@ -19739,8 +19724,7 @@
       ],
       "breedingElements": [
         "Earth",
-        "Fire",
-        "Air"
+        "Fire"
       ],
       "isLimited": true,
       "traits": {
@@ -20583,7 +20567,6 @@
       ],
       "breedingElements": [
         "Dark",
-        "Light",
         "Rift"
       ],
       "isLimited": true,
@@ -22410,8 +22393,7 @@
       "breedingElements": [
         "Metal",
         "Light",
-        "Earth",
-        "Air"
+        "Earth"
       ],
       "isLimited": true,
       "traits": {
@@ -28891,10 +28873,10 @@
         "Olympus"
       ],
       "breedingElements": [
+        "Dark",
+        "Lightning",
         "Cold",
         "Earth",
-        "Lightning",
-        "Dark",
         "Olympus"
       ],
       "isLimited": true,
@@ -29284,9 +29266,9 @@
         "Plant"
       ],
       "breedingElements": [
+        "Hidden",
         "Light",
-        "Plant",
-        "Hidden"
+        "Plant"
       ],
       "isLimited": true,
       "traits": {
@@ -29590,9 +29572,9 @@
         "Plant"
       ],
       "breedingElements": [
+        "Hidden",
         "Earth",
-        "Plant",
-        "Hidden"
+        "Plant"
       ],
       "isLimited": true,
       "traits": {
@@ -29831,9 +29813,9 @@
         "Earth"
       ],
       "breedingElements": [
+        "Apocalypse",
         "Fire",
-        "Earth",
-        "Apocalypse"
+        "Earth"
       ],
       "isLimited": true,
       "traits": {
@@ -29864,9 +29846,9 @@
         "Plant"
       ],
       "breedingElements": [
+        "Hidden",
         "Water",
-        "Plant",
-        "Hidden"
+        "Plant"
       ],
       "isLimited": true,
       "traits": {
@@ -30072,10 +30054,10 @@
         "Olympus"
       ],
       "breedingElements": [
-        "Plant",
+        "Olympus",
         "Earth",
-        "Metal",
-        "Olympus"
+        "Plant",
+        "Metal"
       ],
       "isLimited": true,
       "traits": {
@@ -30420,9 +30402,9 @@
         "Plant"
       ],
       "breedingElements": [
+        "Hidden",
         "Lightning",
-        "Plant",
-        "Hidden"
+        "Plant"
       ],
       "isLimited": true,
       "traits": {
@@ -30494,10 +30476,10 @@
         "Lightning"
       ],
       "breedingElements": [
+        "Apocalypse",
         "Cold",
         "Dark",
-        "Lightning",
-        "Apocalypse"
+        "Lightning"
       ],
       "isLimited": true,
       "traits": {
@@ -32353,9 +32335,9 @@
         "Cold"
       ],
       "breedingElements": [
+        "Hidden",
         "Plant",
-        "Cold",
-        "Hidden"
+        "Cold"
       ],
       "isLimited": true,
       "traits": {
@@ -32559,9 +32541,9 @@
         "Plant"
       ],
       "breedingElements": [
+        "Treasure",
         "Dark",
-        "Plant",
-        "Treasure"
+        "Plant"
       ],
       "isLimited": true,
       "traits": {
@@ -32664,10 +32646,10 @@
         "Treasure"
       ],
       "breedingElements": [
-        "Earth",
-        "Light",
         "Sun",
-        "Treasure"
+        "Treasure",
+        "Earth",
+        "Light"
       ],
       "isLimited": true,
       "traits": {
@@ -32731,10 +32713,10 @@
         "Air"
       ],
       "breedingElements": [
-        "Air",
-        "Dark",
         "Sun",
-        "Treasure"
+        "Treasure",
+        "Air",
+        "Dark"
       ],
       "isLimited": true,
       "traits": {
@@ -32765,9 +32747,9 @@
         "Light"
       ],
       "breedingElements": [
+        "Sun",
         "Metal",
-        "Light",
-        "Sun"
+        "Light"
       ],
       "isLimited": true,
       "traits": {
@@ -32802,10 +32784,10 @@
         "Plant"
       ],
       "breedingElements": [
-        "Fire",
-        "Plant",
         "Apocalypse",
-        "Treasure"
+        "Treasure",
+        "Fire",
+        "Plant"
       ],
       "isLimited": true,
       "traits": {
@@ -32837,10 +32819,10 @@
         "Fire"
       ],
       "breedingElements": [
-        "Air",
-        "Fire",
         "Moon",
-        "Sun"
+        "Sun",
+        "Air",
+        "Fire"
       ],
       "isLimited": true,
       "traits": {
@@ -32978,9 +32960,9 @@
         "Earth"
       ],
       "breedingElements": [
+        "Hidden",
         "Plant",
-        "Earth",
-        "Hidden"
+        "Earth"
       ],
       "isLimited": true,
       "traits": {
@@ -33075,8 +33057,8 @@
       "order": 977,
       "elements": [
         "Dark",
-        "Water",
-        "Air"
+        "Air",
+        "Water"
       ],
       "breedingElements": [
         "Dark",
@@ -33113,10 +33095,10 @@
         "Light"
       ],
       "breedingElements": [
+        "Moon",
         "Dark",
         "Water",
-        "Light",
-        "Moon"
+        "Light"
       ],
       "isLimited": true,
       "traits": {
@@ -33179,9 +33161,9 @@
         "Plant"
       ],
       "breedingElements": [
+        "Dream",
         "Plant",
-        "Earth",
-        "Dream"
+        "Earth"
       ],
       "isLimited": true,
       "traits": {
@@ -33212,10 +33194,10 @@
         "Plant"
       ],
       "breedingElements": [
-        "Plant",
-        "Light",
         "Sun",
-        "Seasonal"
+        "Seasonal",
+        "Plant",
+        "Light"
       ],
       "isLimited": true,
       "traits": {
@@ -33249,6 +33231,7 @@
       "breedingElements": [
         "Plant",
         "Earth",
+        "Rift",
         "Dark"
       ],
       "isLimited": true,
@@ -33283,9 +33266,9 @@
         "Chrysalis"
       ],
       "breedingElements": [
+        "Chrysalis",
         "Plant",
-        "Air",
-        "Chrysalis"
+        "Air"
       ],
       "isLimited": true,
       "traits": {
@@ -33409,6 +33392,39 @@
           }
         }
       ]
+    },
+    {
+      "name": "Defflorescence",
+      "wikiPage": "Defflorescence Dragon",
+      "rarity": "Epic",
+      "order": 987,
+      "elements": [
+        "Apocalypse",
+        "Plant",
+        "Dark"
+      ],
+      "breedingElements": [
+        "Apocalypse",
+        "Plant",
+        "Dark"
+      ],
+      "isLimited": true,
+      "traits": {
+        "kind": "all"
+      },
+      "canBeParent": true,
+      "image": "images/dragons/Defflorescence.png",
+      "routes": [
+        {
+          "kind": "bred",
+          "requirement": {
+            "parents": [
+              "Amalgamate",
+              "Etch"
+            ]
+          }
+        }
+      ]
     }
   ],
   "pages": [
@@ -33519,7 +33535,8 @@
         "Dracomancy 3",
         "Reaper",
         "Jawny",
-        "Plagues"
+        "Plagues",
+        "Defflorescence"
       ],
       "icon": "images/pages/Apocalypse.png"
     },
@@ -34911,7 +34928,8 @@
         "Reaper",
         "Eggony",
         "Hollowjaw",
-        "Torment"
+        "Torment",
+        "Defflorescence"
       ],
       "icon": "images/pages/Spooky.png"
     },

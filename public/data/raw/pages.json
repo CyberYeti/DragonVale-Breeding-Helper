@@ -1,15 +1,15 @@
 {
   "source": "https://dragonvale.fandom.com",
-  "fetchedAt": "2026-10-11T17:42:39.069Z",
+  "fetchedAt": "2026-10-18T04:14:42.506Z",
   "license": "CC BY-SA 3.0",
   "pages": {
     "Data:Dragons.json": {
       "file": "Dragons.json",
-      "revision": 1758826
+      "revision": 1759037
     },
     "Data:BreedingHints.json": {
       "file": "BreedingHints.json",
-      "revision": 1758767
+      "revision": 1759007
     },
     "Data:Game.json": {
       "file": "Game.json",
@@ -17,11 +17,11 @@
     },
     "Data:Dragonarium.json": {
       "file": "Dragonarium.json",
-      "revision": 1758802
+      "revision": 1759025
     },
     "Data:Limited.json": {
       "file": "Limited.json",
-      "revision": 1758773
+      "revision": 1759011
     }
   }
 }
