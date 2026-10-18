@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:data": "vitest run scraper/snapshot.data.test.ts",
     "lint": "eslint .",
     "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json",
     "snapshot": "tsx scraper/cli.ts"

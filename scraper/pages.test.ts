@@ -7,13 +7,9 @@ import {
   fetchPages,
   fetchRevisions,
   PAGE_TITLES,
-  RAW_DIR,
   readManifestRevisions,
   writeRawPages,
-  type RawPages,
 } from './pages';
-
-const rawDir = join(import.meta.dirname, '..', RAW_DIR);
 
 function apiBody(titles: readonly string[] = PAGE_TITLES) {
   return {
@@ -104,23 +100,6 @@ describe('fetchPages, offline', () => {
       await rm(dir, { recursive: true, force: true });
     }
   });
-
-  it('reads the committed raw pages without network access', async () => {
-    const noNetwork = vi.fn(() => {
-      throw new Error('network used');
-    });
-    vi.stubGlobal('fetch', noNetwork);
-
-    const raw: RawPages = await fetchPages({ kind: 'offline', dir: rawDir });
-
-    expect(noNetwork).not.toHaveBeenCalled();
-    expect(Object.keys(raw.pages)).toEqual(PAGE_TITLES);
-    for (const title of PAGE_TITLES) {
-      expect(raw.pages[title].revision).toBeGreaterThan(0);
-      expect(() => JSON.parse(raw.pages[title].content)).not.toThrow();
-    }
-    expect(JSON.parse(raw.pages['Data:Dragons.json'].content).dragons.length).toBeGreaterThan(900);
-  });
 });
 
 describe('the revision check', () => {
@@ -156,9 +135,14 @@ describe('the revision check', () => {
     expect(changedPages(current, noGame)).toEqual(['Data:Game.json']);
   });
 
-  it('readManifestRevisions reads the committed pages.json', async () => {
-    const committed = await readManifestRevisions(join(rawDir, 'pages.json'));
-    const raw = await fetchPages({ kind: 'offline', dir: rawDir });
-    for (const title of PAGE_TITLES) expect(committed[title]).toBe(raw.pages[title].revision);
+  it('readManifestRevisions reads back the revisions writeRawPages wrote', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'raw-pages-'));
+    try {
+      const raw = await fetchPages({ kind: 'live', fetch: stubFetch(apiBody()), now: () => new Date(0) });
+      await writeRawPages(dir, raw);
+      expect(await readManifestRevisions(join(dir, 'pages.json'))).toEqual(await fetchRevisions(stubFetch(apiBody())));
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
   });
 });

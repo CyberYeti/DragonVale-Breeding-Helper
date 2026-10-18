@@ -1,15 +1,21 @@
 # Keeps the snapshot up to date with the wiki. Every 6 hours (or by hand) it
 # asks the wiki for the Data: pages' revision IDs, one small request. Only
 # when a page changed since the committed snapshot, and since the open
-# refresh PR, does it scrape, download new images, re-cut the fixture and run
-# the checks. An unchanged wiki is never scraped again, however long the gap
-# (new Dragons the wiki hasn't added yet appear once it does).
+# refresh PR, does it scrape, download new images and run the data checks. An
+# unchanged wiki is never scraped again, however long the gap (new Dragons the
+# wiki hasn't added yet appear once it does).
+#
+# Only data changes here, so only the data tests run (`npm run test:data`):
+# rules the snapshot must keep however many Dragons the wiki adds. The code
+# checks (typecheck, lint, every test) run in ci.yml on PRs and pushes, so a
+# code bug on main can't hold up a refresh. Broken wiki data mostly stops
+# the Scrape step itself: buildSnapshot fails on records it can't read.
 #
 # Then it splits on one question, whether a Dragon was removed (a possible
 # rename, which would orphan owned flags if published unanswered):
-#   - none removed and the checks pass: commit straight to main and start the
-#     deploy. Nobody has to do anything.
-#   - a Dragon removed, or the checks failed: open or update one PR on the
+#   - none removed and the data checks pass: commit straight to main and start
+#     the deploy. Nobody has to do anything.
+#   - a Dragon removed, or the data checks failed: open or update one PR on the
 #     `auto/snapshot-refresh` branch for a person. Rename candidates must be
 #     answered by hand (`npm run snapshot -- --offline` on the branch) before
 #     merging; merging deploys. The PR carries the new raw pages and images
@@ -68,13 +74,13 @@ jobs:
       - name: Scrape
         id: scrape
         if: steps.check.outputs.changed == 'true'
-        run: npm run snapshot -- --ci --fixture --report "$RUNNER_TEMP/report.md"
+        run: npm run snapshot -- --ci --report "$RUNNER_TEMP/report.md"
 
-      - name: Run the checks
+      - name: Run the data checks
         id: tests
         if: steps.check.outputs.changed == 'true'
         continue-on-error: true
-        run: npm run check && npm run lint && npm test
+        run: npm run test:data
 
       - name: Note the checks in the report
         if: steps.check.outputs.changed == 'true'
@@ -82,15 +88,15 @@ jobs:
           {
             echo
             if [ "${{ steps.tests.outcome }}" = "success" ]; then
-              echo "Checks (typecheck, lint, tests): passed."
+              echo "Data checks: passed."
             else
-              echo "### ❌ Checks failed"
+              echo "### ❌ Data checks failed"
               echo
-              echo "Typecheck, lint or tests failed on this data. See the workflow run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+              echo "The new data breaks a rule in scraper/snapshot.data.test.ts. See the workflow run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
             fi
           } >> "$RUNNER_TEMP/report.md"
 
-      # Nothing removed and the checks passed: publish without a person.
+      # Nothing removed and the data checks passed: publish without a person.
       - name: Publish to main and deploy
         id: publish
         if: steps.check.outputs.changed == 'true' && steps.tests.outcome == 'success' && steps.scrape.outputs.needs_review == 'false'
@@ -99,7 +105,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/data public/images fixtures/real-records.json
+          git add public/data public/images
           git commit -m "Refresh the snapshot from the wiki"
           git push origin HEAD:main
           # A review PR from an earlier run is out of date now.
@@ -117,5 +123,4 @@ jobs:
           add-paths: |
             public/data
             public/images
-            fixtures/real-records.json
           delete-branch: true
