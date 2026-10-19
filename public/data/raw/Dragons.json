@@ -10491,7 +10491,6 @@
 				"Lightning",
 				"Plant"
 			],
-			"IsLimited": true,
 			"Pedestal": {
 				"BuyPrice": 100,
 				"BuyCurrency": "Gems"
@@ -10537,8 +10536,7 @@
 			"Traits": {
 				"Available": "All"
 			},
-			"Goal": "Maybe visitors will help this dragon to come out of its shell!",
-			"IsLimited": true
+			"Goal": "Maybe visitors will help this dragon to come out of its shell!"
 		},
 		{
 			"Name": "Cumulus",
@@ -10631,8 +10629,7 @@
 			"Traits": {
 				"Available": "All"
 			},
-			"Goal": "Do you think the pond dragon and the salamander dragon hang out?",
-			"IsLimited": true
+			"Goal": "Do you think the pond dragon and the salamander dragon hang out?"
 		},
 		{
 			"Name": "Sumi",
@@ -10686,7 +10683,6 @@
 				"Plant",
 				"Air"
 			],
-			"IsLimited": true,
 			"Pedestal": {
 				"BuyPrice": 100,
 				"BuyCurrency": "Gems"
@@ -29610,7 +29606,6 @@
 				"Plant",
 				"Air"
 			],
-			"IsLimited": true,
 			"Pedestal": {
 				"BuyPrice": 170,
 				"BuyCurrency": "Gems"
@@ -29709,15 +29704,15 @@
 			"Name": "Defflorescence",
 			"Rarity": "Epic",
 			"BreedingTime": "23 H",
-			"Description": "",
+			"Description": "There is nothing Gardenia loves more than her plants, gardens, and the notion of love itself. The thought that two souls could grow so inseparable that they appear as one brings a tear to her eye, the magic of weathering the seasons and shaping one another over time brings peace to her heart! On the other hand, the idea of those roots being torn or severed fills her with sharp, lingering fear.",
 			"ReleaseDate": "October 15, 2026 #987",
 			"Order": 987,
 			"BuyPrice": 0,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2300000,
 			"SellCurrency": "DragonCash",
-			"HatchExperience": 0,
-			"LevelRequirement": 15,
+			"HatchExperience": 2300000,
+			"LevelRequirement": 25,
 			"Elements": [
 				"Apocalypse",
 				"Plant",
@@ -29731,7 +29726,7 @@
 			"Traits": {
 				"Available": "All"
 			},
-			"Goal": ""
+			"Goal": "This dragon definitely knows how to wither away in style."
 		}
 	]
 }

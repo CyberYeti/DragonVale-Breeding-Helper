@@ -1,17 +1,17 @@
 {
   "meta": {
     "schemaVersion": 2,
-    "revision": "e7da7da89e5c",
+    "revision": "958b0d33b31b",
     "source": "https://dragonvale.fandom.com",
     "license": "CC BY-SA 3.0",
     "pageRevisions": {
-      "Data:Dragons.json": 1759037,
+      "Data:Dragons.json": 1759332,
       "Data:BreedingHints.json": 1759007,
       "Data:Game.json": 1754925,
       "Data:Dragonarium.json": 1759025,
-      "Data:Limited.json": 1759011
+      "Data:Limited.json": 1759321
     },
-    "fetchedAt": "2026-10-18T05:02:19.288Z"
+    "fetchedAt": "2026-10-19T22:25:12.690Z"
   },
   "elements": [
     {
@@ -11456,7 +11456,7 @@
         "Plant",
         "Hidden"
       ],
-      "isLimited": true,
+      "isLimited": false,
       "traits": {
         "kind": "all"
       },
@@ -11489,7 +11489,7 @@
         "Lightning",
         "Hidden"
       ],
-      "isLimited": true,
+      "isLimited": false,
       "traits": {
         "kind": "all"
       },
@@ -11588,7 +11588,7 @@
         "Cold",
         "Hidden"
       ],
-      "isLimited": true,
+      "isLimited": false,
       "traits": {
         "kind": "all"
       },
@@ -11660,7 +11660,7 @@
         "Air",
         "Hidden"
       ],
-      "isLimited": true,
+      "isLimited": false,
       "traits": {
         "kind": "all"
       },
@@ -33270,7 +33270,7 @@
         "Plant",
         "Air"
       ],
-      "isLimited": true,
+      "isLimited": false,
       "traits": {
         "kind": "all"
       },
