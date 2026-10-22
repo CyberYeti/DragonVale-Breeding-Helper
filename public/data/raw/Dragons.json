@@ -29727,6 +29727,62 @@
 				"Available": "All"
 			},
 			"Goal": "This dragon definitely knows how to wither away in style."
+		},
+		{
+			"Name": "Kyanite",
+			"Rarity": "Rare",
+			"BreedingTime": "15 H",
+			"Description": "",
+			"ReleaseDate": "October 22, 2026",
+			"Order": 988,
+			"BuyPrice": 2015,
+			"BuyCurrency": "Gems",
+			"SellPrice": 0,
+			"SellCurrency": "DragonCash",
+			"HatchExperience": 0,
+			"LevelRequirement": 0,
+			"Elements": [
+				"Earth",
+				"Lightning",
+				"Metal"
+			],
+			"IsLimited": true,
+			"Pedestal": {
+				"BuyPrice": 0,
+				"BuyCurrency": "Gems"
+			},
+			"Traits": {
+				"Available": "All"
+			},
+			"Goal": ""
+		},
+		{
+			"Name": "Outworld",
+			"Rarity": "Epic",
+			"BreedingTime": "28 H",
+			"Description": "",
+			"ReleaseDate": "October 22, 2026",
+			"Order": 989,
+			"BuyPrice": 0,
+			"BuyCurrency": "Gems",
+			"SellPrice": 0,
+			"SellCurrency": "DragonCash",
+			"HatchExperience": 0,
+			"LevelRequirement": 25,
+			"Elements": [
+				"Apocalypse",
+				"Earth",
+				"Dark"
+			],
+			"IsLimited": true,
+			"Pedestal": {
+				"BuyPrice": 0,
+				"BuyCurrency": "Gems"
+			},
+			"Traits": {
+				"Available": "All"
+			},
+			"Goal": ""
 		}
 	]
 }

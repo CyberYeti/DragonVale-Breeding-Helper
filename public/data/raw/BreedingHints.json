@@ -8477,6 +8477,25 @@
 				"Amalgamate",
 				"Etch"
 			]
+		},
+		"Kyanite": {
+			"BuyPrice": 15,
+			"BuyPriceType": "Gems",
+			"RequiredElements": [
+				"Earth",
+				"Lightning",
+				"Metal"
+			]
+		},
+		"Outworld": {
+			"BuyPrice": 20,
+			"BuyPriceType": "Gems",
+			"RequiredDragons": [
+				"Tartarus"
+			],
+			"RequiredElements": [
+				"Apocalypse"
+			]
 		}
 	}
 }

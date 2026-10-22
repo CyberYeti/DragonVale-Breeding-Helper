@@ -1,17 +1,17 @@
 {
   "meta": {
     "schemaVersion": 2,
-    "revision": "abb0078ae1ec",
+    "revision": "e8d2a7caa724",
     "source": "https://dragonvale.fandom.com",
     "license": "CC BY-SA 3.0",
     "pageRevisions": {
-      "Data:Dragons.json": 1759353,
-      "Data:BreedingHints.json": 1759007,
+      "Data:Dragons.json": 1759414,
+      "Data:BreedingHints.json": 1759390,
       "Data:Game.json": 1754925,
       "Data:Dragonarium.json": 1759025,
-      "Data:Limited.json": 1759321
+      "Data:Limited.json": 1759410
     },
-    "fetchedAt": "2026-10-22T04:57:06.995Z"
+    "fetchedAt": "2026-10-22T17:15:53.776Z"
   },
   "elements": [
     {
@@ -33421,6 +33421,75 @@
             "parents": [
               "Amalgamate",
               "Etch"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Kyanite",
+      "wikiPage": "Kyanite Dragon",
+      "rarity": "Rare",
+      "order": 988,
+      "elements": [
+        "Earth",
+        "Lightning",
+        "Metal"
+      ],
+      "breedingElements": [
+        "Earth",
+        "Lightning",
+        "Metal"
+      ],
+      "isLimited": true,
+      "traits": {
+        "kind": "all"
+      },
+      "canBeParent": true,
+      "image": "images/dragons/Kyanite.png",
+      "routes": [
+        {
+          "kind": "bred",
+          "requirement": {
+            "elements": [
+              "Earth",
+              "Lightning",
+              "Metal"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Outworld",
+      "wikiPage": "Outworld Dragon",
+      "rarity": "Epic",
+      "order": 989,
+      "elements": [
+        "Apocalypse",
+        "Earth",
+        "Dark"
+      ],
+      "breedingElements": [
+        "Apocalypse",
+        "Earth",
+        "Dark"
+      ],
+      "isLimited": true,
+      "traits": {
+        "kind": "all"
+      },
+      "canBeParent": true,
+      "image": null,
+      "routes": [
+        {
+          "kind": "bred",
+          "requirement": {
+            "parents": [
+              "Tartarus"
+            ],
+            "elements": [
+              "Apocalypse"
             ]
           }
         }
