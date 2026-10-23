@@ -29707,7 +29707,7 @@
 			"Description": "There is nothing Gardenia loves more than her plants, gardens, and the notion of love itself. The thought that two souls could grow so inseparable that they appear as one brings a tear to her eye, the magic of weathering the seasons and shaping one another over time brings peace to her heart! On the other hand, the idea of those roots being torn or severed fills her with sharp, lingering fear.",
 			"ReleaseDate": "October 15, 2026",
 			"Order": 987,
-			"BuyPrice": 0,
+			"BuyPrice": 2300,
 			"BuyCurrency": "Gems",
 			"SellPrice": 2300000,
 			"SellCurrency": "DragonCash",
@@ -29732,14 +29732,14 @@
 			"Name": "Kyanite",
 			"Rarity": "Rare",
 			"BreedingTime": "15 H",
-			"Description": "",
+			"Description": "The kyanite dragon has a sharp wit and an even sharper appearance. Its brilliant blue scales resemble blades of crystal, and it takes great pride in keeping them polished. Just be careful when complimenting its looks; it has a tendency to take things to the point!",
 			"ReleaseDate": "October 22, 2026",
 			"Order": 988,
 			"BuyPrice": 2015,
 			"BuyCurrency": "Gems",
-			"SellPrice": 0,
+			"SellPrice": 15000000,
 			"SellCurrency": "DragonCash",
-			"HatchExperience": 0,
+			"HatchExperience": 1500000,
 			"LevelRequirement": 0,
 			"Elements": [
 				"Earth",
@@ -29754,7 +29754,7 @@
 			"Traits": {
 				"Available": "All"
 			},
-			"Goal": ""
+			"Goal": "This dragon certainly knows how to make a cutting remark."
 		},
 		{
 			"Name": "Outworld",
