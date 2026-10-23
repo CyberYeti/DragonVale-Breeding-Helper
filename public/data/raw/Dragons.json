@@ -29760,14 +29760,14 @@
 			"Name": "Outworld",
 			"Rarity": "Epic",
 			"BreedingTime": "28 H",
-			"Description": "",
+			"Description": "Few dare speak of the world beyond the veil, yet some would do anything to tear it down. With every incantation and every ritual, the barriers that hold back the horrors grow weaker, allowing glimpses of the madness beyond to seep through. But the abyss of the outworld dragons does more than stare back - it ensnares the mind, jailing the psyche in a nightmare that feels like an eternity.",
 			"ReleaseDate": "October 22, 2026",
 			"Order": 989,
-			"BuyPrice": 0,
+			"BuyPrice": 2400,
 			"BuyCurrency": "Gems",
-			"SellPrice": 0,
+			"SellPrice": 2400000,
 			"SellCurrency": "DragonCash",
-			"HatchExperience": 0,
+			"HatchExperience": 2400000,
 			"LevelRequirement": 25,
 			"Elements": [
 				"Apocalypse",
@@ -29782,7 +29782,7 @@
 			"Traits": {
 				"Available": "All"
 			},
-			"Goal": ""
+			"Goal": "Some doors are best left unopened, but this dragon has other plans."
 		}
 	]
 }
