@@ -1,17 +1,17 @@
 {
   "meta": {
     "schemaVersion": 2,
-    "revision": "942dcdcecf2c",
+    "revision": "9b3908455464",
     "source": "https://dragonvale.fandom.com",
     "license": "CC BY-SA 3.0",
     "pageRevisions": {
-      "Data:Dragons.json": 1759651,
+      "Data:Dragons.json": 1759766,
       "Data:BreedingHints.json": 1759390,
       "Data:Game.json": 1754925,
-      "Data:Dragonarium.json": 1759025,
+      "Data:Dragonarium.json": 1759765,
       "Data:Limited.json": 1759697
     },
-    "fetchedAt": "2026-10-23T21:28:25.930Z"
+    "fetchedAt": "2026-10-26T04:54:57.383Z"
   },
   "elements": [
     {
@@ -33561,7 +33561,8 @@
         "Vaul",
         "Nacre",
         "Doily",
-        "Ivory"
+        "Ivory",
+        "Kyanite"
       ],
       "icon": "images/pages/Anniversary.png"
     },
@@ -33605,7 +33606,8 @@
         "Reaper",
         "Jawny",
         "Plagues",
-        "Defflorescence"
+        "Defflorescence",
+        "Outworld"
       ],
       "icon": "images/pages/Apocalypse.png"
     },
@@ -34998,7 +35000,8 @@
         "Eggony",
         "Hollowjaw",
         "Torment",
-        "Defflorescence"
+        "Defflorescence",
+        "Outworld"
       ],
       "icon": "images/pages/Spooky.png"
     },

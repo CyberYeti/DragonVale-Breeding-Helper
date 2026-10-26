@@ -29740,7 +29740,7 @@
 			"SellPrice": 15000000,
 			"SellCurrency": "DragonCash",
 			"HatchExperience": 1500000,
-			"LevelRequirement": 0,
+			"LevelRequirement": 21,
 			"Elements": [
 				"Earth",
 				"Lightning",
@@ -29748,7 +29748,7 @@
 			],
 			"IsLimited": true,
 			"Pedestal": {
-				"BuyPrice": 0,
+				"BuyPrice": 150,
 				"BuyCurrency": "Gems"
 			},
 			"Traits": {
