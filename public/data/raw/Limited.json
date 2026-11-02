@@ -95,7 +95,8 @@
 				},
 				"Outworld": {
 					"Currency": "Candy",
-					"Cost": 15500
+					"Cost": 15500,
+					"countdown": "November 2, 2026"
 				},
 				"Mirhor": {
 					"Currency": "Candy",
