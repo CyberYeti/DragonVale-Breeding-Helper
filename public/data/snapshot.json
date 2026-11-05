@@ -1,17 +1,17 @@
 {
   "meta": {
     "schemaVersion": 2,
-    "revision": "e850b9d85661",
+    "revision": "326b5a88ba37",
     "source": "https://dragonvale.fandom.com",
     "license": "CC BY-SA 3.0",
     "pageRevisions": {
-      "Data:Dragons.json": 1759766,
+      "Data:Dragons.json": 1760304,
       "Data:BreedingHints.json": 1759390,
       "Data:Game.json": 1754925,
       "Data:Dragonarium.json": 1759765,
-      "Data:Limited.json": 1760111
+      "Data:Limited.json": 1760302
     },
-    "fetchedAt": "2026-11-02T06:17:56.182Z"
+    "fetchedAt": "2026-11-05T20:02:43.950Z"
   },
   "elements": [
     {
@@ -5218,7 +5218,7 @@
         "Plant",
         "Earth"
       ],
-      "isLimited": true,
+      "isLimited": false,
       "traits": {
         "kind": "all"
       },
@@ -8303,7 +8303,7 @@
         "Fire",
         "Ornamental"
       ],
-      "isLimited": true,
+      "isLimited": false,
       "traits": {
         "kind": "all"
       },
