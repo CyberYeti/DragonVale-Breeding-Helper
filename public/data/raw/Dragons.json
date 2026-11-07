@@ -29737,7 +29737,7 @@
 			"BuyCurrency": "Gems",
 			"SellPrice": 15000000,
 			"SellCurrency": "DragonCash",
-			"HatchExperience": 1500000,
+			"HatchExperience": 15000000,
 			"LevelRequirement": 21,
 			"Elements": [
 				"Earth",

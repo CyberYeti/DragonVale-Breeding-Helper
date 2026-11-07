@@ -18,11 +18,8 @@
 		"Scorpionian": {
 			"countdown": "November 22, 2026"
 		},
-		"Winter": {
-			"countdown": "November 4, 2026"
-		},
-		"Snowpocalypse": {
-			"countdown": "November 4, 2026"
+		"Berry": {
+			"countdown": "November 22, 2026"
 		}
 	},
 	"islandThemes": {},
@@ -32,6 +29,9 @@
 		},
 		"Tear of the Cataclysm": {
 			"countdown": "November 15, 2026"
+		},
+		"Berry Patch": {
+			"countdown": "November 22, 2026"
 		}
 	},
 	"events": {
