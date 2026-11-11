@@ -29737,7 +29737,7 @@
 			"BuyCurrency": "Gems",
 			"SellPrice": 15000000,
 			"SellCurrency": "DragonCash",
-			"HatchExperience": 15000000,
+			"HatchExperience": 1500000,
 			"LevelRequirement": 21,
 			"Elements": [
 				"Earth",
@@ -29752,7 +29752,8 @@
 			"Traits": {
 				"Available": "All"
 			},
-			"Goal": "This dragon certainly knows how to make a cutting remark."
+			"Goal": "This dragon certainly knows how to make a cutting remark.",
+			"Level": 21
 		},
 		{
 			"Name": "Outworld",
