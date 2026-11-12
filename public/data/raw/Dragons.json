@@ -22639,7 +22639,8 @@
 			"Traits": {
 				"Available": "All"
 			},
-			"Goal": "This dragon will zoom right by you!"
+			"Goal": "This dragon will zoom right by you!",
+			"Level": 25
 		},
 		{
 			"Name": "Elkar",
