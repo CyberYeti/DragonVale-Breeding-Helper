@@ -1,7 +1,7 @@
 {
   "meta": {
     "schemaVersion": 2,
-    "revision": "061273fc5f68",
+    "revision": "1e3f94e31342",
     "source": "https://dragonvale.fandom.com",
     "license": "CC BY-SA 3.0",
     "pageRevisions": {
@@ -9,9 +9,9 @@
       "Data:BreedingHints.json": 1760526,
       "Data:Game.json": 1754925,
       "Data:Dragonarium.json": 1759765,
-      "Data:Limited.json": 1760333
+      "Data:Limited.json": 1760704
     },
-    "fetchedAt": "2026-11-15T06:43:40.519Z"
+    "fetchedAt": "2026-11-15T18:55:48.283Z"
   },
   "elements": [
     {
