@@ -1,17 +1,17 @@
 {
   "meta": {
     "schemaVersion": 2,
-    "revision": "1b80a3e18336",
+    "revision": "061273fc5f68",
     "source": "https://dragonvale.fandom.com",
     "license": "CC BY-SA 3.0",
     "pageRevisions": {
       "Data:Dragons.json": 1760520,
-      "Data:BreedingHints.json": 1759390,
+      "Data:BreedingHints.json": 1760526,
       "Data:Game.json": 1754925,
       "Data:Dragonarium.json": 1759765,
       "Data:Limited.json": 1760333
     },
-    "fetchedAt": "2026-11-14T22:31:00.098Z"
+    "fetchedAt": "2026-11-15T06:43:40.519Z"
   },
   "elements": [
     {
@@ -26359,8 +26359,8 @@
           "kind": "bred",
           "requirement": {
             "parents": [
-              "Crawler",
-              "Kann"
+              "Kann",
+              "Crawler"
             ]
           }
         }

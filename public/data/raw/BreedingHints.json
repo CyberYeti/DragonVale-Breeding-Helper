@@ -6612,8 +6612,8 @@
 			"BuyPrice": 20,
 			"BuyPriceType": "Gems",
 			"RequiredDragons": [
-				"Crawler",
-				"Kann"
+				"Kann",
+				"Crawler"
 			]
 		},
 		"Saharus": {
