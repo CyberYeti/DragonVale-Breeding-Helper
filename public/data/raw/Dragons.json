@@ -14288,7 +14288,10 @@
 				"Cold"
 			],
 			"BreedingElements": [
-				"Ornamental"
+				"Ornamental",
+				"Plant",
+				"Fire",
+				"Cold"
 			],
 			"Devolution": "Gift",
 			"IsLimited": true,
@@ -14321,7 +14324,10 @@
 				"Cold"
 			],
 			"BreedingElements": [
-				"Ornamental"
+				"Ornamental",
+				"Plant",
+				"Fire",
+				"Cold"
 			],
 			"Devolution": "Gift",
 			"IsLimited": true,
@@ -14354,7 +14360,10 @@
 				"Cold"
 			],
 			"BreedingElements": [
-				"Ornamental"
+				"Ornamental",
+				"Plant",
+				"Fire",
+				"Cold"
 			],
 			"Devolution": "Gift",
 			"IsLimited": true,
@@ -14390,6 +14399,7 @@
 				"Earth",
 				"Fire",
 				"Plant",
+				"Cold",
 				"Ornamental"
 			],
 			"Devolution": "Coal",
@@ -14465,6 +14475,7 @@
 				"Metal",
 				"Fire",
 				"Plant",
+				"Cold",
 				"Ornamental"
 			],
 			"Devolution": "Coal",
@@ -14498,7 +14509,10 @@
 				"Cold"
 			],
 			"BreedingElements": [
-				"Ornamental"
+				"Ornamental",
+				"Plant",
+				"Fire",
+				"Cold"
 			],
 			"Devolution": "Gift",
 			"IsLimited": true,
@@ -14535,6 +14549,7 @@
 				"Dark",
 				"Metal",
 				"Fire",
+				"Cold",
 				"Ornamental"
 			],
 			"Devolution": "Coal",
@@ -14568,7 +14583,10 @@
 				"Cold"
 			],
 			"BreedingElements": [
-				"Ornamental"
+				"Ornamental",
+				"Plant",
+				"Fire",
+				"Cold"
 			],
 			"Devolution": "Gift",
 			"IsLimited": true,
@@ -14605,6 +14623,7 @@
 				"Light",
 				"Water",
 				"Fire",
+				"Cold",
 				"Ornamental"
 			],
 			"Devolution": "Coal",
@@ -29737,7 +29756,7 @@
 			"BuyCurrency": "Gems",
 			"SellPrice": 15000000,
 			"SellCurrency": "DragonCash",
-			"HatchExperience": 1500000,
+			"HatchExperience": 15000000,
 			"LevelRequirement": 21,
 			"Elements": [
 				"Earth",

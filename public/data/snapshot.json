@@ -1,17 +1,17 @@
 {
   "meta": {
     "schemaVersion": 2,
-    "revision": "1e3f94e31342",
+    "revision": "b56e73312702",
     "source": "https://dragonvale.fandom.com",
     "license": "CC BY-SA 3.0",
     "pageRevisions": {
-      "Data:Dragons.json": 1760520,
+      "Data:Dragons.json": 1760707,
       "Data:BreedingHints.json": 1760526,
       "Data:Game.json": 1754925,
       "Data:Dragonarium.json": 1759765,
-      "Data:Limited.json": 1760704
+      "Data:Limited.json": 1760706
     },
-    "fetchedAt": "2026-11-15T18:55:48.283Z"
+    "fetchedAt": "2026-11-16T06:41:05.144Z"
   },
   "elements": [
     {
@@ -15850,7 +15850,10 @@
         "Cold"
       ],
       "breedingElements": [
-        "Ornamental"
+        "Ornamental",
+        "Plant",
+        "Fire",
+        "Cold"
       ],
       "isLimited": true,
       "traits": {
@@ -15880,7 +15883,10 @@
         "Cold"
       ],
       "breedingElements": [
-        "Ornamental"
+        "Ornamental",
+        "Plant",
+        "Fire",
+        "Cold"
       ],
       "isLimited": true,
       "traits": {
@@ -15910,7 +15916,10 @@
         "Cold"
       ],
       "breedingElements": [
-        "Ornamental"
+        "Ornamental",
+        "Plant",
+        "Fire",
+        "Cold"
       ],
       "isLimited": true,
       "traits": {
@@ -15943,6 +15952,7 @@
         "Earth",
         "Fire",
         "Plant",
+        "Cold",
         "Ornamental"
       ],
       "isLimited": true,
@@ -16012,6 +16022,7 @@
         "Metal",
         "Fire",
         "Plant",
+        "Cold",
         "Ornamental"
       ],
       "isLimited": true,
@@ -16042,7 +16053,10 @@
         "Cold"
       ],
       "breedingElements": [
-        "Ornamental"
+        "Ornamental",
+        "Plant",
+        "Fire",
+        "Cold"
       ],
       "isLimited": true,
       "traits": {
@@ -16076,6 +16090,7 @@
         "Dark",
         "Metal",
         "Fire",
+        "Cold",
         "Ornamental"
       ],
       "isLimited": true,
@@ -16106,7 +16121,10 @@
         "Cold"
       ],
       "breedingElements": [
-        "Ornamental"
+        "Ornamental",
+        "Plant",
+        "Fire",
+        "Cold"
       ],
       "isLimited": true,
       "traits": {
@@ -16140,6 +16158,7 @@
         "Light",
         "Water",
         "Fire",
+        "Cold",
         "Ornamental"
       ],
       "isLimited": true,
