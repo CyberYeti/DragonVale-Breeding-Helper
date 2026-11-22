@@ -27,7 +27,8 @@
 				"BuyPrice": 5,
 				"BuyCurrency": "Gems"
 			},
-			"Elder": true
+			"Elder": true,
+			"Goal": "Excellent. Your dragon looks quite happy at home. Dragons attract visitors to your park and generate DragonCash for you to spend. Check back at any time to collect your DragonCash. Now let's give your dragon a name."
 		},
 		{
 			"Name": "Fire",
@@ -56,7 +57,8 @@
 				"BuyPrice": 5,
 				"BuyCurrency": "Gems"
 			},
-			"Elder": true
+			"Elder": true,
+			"Goal": "Dragons are amazing creatures. If we want these hatchlings to grow up, we need a Treat Farm so we can feed them. I'll wait here while you go build one."
 		},
 		{
 			"Name": "Poison",
@@ -26759,6 +26761,13 @@
 				"BuyPrice": 175,
 				"BuyCurrency": "Gems"
 			},
+			"Evolutions": [
+				{
+					"Name": "Muspel",
+					"Cost": 0,
+					"CostType": "Gems"
+				}
+			],
 			"Traits": {
 				"Available": "All"
 			},
@@ -29756,7 +29765,7 @@
 			"BuyCurrency": "Gems",
 			"SellPrice": 15000000,
 			"SellCurrency": "DragonCash",
-			"HatchExperience": 15000000,
+			"HatchExperience": 1500000,
 			"LevelRequirement": 21,
 			"Elements": [
 				"Earth",
@@ -29800,6 +29809,92 @@
 				"Available": "All"
 			},
 			"Goal": "Some doors are best left unopened, but this dragon has other plans."
+		},
+		{
+			"Name": "Magni",
+			"Rarity": "Rare",
+			"BreedingTime": "21 H",
+			"Description": "With both the strength and appetite of a mountain, magni dragons will often eat enough to feed a whole island! They are particularly fond of large meals, dragon treats, and anything that happens to be left unattended. Fortunately, a magni with a full belly is a happy magni, and there is little they enjoy more than laying back for a nice nap after a hearty meal.",
+			"ReleaseDate": "November 19, 2026",
+			"Order": 990,
+			"BuyPrice": 2300,
+			"BuyCurrency": "Gems",
+			"SellPrice": 2300000,
+			"SellCurrency": "DragonCash",
+			"HatchExperience": 2300000,
+			"LevelRequirement": 15,
+			"Elements": [
+				"Earth",
+				"Cold",
+				"Lightning"
+			],
+			"IsLimited": true,
+			"Pedestal": {
+				"BuyPrice": 0,
+				"BuyCurrency": "Gems"
+			},
+			"Traits": {
+				"Available": "All"
+			},
+			"Goal": "This dragon will eat just about anything!"
+		},
+		{
+			"Name": "Muspel",
+			"Rarity": "Epic",
+			"BreedingTime": "18 H",
+			"Description": "A realm that burns with such intense rage, that all its raw energy pooled to conjure life, born by the fires that seek to destroy and devour all. The scorched earth behind it remains barren... the skies above it clouded in ash... and the lands before it are next! The volcano now has a mouth, and it must scream!",
+			"ReleaseDate": "November 19, 2026",
+			"Order": 991,
+			"BuyPrice": 3500,
+			"BuyCurrency": "Gems",
+			"SellPrice": 3500000,
+			"SellCurrency": "DragonCash",
+			"HatchExperience": 3500000,
+			"LevelRequirement": 25,
+			"Elements": [
+				"Apocalypse",
+				"Fire",
+				"Earth",
+				"Metal"
+			],
+			"Devolution": "Volcano",
+			"IsLimited": true,
+			"Pedestal": {
+				"BuyPrice": 0,
+				"BuyCurrency": "Gems"
+			},
+			"Traits": {
+				"Available": "All"
+			},
+			"Goal": "Local dragon too angry to go dormant!"
+		},
+		{
+			"Name": "Kraka \u0026 Krummi",
+			"Rarity": "Epic",
+			"BreedingTime": "22 H 22 M 22 S",
+			"Description": "Nogard was surprised to discover just how much his pet ravens had grown since he last showed them off to Sandakloz. Perhaps he had something to do with their transformation, or maybe there was something truly special about the treats he had been using to train them. Yet, considering the wisdom and presence of mind they displayed, he couldn't help but wonder if this influence was the work of somethin from another realm entirely.",
+			"ReleaseDate": "November 19, 2026",
+			"Order": 992,
+			"BuyPrice": 2222,
+			"BuyCurrency": "Gems",
+			"SellPrice": 2222222,
+			"SellCurrency": "DragonCash",
+			"HatchExperience": 2222222,
+			"LevelRequirement": 25,
+			"Elements": [
+				"Ornamental",
+				"Dark",
+				"Air"
+			],
+			"IsLimited": true,
+			"Pedestal": {
+				"BuyPrice": 0,
+				"BuyCurrency": "Gems"
+			},
+			"Traits": {
+				"Available": "All"
+			},
+			"Goal": "These dragons remember faces very well!"
 		}
 	]
 }

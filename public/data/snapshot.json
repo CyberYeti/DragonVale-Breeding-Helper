@@ -1,17 +1,17 @@
 {
   "meta": {
     "schemaVersion": 2,
-    "revision": "b56e73312702",
+    "revision": "aaf654074e52",
     "source": "https://dragonvale.fandom.com",
     "license": "CC BY-SA 3.0",
     "pageRevisions": {
-      "Data:Dragons.json": 1760707,
-      "Data:BreedingHints.json": 1760526,
+      "Data:Dragons.json": 1761292,
+      "Data:BreedingHints.json": 1760969,
       "Data:Game.json": 1754925,
-      "Data:Dragonarium.json": 1759765,
-      "Data:Limited.json": 1760706
+      "Data:Dragonarium.json": 1761299,
+      "Data:Limited.json": 1761204
     },
-    "fetchedAt": "2026-11-16T06:41:05.144Z"
+    "fetchedAt": "2026-11-22T06:59:28.325Z"
   },
   "elements": [
     {
@@ -33513,6 +33513,108 @@
           }
         }
       ]
+    },
+    {
+      "name": "Magni",
+      "wikiPage": "Magni Dragon",
+      "rarity": "Rare",
+      "order": 990,
+      "elements": [
+        "Earth",
+        "Cold",
+        "Lightning"
+      ],
+      "breedingElements": [
+        "Earth",
+        "Cold",
+        "Lightning"
+      ],
+      "isLimited": true,
+      "traits": {
+        "kind": "all"
+      },
+      "canBeParent": true,
+      "image": "images/dragons/Magni.png",
+      "routes": [
+        {
+          "kind": "bred",
+          "requirement": {
+            "parents": [
+              "Zero",
+              "Fulgurite"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Muspel",
+      "wikiPage": "Muspel Dragon",
+      "rarity": "Epic",
+      "order": 991,
+      "elements": [
+        "Apocalypse",
+        "Fire",
+        "Earth",
+        "Metal"
+      ],
+      "breedingElements": [
+        "Apocalypse",
+        "Fire",
+        "Earth",
+        "Metal"
+      ],
+      "isLimited": true,
+      "traits": {
+        "kind": "all"
+      },
+      "canBeParent": true,
+      "image": "images/dragons/Muspel.png",
+      "routes": [
+        {
+          "kind": "evolved",
+          "from": "Volcano",
+          "decorations": [
+            "Worldscar"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Kraka & Krummi",
+      "wikiPage": "Kraka & Krummi Dragon",
+      "rarity": "Epic",
+      "order": 992,
+      "elements": [
+        "Ornamental",
+        "Dark",
+        "Air"
+      ],
+      "breedingElements": [
+        "Ornamental",
+        "Dark",
+        "Air"
+      ],
+      "isLimited": true,
+      "traits": {
+        "kind": "all"
+      },
+      "canBeParent": true,
+      "image": null,
+      "routes": [
+        {
+          "kind": "bred",
+          "requirement": {
+            "parents": [
+              "Lokilure"
+            ],
+            "elements": [
+              "Dark",
+              "Air"
+            ]
+          }
+        }
+      ]
     }
   ],
   "pages": [
@@ -33626,7 +33728,8 @@
         "Jawny",
         "Plagues",
         "Defflorescence",
-        "Outworld"
+        "Outworld",
+        "Muspel"
       ],
       "icon": "images/pages/Apocalypse.png"
     },
@@ -34686,7 +34789,8 @@
         "Dancey",
         "Gingerbread",
         "Thaw",
-        "Iceere"
+        "Iceere",
+        "Kraka & Krummi"
       ],
       "icon": "images/pages/Ornamental.png"
     },
@@ -35374,7 +35478,10 @@
         "Onsen",
         "Jawny",
         "Kitse",
-        "Iceere"
+        "Iceere",
+        "Muspel",
+        "Kraka & Krummi",
+        "Magni"
       ],
       "icon": "images/pages/Winter.png"
     },

@@ -35,8 +35,454 @@
 		}
 	},
 	"events": {
-		"dragons": {},
-		"islands": {},
-		"islandThemes": {}
+		"Branches of Valedrasil": {
+			"countdown": "January 6, 2027",
+			"dragons": {
+				"Kraka \u0026 Krummi": {
+					"Currency": "Iceberries",
+					"Cost": 22222,
+					"Breedable": false
+				},
+				"Magni": {
+					"Currency": "Iceberries",
+					"Cost": 18000,
+					"countdown": "November 26, 2026"
+				},
+				"Fubuki": {
+					"Currency": "Iceberries",
+					"Cost": 16550
+				},
+				"Drak-E": {
+					"Currency": "Iceberries",
+					"Cost": 17000
+				},
+				"Onsen": {
+					"Currency": "Iceberries",
+					"Cost": 16550
+				},
+				"Jawny": {
+					"Currency": "Iceberries",
+					"Cost": 17500
+				},
+				"Kitse": {
+					"Currency": "Iceberries",
+					"Cost": 18000
+				},
+				"Iceere": {
+					"Currency": "Iceberries",
+					"Cost": 16000
+				},
+				"Om": {
+					"Currency": "Iceberries",
+					"Cost": 17000
+				},
+				"Thaw": {
+					"Currency": "Iceberries",
+					"Cost": 17000
+				},
+				"Reindeer": {
+					"Currency": "Iceberries",
+					"Cost": 675
+				},
+				"Gift": {
+					"Currency": "Iceberries",
+					"Cost": 1800
+				},
+				"Coal": {
+					"Currency": "Iceberries",
+					"Cost": 1800
+				},
+				"Trinket": {
+					"Currency": "Iceberries",
+					"Cost": 1800
+				},
+				"Regift": {
+					"Currency": "Iceberries",
+					"Cost": 1800
+				},
+				"Mistletoe": {
+					"Currency": "Iceberries",
+					"Cost": 2000
+				},
+				"Holly": {
+					"Currency": "Iceberries",
+					"Cost": 2300
+				},
+				"First Snowflake": {
+					"Currency": "Iceberries",
+					"Cost": 2850
+				},
+				"Second Snowflake": {
+					"Currency": "Iceberries",
+					"Cost": 2850
+				},
+				"Third Snowflake": {
+					"Currency": "Iceberries",
+					"Cost": 2850
+				},
+				"Fourth Snowflake": {
+					"Currency": "Iceberries",
+					"Cost": 2850
+				},
+				"Fifth Snowflake": {
+					"Currency": "Iceberries",
+					"Cost": 2850
+				},
+				"Sixth Snowflake": {
+					"Currency": "Iceberries",
+					"Cost": 2850
+				},
+				"Seventh Snowflake": {
+					"Currency": "Iceberries",
+					"Cost": 2850
+				},
+				"Sleighbell": {
+					"Currency": "Iceberries",
+					"Cost": 4400
+				},
+				"Candlecrown": {
+					"Currency": "Iceberries",
+					"Cost": 4400
+				},
+				"Snowpocalypse": {
+					"Currency": "Iceberries",
+					"Cost": 4900
+				},
+				"Jingle": {
+					"Currency": "Iceberries",
+					"Cost": 5200
+				},
+				"Eve": {
+					"Currency": "Iceberries",
+					"Cost": 5000
+				},
+				"Tusk": {
+					"Currency": "Iceberries",
+					"Cost": 5400
+				},
+				"Shiver": {
+					"Currency": "Iceberries",
+					"Cost": 5500
+				},
+				"Festive": {
+					"Currency": "Iceberries",
+					"Cost": 5550
+				},
+				"Chaiko": {
+					"Currency": "Iceberries",
+					"Cost": 6750
+				},
+				"Grandeur": {
+					"Currency": "Iceberries",
+					"Cost": 10000
+				},
+				"Icearade": {
+					"Currency": "Iceberries",
+					"Cost": 10000
+				},
+				"Shaper": {
+					"Currency": "Iceberries",
+					"Cost": 11500
+				},
+				"Snopaw": {
+					"Currency": "Iceberries",
+					"Cost": 12500
+				},
+				"Gingerbread": {
+					"Currency": "Iceberries",
+					"Cost": 12000
+				},
+				"Eaves": {
+					"Currency": "Iceberries",
+					"Cost": 11400
+				},
+				"Tectonic": {
+					"Currency": "Iceberries",
+					"Cost": 12000
+				},
+				"Iceclaw": {
+					"Currency": "Iceberries",
+					"Cost": 11400
+				},
+				"Flamegobbler": {
+					"Currency": "Iceberries",
+					"Cost": 11400
+				},
+				"Pyros \u0026 Glacius": {
+					"Currency": "Iceberries",
+					"Cost": 12500
+				},
+				"Earthcore": {
+					"Currency": "Iceberries",
+					"Cost": 14500
+				},
+				"Volcano": {
+					"Currency": "Iceberries",
+					"Cost": 11250
+				},
+				"Ornamental": {
+					"Currency": "Iceberries",
+					"Cost": 1900
+				},
+				"Winter": {
+					"Currency": "Iceberries",
+					"Cost": 5900
+				},
+				"Nibwhip": {
+					"Currency": "Iceberries",
+					"Cost": 6300
+				},
+				"Burglehoo": {
+					"Currency": "Iceberries",
+					"Cost": 6300
+				},
+				"Libretto": {
+					"Currency": "Iceberries",
+					"Cost": 6300
+				},
+				"Gulletail": {
+					"Currency": "Iceberries",
+					"Cost": 6300
+				},
+				"Sugarplum": {
+					"Currency": "Iceberries",
+					"Cost": 6300
+				},
+				"Avarice": {
+					"Currency": "Iceberries",
+					"Cost": 6300
+				},
+				"Trepak": {
+					"Currency": "Iceberries",
+					"Cost": 6300
+				},
+				"Lokilure": {
+					"Currency": "Iceberries",
+					"Cost": 6300
+				},
+				"Saccahrine": {
+					"Currency": "Iceberries",
+					"Cost": 6300
+				},
+				"Jadice": {
+					"Currency": "Iceberries",
+					"Cost": 6300
+				},
+				"Neoteric": {
+					"Currency": "Iceberries",
+					"Cost": 2400
+				},
+				"Lyuba": {
+					"Currency": "Iceberries",
+					"Cost": 5900
+				},
+				"Neyvee": {
+					"Currency": "Iceberries",
+					"Cost": 5900
+				},
+				"Longcicle": {
+					"Currency": "Iceberries",
+					"Cost": 6900
+				},
+				"Ketu": {
+					"Currency": "Iceberries",
+					"Cost": 7300
+				},
+				"Snowball": {
+					"Currency": "Iceberries",
+					"Cost": 7500
+				},
+				"Jamjam": {
+					"Currency": "Iceberries",
+					"Cost": 7700
+				},
+				"Yanghis": {
+					"Currency": "Iceberries",
+					"Cost": 7900
+				},
+				"Yeti": {
+					"Currency": "Iceberries",
+					"Cost": 7900
+				},
+				"Chorister": {
+					"Currency": "Iceberries",
+					"Cost": 8200
+				},
+				"Angler": {
+					"Currency": "Iceberries",
+					"Cost": 8200
+				},
+				"Weaver": {
+					"Currency": "Iceberries",
+					"Cost": 8500
+				},
+				"Liveloch": {
+					"Currency": "Iceberries",
+					"Cost": 8900
+				},
+				"Everfrost": {
+					"Currency": "Iceberries",
+					"Cost": 9500
+				},
+				"Igluit": {
+					"Currency": "Iceberries",
+					"Cost": 9500
+				},
+				"Sugarmitten": {
+					"Currency": "Iceberries",
+					"Cost": 9500
+				},
+				"Toboggan": {
+					"Currency": "Iceberries",
+					"Cost": 11000
+				},
+				"Snowdrop": {
+					"Currency": "Iceberries",
+					"Cost": 12000
+				},
+				"Cubicle": {
+					"Currency": "Iceberries",
+					"Cost": 13750
+				},
+				"Dancey": {
+					"Currency": "Iceberries",
+					"Cost": 14500
+				},
+				"Icy Torrent": {
+					"Currency": "Iceberries",
+					"Cost": 1425
+				},
+				"Mountain Sun": {
+					"Currency": "Iceberries",
+					"Cost": 1425
+				},
+				"Hidden Bolt": {
+					"Currency": "Iceberries",
+					"Cost": 1425
+				},
+				"Blazing Gale": {
+					"Currency": "Iceberries",
+					"Cost": 1425
+				},
+				"Iron Blossom": {
+					"Currency": "Iceberries",
+					"Cost": 1425
+				},
+				"Flicker": {
+					"Currency": "Iceberries",
+					"Cost": 2000
+				},
+				"Ribbon": {
+					"Currency": "Iceberries",
+					"Cost": 2100
+				},
+				"Verglace": {
+					"Currency": "Iceberries",
+					"Cost": 2200
+				},
+				"Tinsel": {
+					"Currency": "Iceberries",
+					"Cost": 2300
+				},
+				"Flurry": {
+					"Currency": "Iceberries",
+					"Cost": 2300
+				},
+				"Thundersnow": {
+					"Currency": "Iceberries",
+					"Cost": 2300
+				},
+				"Lace": {
+					"Currency": "Iceberries",
+					"Cost": 2300
+				},
+				"Snowbrush": {
+					"Currency": "Iceberries",
+					"Cost": 2500
+				},
+				"Kringle": {
+					"Currency": "Iceberries",
+					"Cost": 4300
+				},
+				"Krampus": {
+					"Currency": "Iceberries",
+					"Cost": 4300
+				},
+				"Dazzling": {
+					"Currency": "Iceberries",
+					"Cost": 5300
+				},
+				"Harmony": {
+					"Currency": "Iceberries",
+					"Cost": 5500
+				},
+				"Yule": {
+					"Currency": "Iceberries",
+					"Cost": 5500
+				},
+				"Spellmason": {
+					"Currency": "Iceberries",
+					"Cost": 5500
+				},
+				"Venture": {
+					"Currency": "Iceberries",
+					"Cost": 5500
+				},
+				"Reminiscence": {
+					"Currency": "Iceberries",
+					"Cost": 5500
+				},
+				"Twinkle": {
+					"Currency": "Iceberries",
+					"Cost": 5600
+				},
+				"Glitz": {
+					"Currency": "Iceberries",
+					"Cost": 9600
+				},
+				"Zumi": {
+					"Currency": "Iceberries",
+					"Cost": 9500
+				},
+				"Zero": {
+					"Currency": "Iceberries",
+					"Cost": 9500
+				},
+				"Aisa": {
+					"Currency": "Iceberries",
+					"Cost": 9500
+				},
+				"Elkar": {
+					"Currency": "Iceberries",
+					"Cost": 9500
+				},
+				"Greenge": {
+					"Currency": "Iceberries",
+					"Cost": 14000
+				},
+				"Nature": {
+					"Currency": "Iceberries",
+					"Cost": 14000
+				},
+				"Kotun": {
+					"Currency": "Iceberries",
+					"Cost": 14000
+				},
+				"Icebound": {
+					"Currency": "Iceberries",
+					"Cost": 1920
+				},
+				"Woolen": {
+					"Currency": "Iceberries",
+					"Cost": 4160
+				},
+				"Starshine": {
+					"Currency": "Iceberries",
+					"Cost": 4720
+				}
+			},
+			"islands": {},
+			"islandThemes": {}
+		}
 	}
 }

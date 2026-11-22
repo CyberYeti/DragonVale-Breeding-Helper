@@ -8026,7 +8026,7 @@
 			]
 		},
 		"Thaw": {
-			"BuyPrice": 20,
+			"BuyPrice": 15,
 			"BuyPriceType": "Gems",
 			"IsEvolution": true,
 			"RequiredDecorations": [
@@ -8208,7 +8208,7 @@
 			]
 		},
 		"Dustroyer": {
-			"BuyPrice": 0,
+			"BuyPrice": 20,
 			"BuyPriceType": "Gems",
 			"RequiredDragons": [
 				"Lyuba"
@@ -8218,7 +8218,7 @@
 			]
 		},
 		"Scrubby": {
-			"BuyPrice": 0,
+			"BuyPrice": 15,
 			"BuyPriceType": "Gems",
 			"RequiredDragons": [
 				"Moppey"
@@ -8256,7 +8256,7 @@
 			]
 		},
 		"Venator": {
-			"BuyPrice": 0,
+			"BuyPrice": 15,
 			"BuyPriceType": "Gems",
 			"RequiredDragons": [
 				"Valeodon"
@@ -8266,7 +8266,7 @@
 			]
 		},
 		"Sobek": {
-			"BuyPrice": 0,
+			"BuyPrice": 15,
 			"BuyPriceType": "Gems",
 			"RequiredElements": [
 				"Water",
@@ -8275,7 +8275,7 @@
 			]
 		},
 		"Naja": {
-			"BuyPrice": 0,
+			"BuyPrice": 20,
 			"BuyPriceType": "Gems",
 			"RequiredElements": [
 				"Treasure",
@@ -8328,7 +8328,7 @@
 			]
 		},
 		"Pathfinder": {
-			"BuyPrice": 15,
+			"BuyPrice": 20,
 			"BuyPriceType": "Gems",
 			"RequiredDragons": [
 				"Magnetic"
@@ -8495,6 +8495,33 @@
 			],
 			"RequiredElements": [
 				"Apocalypse"
+			]
+		},
+		"Magni": {
+			"BuyPrice": 15,
+			"BuyPriceType": "Gems",
+			"RequiredDragons": [
+				"Zero",
+				"Fulgurite"
+			]
+		},
+		"Muspel": {
+			"BuyPrice": 20,
+			"BuyPriceType": "Gems",
+			"IsEvolution": true,
+			"RequiredDecorations": [
+				"Worldscar"
+			]
+		},
+		"Kraka \u0026 Krummi": {
+			"BuyPrice": 20,
+			"BuyPriceType": "Gems",
+			"RequiredDragons": [
+				"Lokilure"
+			],
+			"RequiredElements": [
+				"Dark",
+				"Air"
 			]
 		}
 	}
