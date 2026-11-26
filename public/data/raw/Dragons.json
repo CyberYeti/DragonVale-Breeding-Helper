@@ -29895,6 +29895,35 @@
 				"Available": "All"
 			},
 			"Goal": "These dragons remember faces very well!"
+		},
+		{
+			"Name": "Eir",
+			"Rarity": "Rare",
+			"BreedingTime": "18 H",
+			"Description": "",
+			"ReleaseDate": "November 26, 2026",
+			"Order": 993,
+			"BuyPrice": 0,
+			"BuyCurrency": "Gems",
+			"SellPrice": 2100000,
+			"SellCurrency": "DragonCash",
+			"HatchExperience": 0,
+			"LevelRequirement": 25,
+			"Elements": [
+				"Light",
+				"Cold",
+				"Plant",
+				"Earth"
+			],
+			"IsLimited": true,
+			"Pedestal": {
+				"BuyPrice": 0,
+				"BuyCurrency": "Gems"
+			},
+			"Traits": {
+				"Available": "All"
+			},
+			"Goal": ""
 		}
 	]
 }

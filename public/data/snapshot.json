@@ -1,17 +1,17 @@
 {
   "meta": {
     "schemaVersion": 2,
-    "revision": "b5c0cd5cecae",
+    "revision": "c28564048a63",
     "source": "https://dragonvale.fandom.com",
     "license": "CC BY-SA 3.0",
     "pageRevisions": {
-      "Data:Dragons.json": 1761292,
-      "Data:BreedingHints.json": 1760969,
+      "Data:Dragons.json": 1761378,
+      "Data:BreedingHints.json": 1761373,
       "Data:Game.json": 1754925,
       "Data:Dragonarium.json": 1761299,
-      "Data:Limited.json": 1761335
+      "Data:Limited.json": 1761376
     },
-    "fetchedAt": "2026-11-23T23:59:09.654Z"
+    "fetchedAt": "2026-11-26T21:40:07.000Z"
   },
   "elements": [
     {
@@ -33611,6 +33611,41 @@
             "elements": [
               "Dark",
               "Air"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Eir",
+      "wikiPage": "Eir Dragon",
+      "rarity": "Rare",
+      "order": 993,
+      "elements": [
+        "Light",
+        "Cold",
+        "Plant",
+        "Earth"
+      ],
+      "breedingElements": [
+        "Light",
+        "Cold",
+        "Plant",
+        "Earth"
+      ],
+      "isLimited": true,
+      "traits": {
+        "kind": "all"
+      },
+      "canBeParent": true,
+      "image": null,
+      "routes": [
+        {
+          "kind": "bred",
+          "requirement": {
+            "parents": [
+              "Elkar",
+              "Luminous"
             ]
           }
         }
