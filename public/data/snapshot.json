@@ -1,17 +1,17 @@
 {
   "meta": {
     "schemaVersion": 2,
-    "revision": "7e3e67f8f652",
+    "revision": "2c0ef39b87ac",
     "source": "https://dragonvale.fandom.com",
     "license": "CC BY-SA 3.0",
     "pageRevisions": {
-      "Data:Dragons.json": 1761378,
+      "Data:Dragons.json": 1761391,
       "Data:BreedingHints.json": 1761373,
       "Data:Game.json": 1754925,
       "Data:Dragonarium.json": 1761381,
       "Data:Limited.json": 1761376
     },
-    "fetchedAt": "2026-11-27T08:43:57.255Z"
+    "fetchedAt": "2026-11-27T21:24:43.489Z"
   },
   "elements": [
     {
@@ -33638,7 +33638,7 @@
         "kind": "all"
       },
       "canBeParent": true,
-      "image": null,
+      "image": "images/dragons/Eir.png",
       "routes": [
         {
           "kind": "bred",

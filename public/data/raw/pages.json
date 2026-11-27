@@ -1,11 +1,11 @@
 {
   "source": "https://dragonvale.fandom.com",
-  "fetchedAt": "2026-11-27T08:43:57.255Z",
+  "fetchedAt": "2026-11-27T21:24:43.489Z",
   "license": "CC BY-SA 3.0",
   "pages": {
     "Data:Dragons.json": {
       "file": "Dragons.json",
-      "revision": 1761378
+      "revision": 1761391
     },
     "Data:BreedingHints.json": {
       "file": "BreedingHints.json",
