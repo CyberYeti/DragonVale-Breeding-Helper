@@ -1,17 +1,17 @@
 {
   "meta": {
     "schemaVersion": 2,
-    "revision": "c28564048a63",
+    "revision": "7e3e67f8f652",
     "source": "https://dragonvale.fandom.com",
     "license": "CC BY-SA 3.0",
     "pageRevisions": {
       "Data:Dragons.json": 1761378,
       "Data:BreedingHints.json": 1761373,
       "Data:Game.json": 1754925,
-      "Data:Dragonarium.json": 1761299,
+      "Data:Dragonarium.json": 1761381,
       "Data:Limited.json": 1761376
     },
-    "fetchedAt": "2026-11-26T21:40:07.000Z"
+    "fetchedAt": "2026-11-27T08:43:57.255Z"
   },
   "elements": [
     {
@@ -35516,7 +35516,8 @@
         "Iceere",
         "Muspel",
         "Kraka & Krummi",
-        "Magni"
+        "Magni",
+        "Eir"
       ],
       "icon": "images/pages/Winter.png"
     },

@@ -1,6 +1,6 @@
 {
   "source": "https://dragonvale.fandom.com",
-  "fetchedAt": "2026-11-26T21:40:07.000Z",
+  "fetchedAt": "2026-11-27T08:43:57.255Z",
   "license": "CC BY-SA 3.0",
   "pages": {
     "Data:Dragons.json": {
@@ -17,7 +17,7 @@
     },
     "Data:Dragonarium.json": {
       "file": "Dragonarium.json",
-      "revision": 1761299
+      "revision": 1761381
     },
     "Data:Limited.json": {
       "file": "Limited.json",
